@@ -1,1 +1,1 @@
-{"appId":"com.pajareo.huelva","appName":"Pajareo Huelva","webDir":"www"}
+{"appId":"com.pajareo.huelva","appName":"Pajareo Huelva","webDir":"www","plugins":{"CapacitorHttp":{"enabled":true}}}
