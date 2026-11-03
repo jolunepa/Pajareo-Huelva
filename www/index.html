@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PAJAREO HUELVA</title>
+<title>Pajareo Huelva</title>
 <style>
 :root{--bg:#f4f7f1;--card:#fff;--tx:#1d2a1f;--mu:#5d6b5f;--ac:#2f7d4a;--bd:#d9e2d6}
 @media(prefers-color-scheme:dark){:root{--bg:#121a14;--card:#1c271f;--tx:#e8f0e6;--mu:#9fb0a0;--ac:#58b97a;--bd:#2d3d31;color-scheme:dark}}
@@ -13,12 +13,12 @@ main{padding:12px;max-width:640px;margin:auto}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin:8px 0}
 input,select,button.b{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);width:100%;margin:4px 0}
 button.b{background:var(--ac);color:#fff;border:0;font-weight:600}
-a{color:var(--ac)}.mu{color:var(--mu)}.sci{font-style:italic;color:var(--mu);font-size:14px}
+a{color:var(--ac);word-break:break-word}.mu{color:var(--mu)}.sci{font-style:italic;color:var(--mu);font-size:14px}
 .row{display:flex;gap:6px}.row button{flex:1}audio{width:100%;margin-top:6px}h2{margin:6px 0}
 .topic{display:flex;gap:14px;align-items:center;padding:14px 6px;border-bottom:1px solid var(--bd)}.topic .ic{font-size:30px;width:40px;text-align:center}
 .x{float:right;border:0;background:none;font-size:18px}
 </style></head><body>
-<header><button id="bk" onclick="tab='home';q='';render()">←</button><span id="ttl">PAJAREO HUELVA</span></header>
+<header><button id="bk" onclick="tab='home';q='';render()">←</button><span id="ttl">Pajareo Huelva</span></header>
 <main id="m"></main>
 <script>
 const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
@@ -33,18 +33,19 @@ let tab="home",q="",LIB=[];const URLS={};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const safe=u=>{u=String(u||"").trim();if(!u)return"";if(!/^https?:\/\//i.test(u))u="https://"+u;try{return new URL(u).href}catch(e){return""}};
+const lbl=u=>{try{const x=new URL(u);const h=x.hostname.replace("www.","");const p=x.pathname.split("/").filter(Boolean)[0]||"";if(h.includes("instagram.com"))return "Instagram @"+p;if(h.includes("facebook.com"))return "Facebook";if(h.includes("ebird.org"))return "eBird";return h}catch(e){return u}};
 window.go=u=>window.open(u,"_blank");
 window.add=(k,f)=>{const o={};for(const el of f.querySelectorAll("[name]"))o[el.name]=el.value.trim();if(!o.name)return;S[k].push(o);keep();render()};
 window.rm=(k,i)=>{if(confirm("¿Borrar?")){S[k].splice(i,1);keep();render()}};
 function render(){
   const cur=TABS.find(t=>t[0]===tab);
-  $("#bk").style.display=cur?"block":"none";$("#ttl").textContent=cur?cur[2]:"PAJAREO HUELVA";
+  $("#bk").style.display=cur?"block":"none";$("#ttl").textContent=cur?cur[2]:"Pajareo Huelva";
   $("#m").innerHTML=cur?({amigos,aves,tiempo,mareas,sitios})[tab]():home();
 }
 function home(){return TABS.map(t=>`<div class="topic" onclick="tab='${t[0]}';q='';render()"><span class="ic">${t[1]}</span><div><b>${t[2]}</b><br><small class="mu">${t[3]}</small></div></div>`).join("")}
 function lista(k,tit,ph1,ph2,btn,lbl){
   const l=S[k].map((f,i)=>({...f,i}));if(k==="friends")l.sort((a,b)=>a.name.localeCompare(b.name,"es"));
-  return `<h2>${tit}</h2>`+l.map(f=>{const u=safe(f.url);return `<div class="card"><b>${esc(f.name)}</b><button class="x" onclick="rm('${k}',${f.i})">🗑</button><br>${u?`<a href="${esc(u)}" target="_blank">${k==="sights"?"Ver localización":esc(f.url)}</a>`:""}</div>`}).join("")+
+  return `<h2>${tit}</h2>`+l.map(f=>{const u=safe(f.url);return `<div class="card"><b>${esc(f.name)}</b><button class="x" onclick="rm('${k}',${f.i})">🗑</button><br>${u?`<a href="${esc(u)}" target="_blank">${k==="sights"?"Ver localización":esc(lbl(u))}</a>`:""}</div>`}).join("")+
   `<form class="card" onsubmit="add('${k}',this);return false"><b>${lbl}</b><input name="name" placeholder="${ph1}"><input name="url" placeholder="${ph2}"><button class="b">${btn}</button></form>`;
 }
 function amigos(){return lista("friends","Amigos y redes","Nombre","Enlace (Instagram, web...)","Añadir","Añadir amigo")}
