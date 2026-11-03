@@ -8,7 +8,7 @@
 *{box-sizing:border-box}html,body{margin:0}
 body{background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 header{padding:14px 16px;background:var(--ac);color:#fff;font-weight:700;letter-spacing:.06em;position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px}
-#bk{border:0;background:none;color:#fff;font-size:22px;padding:0 6px;display:none}
+
 main{padding:12px;max-width:640px;margin:auto}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin:8px 0}
 input,select,button.b{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);width:100%;margin:4px 0}
@@ -17,8 +17,8 @@ a{color:var(--ac);word-break:break-word}.mu{color:var(--mu)}.sci{font-style:ital
 .row{display:flex;gap:6px}.row button{flex:1}audio{width:100%;margin-top:6px}h2{margin:6px 0}
 .topic{display:flex;gap:14px;align-items:center;padding:14px 6px;border-bottom:1px solid var(--bd)}.topic .ic{font-size:30px;width:40px;text-align:center}
 .x{float:right;border:0;background:none;font-size:18px}
-.chips{display:flex;gap:6px;overflow-x:auto}.chip{flex:0 0 auto;min-width:54px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:6px;font:inherit}.chip.on{background:var(--ac);color:#fff}.cols{display:flex;gap:8px}.cols>div{flex:1;text-align:center}.pl{color:#2a7fd0}.bj{color:#d33}.big{font-size:22px;font-weight:700}.wt{border-collapse:collapse;min-width:640px;width:100%}.wt td,.wt th{padding:8px 6px;text-align:center;border-left:1px solid var(--bd);border-bottom:1px solid var(--bd);font-size:14px;white-space:nowrap;font-weight:400}.wt th{font-weight:700}.wt .l{position:sticky;left:0;background:var(--card);font-weight:700;border-left:0;z-index:1;min-width:64px}.wt .ic{font-size:26px;line-height:1.2}</style></head><body>
-<header><button id="bk" onclick="tab='home';q='';render()">←</button><span id="ttl">Pajareo Huelva</span></header>
+.chips{display:flex;gap:6px;overflow-x:auto}.chip{flex:0 0 auto;min-width:54px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:6px;font:inherit}.chip.on{background:var(--ac);color:#fff}.cols{display:flex;gap:8px}.cols>div{flex:1;text-align:center}.pl{color:#2a7fd0}.bj{color:#d33}.big{font-size:22px;font-weight:700}.wt{border-collapse:collapse;min-width:640px;width:100%}.wt td,.wt th{padding:8px 6px;text-align:center;border-left:1px solid var(--bd);border-bottom:1px solid var(--bd);font-size:14px;white-space:nowrap;font-weight:400}.wt th{font-weight:700}.wt .l{position:sticky;left:0;background:var(--card);font-weight:700;border-left:0;z-index:1;min-width:64px}.wt .ic{font-size:26px;line-height:1.2}header{justify-content:center;text-align:center}.foot{text-align:center;margin:36px 0 12px;color:var(--mu);font-size:14px}</style></head><body>
+<header><span id="ttl">Pajareo Huelva</span></header>
 <main id="m"></main>
 <script>
 const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
@@ -39,10 +39,10 @@ window.add=(k,f)=>{const o={};for(const el of f.querySelectorAll("[name]"))o[el.
 window.rm=(k,i)=>{if(confirm("¿Borrar?")){S[k].splice(i,1);keep();render()}};
 function render(){
   const cur=TABS.find(t=>t[0]===tab);
-  $("#bk").style.display=cur?"block":"none";$("#ttl").textContent=cur?cur[2]:"Pajareo Huelva";
+  $("#ttl").textContent=cur?cur[2]:"Pajareo Huelva";
   $("#m").innerHTML=cur?({amigos,aves,tiempo,mareas,sitios})[tab]():home();
 }
-function home(){return TABS.map(t=>`<div class="topic" onclick="tab='${t[0]}';q='';render()"><span class="ic">${t[1]}</span><div><b>${t[2]}</b><br><small class="mu">${t[3]}</small></div></div>`).join("")}
+function home(){return TABS.map(t=>`<div class="topic" onclick="tab='${t[0]}';q='';render()"><span class="ic">${t[1]}</span><div><b>${t[2]}</b><br><small class="mu">${t[3]}</small></div></div>`).join("")+`<div class="foot">Creado por <a href="https://www.instagram.com/jolunepa" target="_blank">jolunepa</a></div>`}
 function lista(k,tit,ph1,ph2,btn,lbl){
   const l=S[k].map((f,i)=>({...f,i}));if(k==="friends")l.sort((a,b)=>a.name.localeCompare(b.name,"es"));
   return `<h2>${tit}</h2>`+l.map(f=>{const u=safe(f.url);return `<div class="card"><b>${esc(f.name)}</b><button class="x" onclick="rm('${k}',${f.i})">🗑</button><br>${u?`<a href="${esc(u)}" target="_blank">${k==="sights"?"Ver localización":esc(corto(u))}</a>`:""}</div>`}).join("")+
