@@ -1,0 +1,3 @@
+PAJAREO HUELVA - proyecto Android. Sigue los pasos que te dio Claude en el chat.
+Si al subir los archivos a GitHub no aparece la carpeta .github, crea el archivo
+.github/workflows/android.yml a mano y pega dentro el contenido de android.yml.

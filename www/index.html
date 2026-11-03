@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PAJAREO HUELVA</title>
+<style>
+:root{--bg:#f4f7f1;--card:#fff;--tx:#1d2a1f;--mu:#5d6b5f;--ac:#2f7d4a;--bd:#d9e2d6}
+@media(prefers-color-scheme:dark){:root{--bg:#121a14;--card:#1c271f;--tx:#e8f0e6;--mu:#9fb0a0;--ac:#58b97a;--bd:#2d3d31;color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{padding:14px 16px;background:var(--ac);color:#fff;font-weight:700;letter-spacing:.06em;position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px}
+#bk{border:0;background:none;color:#fff;font-size:22px;padding:0 6px;display:none}
+main{padding:12px;max-width:640px;margin:auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin:8px 0}
+input,select,button.b{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);width:100%;margin:4px 0}
+button.b{background:var(--ac);color:#fff;border:0;font-weight:600}
+a{color:var(--ac)}.mu{color:var(--mu)}.sci{font-style:italic;color:var(--mu);font-size:14px}
+.row{display:flex;gap:6px}.row button{flex:1}audio{width:100%;margin-top:6px}h2{margin:6px 0}
+.topic{display:flex;gap:14px;align-items:center;padding:14px 6px;border-bottom:1px solid var(--bd)}.topic .ic{font-size:30px;width:40px;text-align:center}
+.x{float:right;border:0;background:none;font-size:18px}
+</style></head><body>
+<header><button id="bk" onclick="tab='home';q='';render()">←</button><span id="ttl">PAJAREO HUELVA</span></header>
+<main id="m"></main>
+<script>
+const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
+const LOCS=["Huelva","Almonte","El Rocío","Doñana","Isla Cristina","Ayamonte","Punta Umbría","Matalascañas","Moguer","Lepe","Cartaya","El Portil"];
+const FR=[["Cristóbal Crespo","https://www.instagram.com/cristobal_crespo_caro"],["Carlos Salguero","https://www.instagram.com/carlxsh"],["Tomás Gómez","https://www.instagram.com/toromy75"],["Fco. Rivas","https://www.instagram.com/francisco_rivas68"],["David (Zuma)","https://www.instagram.com/elzuma"],["Juanjo Cipriano","https://ebird.org/profile/OTEwMTk0/ES"],["Jose Manuel Reyes","https://www.instagram.com/josemreyesp"],["Seba","https://www.instagram.com/seba_wildlife"],["Jose Antonio (jolunepa)","https://www.instagram.com/jolunepa"],["Antonio Medina","https://www.instagram.com/antonio.jmedina"],["Loren","https://www.instagram.com/fotografiasdeloren"],["Felipe","https://www.instagram.com/felipe.felipe.1806"],["Isidro","https://www.instagram.com/donanaparadise"],["Enrique Pragom","https://www.instagram.com/enri_prax"],["Jose A. Diaz","https://www.instagram.com/diazregodon"],["Jose Luis","https://www.facebook.com/joseluis.cruzadoblanco"],["Feliciano","https://www.instagram.com/feliciano.esteban.9"],["Diego","https://www.instagram.com/spanishwildlife70"]];
+const SI=[["Camachuelo común","https://maps.app.goo.gl/Rh3Kthsp6KQoRNQ87"],["Camachuelo común","https://maps.app.goo.gl/Kh3F2EJNKzbcijPk9"],["Pechiazul","https://maps.app.goo.gl/xkopK4rHkDf1pMmh7"],["Búho campestre","https://maps.app.goo.gl/tkmkyvNb69Ak8EhGA"],["Chorlito gris","https://maps.app.goo.gl/qxTrqNCbBqarAwAcA"],["Malvasía cabeciblanca","https://maps.app.goo.gl/uGRr4QxcVu7taz7J7"],["Falaropo tricolor","https://maps.app.goo.gl/bLWZuV7Bf7KAjpb9A"]];
+const mk=a=>a.map(([name,url])=>({name,url}));
+let S;try{S=JSON.parse(localStorage.getItem("ph"))}catch(e){}
+if(!S)S={friends:mk(FR),sights:mk(SI)};
+const keep=()=>{try{localStorage.setItem("ph",JSON.stringify(S))}catch(e){}};
+let tab="home",q="",LIB=[];const URLS={};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const safe=u=>{u=String(u||"").trim();if(!u)return"";if(!/^https?:\/\//i.test(u))u="https://"+u;try{return new URL(u).href}catch(e){return""}};
+window.go=u=>window.open(u,"_blank");
+window.add=(k,f)=>{const o={};for(const el of f.querySelectorAll("[name]"))o[el.name]=el.value.trim();if(!o.name)return;S[k].push(o);keep();render()};
+window.rm=(k,i)=>{if(confirm("¿Borrar?")){S[k].splice(i,1);keep();render()}};
+function render(){
+  const cur=TABS.find(t=>t[0]===tab);
+  $("#bk").style.display=cur?"block":"none";$("#ttl").textContent=cur?cur[2]:"PAJAREO HUELVA";
+  $("#m").innerHTML=cur?({amigos,aves,tiempo,mareas,sitios})[tab]():home();
+}
+function home(){return TABS.map(t=>`<div class="topic" onclick="tab='${t[0]}';q='';render()"><span class="ic">${t[1]}</span><div><b>${t[2]}</b><br><small class="mu">${t[3]}</small></div></div>`).join("")}
+function lista(k,tit,ph1,ph2,btn,lbl){
+  const l=S[k].map((f,i)=>({...f,i}));if(k==="friends")l.sort((a,b)=>a.name.localeCompare(b.name,"es"));
+  return `<h2>${tit}</h2>`+l.map(f=>{const u=safe(f.url);return `<div class="card"><b>${esc(f.name)}</b><button class="x" onclick="rm('${k}',${f.i})">🗑</button><br>${u?`<a href="${esc(u)}" target="_blank">${k==="sights"?"Ver localización":esc(f.url)}</a>`:""}</div>`}).join("")+
+  `<form class="card" onsubmit="add('${k}',this);return false"><b>${lbl}</b><input name="name" placeholder="${ph1}"><input name="url" placeholder="${ph2}"><button class="b">${btn}</button></form>`;
+}
+function amigos(){return lista("friends","Amigos y redes","Nombre","Enlace (Instagram, web...)","Añadir","Añadir amigo")}
+function sitios(){return lista("sights","Avistamientos","Especie","Enlace del lugar (Google Maps...)","Guardar","Nuevo avistamiento")}
+function tiempo(){return `<h2>El tiempo</h2><div class="card"><select id="loc">${LOCS.map(x=>`<option>${x}</option>`).join("")}</select><button class="b" onclick="go('https://www.google.com/search?q=tiempo+'+encodeURIComponent($('#loc').value))">Ver el tiempo</button><button class="b" onclick="go('https://www.aemet.es/es/eltiempo/prediccion/municipios')">AEMET (oficial)</button></div>`}
+function mareas(){return `<h2>Tablas de mareas</h2><div class="card"><button class="b" onclick="go('https://tablademareas.com/es/huelva/huelva')">Ver tabla de mareas de Huelva</button></div>`}
+const IDB=()=>new Promise((res,rej)=>{const r=indexedDB.open("pajareo",1);r.onupgradeneeded=()=>r.result.createObjectStore("a",{keyPath:"id"});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function loadLib(){try{const d=await IDB();LIB=await new Promise((res,rej)=>{const r=d.transaction("a").objectStore("a").getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch(e){LIB=[]}render()}
+async function saveFiles(files){try{const d=await IDB();const tx=d.transaction("a","readwrite");const s=tx.objectStore("a");for(const f of files){const base=f.name.replace(/\.[^.]+$/,"");const p=base.split(/\s+[-–_]\s+/);s.put({id:f.name,name:(p[0]||base).trim(),sci:(p[1]||"").trim(),file:f})}await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}catch(e){alert("No se pudieron guardar los audios.")}loadLib()}
+const au=b=>URLS[b.id]||(URLS[b.id]=URL.createObjectURL(b.file));
+window.loopT=b=>{const a=b.closest(".card").querySelector("audio");a.loop=!a.loop;b.textContent="🔁 Bucle: "+(a.loop?"sí":"no")};
+window.stopA=b=>{const a=b.closest(".card").querySelector("audio");a.pause();a.currentTime=0};
+function aves(){
+  const n=q.toLowerCase();
+  const l=LIB.filter(b=>b.name.toLowerCase().includes(n)).sort((a,b)=>a.name.localeCompare(b.name,"es"));
+  return `<h2>Sonidos de aves</h2><input type="file" id="fl" accept="audio/*" multiple style="display:none" onchange="saveFiles([...this.files])"><button class="b" onclick="$('#fl').click()">📂 Cargar carpeta SONIDOS AVES</button><small class="mu">Entra en la carpeta, selecciona todos los audios y acepta. ${LIB.length} audios guardados.</small><input id="sq" placeholder="Buscar por nombre común" value="${esc(q)}" oninput="q=this.value;render();const i=$('#sq');i.focus();i.setSelectionRange(q.length,q.length)">`+
+  (l.map(b=>`<div class="card"><b>${esc(b.name)}</b><div class="sci">${esc(b.sci)}</div><audio controls preload="none" src="${au(b)}"></audio><div class="row"><button class="b" onclick="loopT(this)">🔁 Bucle: no</button><button class="b" onclick="stopA(this)">⏹ Stop</button></div></div>`).join("")||`<p class="mu">Todavía no hay audios. Pulsa el botón de arriba.</p>`);
+}
+loadLib();
+</script></body></html>
