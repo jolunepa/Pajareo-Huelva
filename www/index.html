@@ -135,5 +135,14 @@ function aves(){
   return `<h2>Sonidos de aves</h2><input type="file" id="fl" accept="audio/*" multiple style="display:none" onchange="saveFiles([...this.files])"><button class="b" onclick="$('#fl').click()">📂 Cargar carpeta SONIDOS AVES</button><small class="mu">Entra en la carpeta, selecciona todos los audios y acepta. ${LIB.length} audios guardados.</small><input id="sq" placeholder="Buscar por nombre común" value="${esc(q)}" oninput="q=this.value;render();const i=$('#sq');i.focus();i.setSelectionRange(q.length,q.length)">`+
   (l.map(b=>`<div class="card"><b>${esc(b.name)}</b><div class="sci">${esc(b.sci)}</div><audio controls preload="none" src="${au(b)}"></audio><div class="row"><button class="b" onclick="loopT(this)">🔁 Bucle: no</button><button class="b" onclick="stopA(this)">⏹ Stop</button></div></div>`).join("")||`<p class="mu">Todavía no hay audios. Pulsa el botón de arriba.</p>`);
 }
+function toast(t){let e=document.getElementById("toast");if(!e){e=document.createElement("div");e.id="toast";e.style.cssText="position:fixed;left:50%;bottom:40px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:20px;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none";document.body.appendChild(e)}e.textContent=t;e.style.opacity=1;clearTimeout(e._t);e._t=setTimeout(()=>e.style.opacity=0,2000)}
+(function(){const A=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App;if(!A)return;let last=0;
+  A.addListener("backButton",()=>{
+    if(tab!=="home"){tab="home";q="";render();return}
+    const n=Date.now();
+    if(n-last<2000){last=0;if(confirm("¿Seguro que quieres salir?"))A.exitApp()}
+    else{last=n;toast("Pulsa otra vez atrás para salir")}
+  });
+})();
 loadLib();
 </script></body></html>
