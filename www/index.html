@@ -369,9 +369,11 @@ function galeria(){
   if(GL.lista){const only=GL.solo?eur.filter(e=>e.idx>=0&&cnt[e.idx]):eur;const tengo=eur.filter(e=>e.idx>=0&&cnt[e.idx]).length;
     lista=`<div class="card"><b>Aves de Europa</b> <span class="mu">· tienes ${tengo} de ${eur.length}</span><div class="chips" style="margin:6px 0"><button class="chip ${GL.solo?"":"on"}" onclick="GL.solo=false;render()">Todas</button><button class="chip ${GL.solo?"on":""}" onclick="GL.solo=true;render()">Solo las que tengo</button></div>${only.map(row).join("")||'<p class="mu">Aún no tienes ninguna.</p>'}</div>`}
   return `<h2>Galería de aves</h2>
-  <input type="file" id="gfl" accept="image/*" multiple style="display:none" onchange="gAdd([...this.files]);this.value=''">
-  <button class="b" onclick="$('#gfl').click()" ${GL.busy?"disabled":""}>📷 Añadir fotos de aves</button>
-  <small class="mu">Elige las fotos de tu carpeta de aves. La app reconoce la especie de cada una (experimental). ${GL.fotos.length} fotos · ${esps} especies.</small>
+  <input type="file" id="gfl" accept="*/*" multiple style="display:none" onchange="gAdd([...this.files]);this.value=''">
+  <input type="file" id="gfl2" accept="image/*" multiple style="display:none" onchange="gAdd([...this.files]);this.value=''">
+  <button class="b" onclick="$('#gfl').click()" ${GL.busy?"disabled":""}>📂 Añadir carpeta de aves (seleccionar todas)</button>
+  <button class="b" style="background:var(--mu)" onclick="$('#gfl2').click()" ${GL.busy?"disabled":""}>🖼️ Elegir desde la galería del móvil</button>
+  <small class="mu">Con el primer botón entras en la carpeta, tocas una foto unos segundos y pulsas "Seleccionar todo" (como con los sonidos). La app reconoce la especie de cada una (experimental). ${GL.fotos.length} fotos · ${esps} especies.</small>
   <div id="gmsg" class="mu" style="margin:6px 0">${esc(GL.msg)} ${FOTO.loading?`<span id="gpg">${GL.prog}%</span>`:""}</div>
   <input id="sq" placeholder="Buscar ave (ej. flamenco, abubilla)" value="${esc(q)}" oninput="q=this.value;GL.esp=null;render();const i=$('#sq');i.focus();i.setSelectionRange(q.length,q.length)">
   ${sug}
