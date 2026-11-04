@@ -12,20 +12,42 @@ jobs:
       - name: Calcular version
         id: ver
         run: |
+          OFFSET=1
           BASE=$(git log -1 --format=%H -- .github/workflows/android.yml)
-          K=$(git rev-list --count "$BASE"..HEAD)
+          K=$(( $(git rev-list --count "$BASE"..HEAD) + OFFSET ))
           MAJOR=$(( 1 + K / 9 ))
           MINOR=$(( K % 9 + 1 ))
           if [ $MINOR -eq 1 ]; then V="v$MAJOR"; else V="v$MAJOR.$MINOR"; fi
           echo "v=$V" >> "$GITHUB_OUTPUT"
       - name: Poner la version dentro de la app
         run: sed -i "s/__VERSION__/${{ steps.ver.outputs.v }}/" www/index.html
+      - name: Descargar modelo de reconocimiento BirdNET
+        run: |
+          SHA=6ab67ac09fa64d98858b90f14318229aca9bb7dc
+          B="https://raw.githubusercontent.com/birdnet-team/real-time-pwa/$SHA/public"
+          M=www/models/birdnet
+          mkdir -p www/js $M/labels $M/area-model
+          get() { curl -fsSL --retry 3 "$1" -o "$2"; }
+          get "$B/js/birdnet-worker.js" www/js/birdnet-worker.js
+          get "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js" www/js/tf.min.js
+          get "$B/models/birdnet/model.json" $M/model.json
+          for i in $(seq 1 13); do get "$B/models/birdnet/group1-shard${i}of13.bin" "$M/group1-shard${i}of13.bin"; done
+          get "$B/models/birdnet/area-model/model.json" $M/area-model/model.json
+          get "$B/models/birdnet/area-model/group1-shard1of2.bin" $M/area-model/group1-shard1of2.bin
+          get "$B/models/birdnet/area-model/group1-shard2of2.bin" $M/area-model/group1-shard2of2.bin
+          get "$B/models/birdnet/labels/en_us.txt" $M/labels/en_us.txt
+          get "$B/models/birdnet/labels/es.txt" $M/labels/es.txt
+          du -sh www/models www/js
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
       - run: npm install
       - run: npx cap add android
+      - name: Permiso de microfono
+        run: |
+          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
+          grep -n "RECORD_AUDIO" android/app/src/main/AndroidManifest.xml
       - run: npx @capacitor/assets generate --android --iconBackgroundColor "#2f7d4a" --iconBackgroundColorDark "#2f7d4a"
       - run: npx cap sync android
       - run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
