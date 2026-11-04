@@ -23,7 +23,7 @@ a{color:var(--ac);word-break:break-word}.mu{color:var(--mu)}.sci{font-style:ital
 <script src="js/foto.js"></script>
 <script src="js/europa.js"></script>
 <script>
-const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["galeria","📷","Galería de aves","Busca tus fotos por especie"],["vistas","✅","Mis aves vistas","Tu lista de especies observadas"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
+const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["galeria","📷","Galería de aves","Busca tus fotos por especie"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["vistas","✅","Mis aves vistas","Tu lista de especies observadas"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
 const LOCS=["Huelva","Almonte","El Rocío","Doñana","Isla Cristina","Ayamonte","Punta Umbría","Matalascañas","Moguer","Lepe","Cartaya","El Portil"];
 const FR=[["Cristóbal Crespo","https://www.instagram.com/cristobal_crespo_caro"],["Carlos Salguero","https://www.instagram.com/carlxsh"],["Tomás Gómez","https://www.instagram.com/toromy75"],["Fco. Rivas","https://www.instagram.com/francisco_rivas68"],["David (Zuma)","https://www.instagram.com/elzuma"],["Juanjo Cipriano","https://ebird.org/profile/OTEwMTk0/ES"],["Jose Manuel Reyes","https://www.instagram.com/josemreyesp"],["Seba","https://www.instagram.com/seba_wildlife"],["Jose Antonio (jolunepa)","https://www.instagram.com/jolunepa"],["Antonio Medina","https://www.instagram.com/antonio.jmedina"],["Loren","https://www.instagram.com/fotografiasdeloren"],["Felipe","https://www.instagram.com/felipe.felipe.1806"],["Isidro","https://www.instagram.com/donanaparadise"],["Enrique Pragom","https://www.instagram.com/enri_prax"],["Jose A. Diaz","https://www.instagram.com/diazregodon"],["Jose Luis","https://www.facebook.com/joseluis.cruzadoblanco"],["Feliciano","https://www.instagram.com/feliciano.esteban.9"],["Diego","https://www.instagram.com/spanishwildlife70"]];
 const SI=[["Camachuelo común","https://maps.app.goo.gl/Rh3Kthsp6KQoRNQ87"],["Camachuelo común","https://maps.app.goo.gl/Kh3F2EJNKzbcijPk9"],["Pechiazul","https://maps.app.goo.gl/xkopK4rHkDf1pMmh7"],["Búho campestre","https://maps.app.goo.gl/tkmkyvNb69Ak8EhGA"],["Chorlito gris","https://maps.app.goo.gl/qxTrqNCbBqarAwAcA"],["Malvasía cabeciblanca","https://maps.app.goo.gl/uGRr4QxcVu7taz7J7"],["Falaropo tricolor","https://maps.app.goo.gl/bLWZuV7Bf7KAjpb9A"]];
@@ -43,7 +43,7 @@ window.rm=(k,i)=>{if(confirm("¿Borrar?")){S[k].splice(i,1);keep();render()}};
 function render(){
   const cur=TABS.find(t=>t[0]===tab);
   $("#ttl").textContent=cur?cur[2]:"Pajareo Huelva";
-  $("#m").innerHTML=cur?({amigos,aves,reconocer,quiz,galeria,vistas,tiempo,mareas,sitios})[tab]():home();if(tab!=="reconocer"&&R.on)detenerR();if(tab==="quiz"&&Q.play){Q.play=false;const a=document.getElementById("qa");if(a)a.play().catch(()=>{})}
+  $("#m").innerHTML=cur?({amigos,aves,reconocer,quiz,galeria,telefonos,vistas,tiempo,mareas,sitios})[tab]():home();if(tab!=="reconocer"&&R.on)detenerR();if(tab==="quiz"&&Q.play){Q.play=false;const a=document.getElementById("qa");if(a)a.play().catch(()=>{})}
 }
 const VER="__VERSION__";
 const verTxt=()=>VER.charAt(0)==="_"?"pruebas":"v."+VER.slice(1);
@@ -382,6 +382,19 @@ function galeria(){
   <div class="chips" style="margin:6px 0"><button class="chip ${GL.filtro==="todas"?"on":""}" onclick="GL.filtro='todas';render()">Todas</button><button class="chip ${GL.filtro==="sin"?"on":""}" onclick="GL.filtro='sin';render()">Sin identificar (${sin})</button></div>
   ${grid?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${grid}</div>`:(GL.esp!=null?"":`<p class="mu">${GL.fotos.length?"Ninguna foto coincide.":"Todavía no hay fotos. Pulsa el botón de arriba."}</p>`)}
   <small class="mu" style="display:block;margin-top:12px">Reconocimiento: WingCLIP (modelo de imagen de aves, licencia CC BY-NC 4.0) y datos de presencia de WingDex. Puede equivocarse: toca una foto para corregirla.</small>${GL.sel?gVisor():""}`;
+}
+
+/* ===== Teléfonos de interés ===== */
+const TEL0=[["Emergencias",["112"]],["Urgencias",["061"]],["Guardia Civil",["062"]],["DGT",["011"]],["Policía Nacional",["091"]],["Bomberos Huelva",["959 21 02 08"]],["CREA Huelva",["671 56 90 81"]],["Servicio de Información Toxicológica",["91 562 04 20"]],["Marismas del Odiel",["959 07 10 15","682 65 44 91"]],["El Acebuche",["959 43 96 29"]],["Centro visitantes J.A. Valverde",["671 56 41 45"]],["Cañada de los Pájaros",["955 77 21 84"]]];
+if(!S.tels){S.tels=TEL0.map(([name,nums])=>({name,nums}));keep()}
+window.addTel=f=>{const name=f.querySelector("[name=n]").value.trim(),nums=f.querySelector("[name=t]").value.split(/[-–\/,;]+/).map(x=>x.trim()).filter(x=>/\d/.test(x));if(!name||!nums.length){toast("Escribe nombre y teléfono");return}S.tels.push({name,nums});keep();render()};
+window.rmTel=i=>{if(confirm("¿Borrar este teléfono?")){S.tels.splice(i,1);keep();render()}};
+window.resetTel=()=>{if(confirm("¿Volver a la lista original? Se perderán los que hayas añadido.")){S.tels=TEL0.map(([name,nums])=>({name,nums}));keep();render()}};
+function telefonos(){
+  const l=S.tels.map((t,i)=>`<div class="card"><button class="x" onclick="rmTel(${i})" title="Borrar">✕</button><b>${esc(t.name)}</b><div class="row" style="margin-top:6px">${t.nums.map(n=>`<a class="b" href="tel:${esc(n.replace(/[^\d+]/g,""))}" style="display:block;flex:1;text-align:center;text-decoration:none;background:${/^(112|061|062|091|011)$/.test(n)?"#b3402f":"var(--ac)"};color:#fff;padding:10px;border-radius:8px;font-weight:600;word-break:normal">📞 ${esc(n)}</a>`).join("")}</div></div>`).join("");
+  return `<h2>Teléfonos de interés</h2><small class="mu">Toca un número para llamar.</small>${l}
+  <form class="card" onsubmit="addTel(this);return false"><b>Añadir teléfono</b><input name="n" placeholder="Nombre"><input name="t" placeholder="Teléfono (si hay dos, sepáralos con -)" inputmode="tel"><button class="b" type="submit">➕ Añadir</button></form>
+  <button class="b" style="background:var(--mu)" onclick="resetTel()">↺ Restaurar lista original</button>`;
 }
 
 loadLib();
