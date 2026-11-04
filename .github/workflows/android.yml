@@ -38,15 +38,40 @@ jobs:
           get "$B/models/birdnet/labels/en_us.txt" $M/labels/en_us.txt
           get "$B/models/birdnet/labels/es.txt" $M/labels/es.txt
           du -sh www/models www/js
+      - name: Descargar modelo de fotos (WingCLIP / WingDex)
+        run: |
+          SHA=0aa0f130f5f21aef713f34ac34c9e3a11d640e08
+          W="https://raw.githubusercontent.com/jlian/wingdex/$SHA"
+          F=www/models/foto
+          mkdir -p $F
+          get() { curl -fsSL --retry 3 "$1" -o "$2"; }
+          get "$W/public/models/wingclip_visual_int8.onnx" $F/wingclip_visual_int8.onnx
+          get "$W/public/models/wingclip_visual_int8.data" $F/wingclip_visual_int8.data
+          get "$W/public/models/text_classifier_int8.bin" $F/text_classifier_int8.bin
+          get "$W/public/priors/occurrence.d0abc168.bin.gz" $F/occurrence.bin.gz
+          get "$W/src/lib/taxonomy.json" /tmp/taxonomy.json
+          node -e '
+          const fs=require("fs");const tax=JSON.parse(fs.readFileSync("/tmp/taxonomy.json","utf8"));
+          const es={};for(const l of fs.readFileSync("www/models/birdnet/labels/es.txt","utf8").split("\n")){const i=l.indexOf("_");if(i>0)es[l.slice(0,i).trim()]=l.slice(i+1).trim()}
+          const o=tax.map(t=>[t[0],t[1],es[t[1]]||""]);
+          fs.writeFileSync("www/models/foto/taxo.json",JSON.stringify(o));console.log("especies",o.length)'
+          ls -la $F
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
       - run: npm install
+      - name: Copiar motor ONNX
+        run: |
+          D=node_modules/onnxruntime-web/dist
+          cp $D/ort.wasm.min.js www/js/ort.wasm.min.js
+          cp $D/ort-wasm-simd-threaded.mjs www/js/ort-simd.js
+          cp $D/ort-wasm-simd-threaded.wasm www/js/ort-simd.wasm
+          ls -la www/js
       - run: npx cap add android
       - name: Permiso de microfono
         run: |
-          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
+          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.CAMERA" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
           grep -n "RECORD_AUDIO" android/app/src/main/AndroidManifest.xml
       - run: npx @capacitor/assets generate --android --iconBackgroundColor "#2f7d4a" --iconBackgroundColorDark "#2f7d4a"
       - run: npx cap sync android
