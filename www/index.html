@@ -21,6 +21,7 @@ a{color:var(--ac);word-break:break-word}.mu{color:var(--mu)}.sci{font-style:ital
 <header><span id="ttl">Pajareo Huelva</span></header>
 <main id="m"></main>
 <script src="js/foto.js"></script>
+<script src="js/europa.js"></script>
 <script>
 const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["copia","💾","Copia de seguridad","Guarda y restaura tus datos"],["zona","🗓️","Aves de la zona","Qué se puede ver este mes"],["calendario","📅","Calendario","Tus avistamientos por días"],["vistas","✅","Mis aves vistas","Tu lista de especies observadas"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
 const LOCS=["Huelva","Almonte","El Rocío","Doñana","Isla Cristina","Ayamonte","Punta Umbría","Matalascañas","Moguer","Lepe","Cartaya","El Portil"];
@@ -278,34 +279,130 @@ async function ftModelo(){
   }catch(e){FOTO.err=String(e.message||e)}
   return FOTO.ready;
 }
+
+/* --- Biblioteca de fotos (IndexedDB, almacén "f") --- */
+const GL={fotos:[],load:false,sel:null,busy:false,msg:"",prog:0,esp:null,q:"",filtro:"todas",todas:false,cor:"",corR:[]};
+const norm=x=>String(x||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").trim();
+const GLOC={lat:37.26,lon:-6.94};
+const gAll=async()=>{const d=await IDB();return new Promise((res,rej)=>{const r=d.transaction("f").objectStore("f").getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})};
+const gPut=async o=>{const d=await IDB();return new Promise((res,rej)=>{const t=d.transaction("f","readwrite");t.objectStore("f").put(o);t.oncomplete=res;t.onerror=()=>rej(t.error)})};
+const gDel=async id=>{const d=await IDB();return new Promise((res,rej)=>{const t=d.transaction("f","readwrite");t.objectStore("f").delete(id);t.oncomplete=res;t.onerror=()=>rej(t.error)})};
+async function gLoad(){GL.load=true;try{GL.fotos=await gAll()}catch(e){GL.fotos=[]}if(tab==="foto")render()}
+async function gTax(){
+  if(FOTO.tax||GL.taxBusy)return;GL.taxBusy=true;
+  try{const r=await fetch(RURL("models/foto/taxo.json"));FOTO.tax=await r.json()}catch(e){GL.msg="No se encuentra la lista de especies."}
+  GL.taxBusy=false;if(tab==="foto")render();
+}
+const gUrl=(f,k)=>{const key=f.id+k;return URLS[key]||(URLS[key]=URL.createObjectURL(f[k]))};
+const nomE=i=>{if(!FOTO.tax||!FOTO.tax[i])return"…";const n=FOTO.nombre(i);return n.es||n.en};
+const gTxt=f=>{if(f.sp==null||!FOTO.tax)return"";const n=FOTO.nombre(f.sp);return norm(n.es+" "+n.en+" "+n.sci)};
+const qid=id=>String(id).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+let EUR=null;
+const gEur=()=>{if(!EUR&&FOTO.tax&&window.EUROPA)EUR=EUROPA(FOTO.tax);return EUR||[]};
+async function gPrep(file){
+  const bm=await createImageBitmap(file);
+  const cv=(maxL,shortS)=>{let w=bm.width,h=bm.height,sc=maxL?Math.min(1,maxL/Math.max(w,h)):Math.min(1,shortS/Math.min(w,h));w=Math.max(1,Math.round(w*sc));h=Math.max(1,Math.round(h*sc));const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(bm,0,0,w,h);return c};
+  const toB=(c,qq)=>new Promise(r=>c.toBlob(r,"image/jpeg",qq));
+  const full=await toB(cv(1400),.85),thumb=await toB(cv(260),.8),rc=cv(0,496);
+  const d=rc.getContext("2d").getImageData(0,0,rc.width,rc.height);bm.close&&bm.close();
+  return{full,thumb,rgba:d.data,w:rc.width,h:rc.height};
+}
+async function gProcesa(file){
+  const id=file.name+"|"+file.size+"|"+(file.lastModified||0);
+  const ya=GL.fotos.find(x=>x.id===id);
+  const p=await gPrep(file);
+  const fecha=file.lastModified&&Math.abs(Date.now()-file.lastModified)<3e12?file.lastModified:Date.now();
+  const r=await FOTO.identify(p.rgba,p.w,p.h,GLOC,new Date(fecha).getMonth()+1,5);
+  const alts=r.res.map(x=>({i:x.idx,c:Math.round(x.conf*1000)/1000}));
+  if(ya&&ya.manual)return{f:ya,r,alts,dup:true};
+  const f={id,name:file.name,fecha,full:p.full,thumb:p.thumb,sp:r.esAve&&alts.length?alts[0].i:null,conf:r.esAve&&alts.length?alts[0].c:0,alts,manual:false};
+  await gPut(f);if(ya)GL.fotos=GL.fotos.filter(x=>x.id!==id);GL.fotos.push(f);
+  return{f,r,alts,dup:!!ya};
+}
+/* una foto (cámara o galería): reconoce, muestra resultado y la guarda */
 window.ftFoto=async file=>{
   if(!file||FT.busy)return;
   FT.busy=true;FT.res=[];FT.msg="Preparando el reconocimiento… ";if(FT.url)URL.revokeObjectURL(FT.url);FT.url=URL.createObjectURL(file);render();
   try{
     if(!await ftModelo())throw new Error(FOTO.err||"no se pudo preparar el modelo");
     FT.msg="Analizando la foto…";const m0=$("#fmsg");if(m0)m0.textContent=FT.msg;
-    const bm=await createImageBitmap(file);
-    const sc=Math.min(1,496/Math.min(bm.width,bm.height)),w=Math.max(1,Math.round(bm.width*sc)),h=Math.max(1,Math.round(bm.height*sc));
-    const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(bm,0,0,w,h);bm.close&&bm.close();
-    const d=c.getContext("2d").getImageData(0,0,w,h).data;
-    const fecha=file.lastModified&&Math.abs(Date.now()-file.lastModified)<3e12?new Date(file.lastModified):new Date();
-    const r=await FOTO.identify(d,w,h,{lat:37.26,lon:-6.94},fecha.getMonth()+1,5);
-    FT.esAve=r.esAve;FT.res=r.res.map(x=>({i:x.idx,c:x.conf}));FT.msg="";
+    const o=await gProcesa(file);
+    FT.esAve=o.r.esAve;FT.res=o.alts.map(x=>({i:x.i,c:x.c}));FT.msg="💾 Guardada en tu galería.";
   }catch(e){FT.msg="No se pudo reconocer la foto: "+(e.message||e)}
   FT.busy=false;render();
 };
+/* muchas fotos (carpeta) */
+window.ftLote=async files=>{
+  files=files.filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp|heic)$/i.test(f.name));
+  if(!files.length||FT.busy)return;
+  FT.busy=true;FT.res=[];FT.url="";FT.msg="Preparando el reconocimiento… ";render();
+  if(!await ftModelo()){FT.msg="No se pudo preparar el reconocimiento: "+(FOTO.err||"");FT.busy=false;render();return}
+  let n=0,bad=0,nuevas=0;
+  for(const file of files){
+    n++;FT.msg=`Identificando ${n} de ${files.length}… (no cierres la app)`;const e=$("#fmsg");if(e)e.textContent=FT.msg;
+    try{const id=file.name+"|"+file.size+"|"+(file.lastModified||0);if(GL.fotos.some(x=>x.id===id))continue;await gProcesa(file);nuevas++}catch(err){bad++;console.log(err)}
+    await new Promise(r=>setTimeout(r,0));
+  }
+  FT.busy=false;FT.msg=`Listo: ${nuevas} fotos nuevas en tu galería.`+(bad?` ${bad} no se pudieron leer.`:"");render();
+};
 window.anotaF=async i=>{const e={name:nomF(i),fecha:new Date().toISOString().slice(0,10),lugar:""};S.seen.push(e);keep();toast("Añadida: "+nomF(i));const g=await getPos();if(g){e.lat=g.lat;e.lon=g.lon;keep()}};
+window.gPick=i=>{GL.esp=i;GL.q=nomE(i);render()};
+window.gClr=()=>{GL.esp=null;GL.q="";render()};
+window.gOpen=id=>{GL.sel=id;GL.cor="";GL.corR=[];render()};
+window.gClose=()=>{GL.sel=null;render()};
+window.gSet=async(id,i)=>{const f=GL.fotos.find(x=>x.id===id);if(!f)return;f.sp=i;f.conf=1;f.manual=true;await gPut(f);GL.cor="";GL.corR=[];render()};
+window.gDelF=async id=>{if(!confirm("¿Quitar esta foto de la galería de la app? (no se borra de tu móvil)"))return;await gDel(id);GL.fotos=GL.fotos.filter(x=>x.id!==id);GL.sel=null;render()};
+window.gCorr=v=>{GL.cor=v;const n=norm(v);GL.corR=n.length<2||!FOTO.tax?[]:FOTO.tax.map((t,i)=>[i,norm((t[2]||"")+" "+t[0]+" "+t[1])]).filter(x=>x[1].includes(n)).sort((a,b)=>(FOTO.tax[b[0]][2]?1:0)-(FOTO.tax[a[0]][2]?1:0)).slice(0,8).map(x=>x[0]);const e=$("#gcr");if(e)e.innerHTML=gCorrHtml()};
+const gCorrHtml=()=>GL.corR.map(i=>`<button class="b" style="text-align:left" onclick="gSet('${qid(GL.sel)}',${i})">${esc(nomE(i))} <small>· ${esc(FOTO.nombre(i).sci)}</small></button>`).join("");
+function gVisor(){
+  const f=GL.fotos.find(x=>x.id===GL.sel);if(!f)return"";
+  const alts=(f.alts||[]).filter(a=>a.i!==f.sp&&a.c>=.02).slice(0,4).map(a=>`<button class="b" style="background:var(--mu);text-align:left" onclick="gSet('${qid(f.id)}',${a.i})">${esc(nomE(a.i))} <small>${Math.round(a.c*100)}%</small></button>`).join("");
+  return `<div style="position:fixed;inset:0;background:var(--bg);z-index:20;overflow:auto;padding:12px;padding-top:calc(12px + env(safe-area-inset-top))"><button class="b" onclick="gClose()" style="width:auto;padding:8px 16px">← Volver</button>
+  <img src="${gUrl(f,"full")}" style="width:100%;border-radius:12px;margin-top:8px">
+  <h2>${f.sp==null?"Sin identificar":esc(nomE(f.sp))}${f.sp!=null&&!f.manual&&f.conf<.5?" ❓":""}</h2>${f.sp!=null?`<div class="sci">${esc(FOTO.nombre(f.sp).sci)} · ${esc(FOTO.nombre(f.sp).en)}</div>`:""}
+  <small class="mu">${f.manual?"Elegida por ti":f.sp!=null?"Reconocida automáticamente ("+Math.round(f.conf*100)+"%)":"No se ha podido reconocer"} · ${esc(f.name)}</small>
+  ${alts?`<p class="mu" style="margin:10px 0 2px">¿Quizá es…?</p>${alts}`:""}
+  <p class="mu" style="margin:10px 0 2px">Cambiar especie a mano</p><input placeholder="Escribe el nombre del ave" value="${esc(GL.cor)}" oninput="gCorr(this.value)"><div id="gcr">${gCorrHtml()}</div>
+  <button class="b" style="background:#b3402f;margin-top:14px" onclick="gDelF('${qid(f.id)}')">🗑 Quitar de la galería</button></div>`;
+}
 function foto(){
-  const rs=FT.res.map((x,k)=>{const n=FOTO.nombre(x.i),p=Math.round(x.c*100);return `<div class="card"><b>${esc(nomF(x.i))}</b> <span class="mu">${p<1?"<1":p}%</span><div class="sci">${esc(n.sci)}${n.es?" · "+esc(n.en):""}</div><div class="bar"><div style="width:${Math.min(100,p)}%"></div></div>${k===0?`<button class="b" onclick="anotaF(${x.i})">✅ Añadir a Mis aves vistas</button>`:""}</div>`}).join("");
+  if(!GL.load)gLoad();
+  if(!FOTO.tax)gTax();
+  const ready=!!FOTO.tax;
+  const rs=ready?FT.res.map((x,k)=>{const n=FOTO.nombre(x.i),p=Math.round(x.c*100);return `<div class="card"><b>${esc(nomF(x.i))}</b> <span class="mu">${p<1?"<1":p}%</span><div class="sci">${esc(n.sci)}${n.es?" · "+esc(n.en):""}</div><div class="bar"><div style="width:${Math.min(100,p)}%"></div></div>${k===0?`<button class="b" onclick="anotaF(${x.i})">✅ Añadir a Mis aves vistas</button>`:""}</div>`}).join(""):"";
+  /* búsqueda en la galería */
+  const cnt={};GL.fotos.forEach(f=>{if(f.sp!=null)cnt[f.sp]=(cnt[f.sp]||0)+1});
+  const n=norm(GL.q);
+  let l=GL.fotos.slice();const sin=l.filter(f=>f.sp==null).length;
+  if(GL.filtro==="sin")l=l.filter(f=>f.sp==null);
+  if(GL.esp!=null)l=l.filter(f=>f.sp===GL.esp);
+  else if(n&&ready)l=l.filter(f=>gTxt(f).includes(n)||norm(f.name).includes(n));
+  const mostrar=ready&&(GL.esp!=null||n||GL.todas||GL.filtro==="sin");
+  l.sort((a,b)=>(a.sp==null)-(b.sp==null)||(a.sp==null?0:nomE(a.sp).localeCompare(nomE(b.sp),"es"))||a.name.localeCompare(b.name));
+  const grid=mostrar?l.map(f=>`<div onclick="gOpen('${qid(f.id)}')" style="border-radius:10px;overflow:hidden;background:var(--card);border:1px solid var(--bd)"><img loading="lazy" src="${gUrl(f,"thumb")}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block"><div style="font-size:12px;padding:4px 6px;line-height:1.2">${f.sp==null?"<span class='mu'>Sin identificar</span>":esc(nomE(f.sp))+(!f.manual&&f.conf<.5?" ❓":"")}</div></div>`).join(""):"";
+  const row=e=>{const c=e.idx>=0?(cnt[e.idx]||0):0;return e.idx<0?"":`<div onclick="gPick(${e.idx})" style="padding:10px 4px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:8px"><span>${esc(e.es)}</span><b style="color:${c?"var(--ac)":"var(--mu)"}">${c?"✅ "+c:"—"}</b></div>`};
+  let sug="";
+  if(GL.esp==null&&n.length>=2&&ready){const m=gEur().filter(e=>e.idx>=0&&norm(e.es).includes(n)).slice(0,6);if(m.length)sug=`<div class="card" style="padding:4px 10px">${m.map(row).join("")}</div>`}
+  let banner="";
+  if(GL.esp!=null){const c=cnt[GL.esp]||0;banner=`<div class="card"><b>${esc(nomE(GL.esp))}</b><div class="sci">${esc(FOTO.nombre(GL.esp).sci)}</div>${c?`✅ Tienes <b>${c}</b> ${c===1?"foto":"fotos"} de esta especie.`:"❌ Todavía no tienes ninguna foto de esta especie."}<button class="b" style="background:var(--mu)" onclick="gClr()">✖ Quitar búsqueda</button></div>`}
+  const esps=Object.keys(cnt).length;
   return `<h2>Reconocer por foto</h2>
   <input type="file" id="ftc" accept="image/*" capture="environment" style="display:none" onchange="ftFoto(this.files[0]);this.value=''">
   <input type="file" id="ftg" accept="image/*" style="display:none" onchange="ftFoto(this.files[0]);this.value=''">
-  <div class="row"><button class="b" onclick="$('#ftc').click()" ${FT.busy?"disabled":""}>📷 Hacer foto</button><button class="b" onclick="$('#ftg').click()" ${FT.busy?"disabled":""}>🖼️ Elegir de la galería</button></div>
+  <input type="file" id="ftl" accept="*/*" multiple style="display:none" onchange="ftLote([...this.files]);this.value=''">
+  <div class="row"><button class="b" onclick="$('#ftc').click()" ${FT.busy?"disabled":""}>📷 Hacer foto</button><button class="b" onclick="$('#ftg').click()" ${FT.busy?"disabled":""}>🖼️ Elegir una foto</button></div>
+  <button class="b" style="background:var(--mu)" onclick="$('#ftl').click()" ${FT.busy?"disabled":""}>📂 Añadir carpeta de aves (muchas fotos)</button>
   <div id="fmsg" class="mu" style="margin:8px 0">${esc(FT.msg)} ${FT.busy&&!FOTO.ready?`<span id="fpg">${FT.prog}%</span>`:""}</div>
   ${FT.url?`<img src="${FT.url}" style="width:100%;max-height:320px;object-fit:contain;border-radius:12px;background:#0002">`:""}
   ${FT.res.length&&!FT.esAve?`<div class="card">⚠️ No parece que haya un ave clara en la foto. Estas son las opciones más parecidas:</div>`:""}
   ${rs}
-  <small class="mu" style="display:block;margin-top:10px">La primera vez que lo usas tarda unos segundos en preparar el modelo. Funciona mejor con el ave grande y centrada. Puede equivocarse con especies parecidas. Reconocimiento: WingCLIP (CC BY-NC 4.0) y datos de WingDex.</small>`;
+  <h3 style="margin:18px 0 4px">🔎 Buscar en mi galería</h3>
+  <small class="mu">${GL.fotos.length} fotos guardadas · ${esps} especies. Las fotos que reconoces se guardan aquí solas.</small>
+  <input placeholder="Buscar ave (ej. flamenco, abubilla)" value="${esc(GL.q)}" oninput="GL.q=this.value;GL.esp=null;const p=this.selectionStart;render();const i=document.querySelector('#m h3+small+input');if(i){i.focus();i.setSelectionRange(p,p)}">
+  ${sug}${banner}
+  <div class="chips" style="margin:6px 0"><button class="chip ${GL.todas&&GL.filtro==="todas"?"on":""}" onclick="GL.todas=!GL.todas;GL.filtro='todas';render()">Ver todas (${GL.fotos.length})</button><button class="chip ${GL.filtro==="sin"?"on":""}" onclick="GL.filtro=GL.filtro==='sin'?'todas':'sin';render()">Sin identificar (${sin})</button></div>
+  ${grid?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${grid}</div>`:""}
+  <small class="mu" style="display:block;margin-top:10px">La primera vez que lo usas tarda unos segundos en preparar el modelo. Funciona mejor con el ave grande y centrada. Puede equivocarse con especies parecidas: toca una foto de tu galería para corregirla. Reconocimiento: WingCLIP (CC BY-NC 4.0) y datos de WingDex.</small>${GL.sel?gVisor():""}`;
 }
 
 /* ===== Copia de seguridad ===== */
