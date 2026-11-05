@@ -48,7 +48,7 @@ jobs:
           get "$W/public/models/wingclip_visual_int8.onnx" $F/wingclip_visual_int8.onnx
           get "$W/public/models/wingclip_visual_int8.data" $F/wingclip_visual_int8.data
           get "$W/public/models/text_classifier_int8.bin" $F/text_classifier_int8.bin
-          get "$W/public/priors/occurrence.d0abc168.bin.gz" $F/occurrence.bin.gz
+          get "$W/public/priors/occurrence.d0abc168.bin.gz" $F/occurrence.dat
           get "$W/src/lib/taxonomy.json" /tmp/taxonomy.json
           node -e '
           const fs=require("fs");const tax=JSON.parse(fs.readFileSync("/tmp/taxonomy.json","utf8"));
