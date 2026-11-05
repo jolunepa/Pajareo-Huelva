@@ -1,4 +1,3 @@
-
 /* Reconocimiento de aves por foto (WingCLIP-0.3 + prior de presencia). Todo local. */
 (function(G){
 const EMB=768,OCC_SCALE=2.5,MONTH_BITS=4,POOLED=12;
@@ -134,6 +133,26 @@ F.identify=async function(rgba,w,h,loc,month,topK){
   for(let s=0;s<F.n;s++){const v=sims[s];if(bi.length===K&&v<=worst)continue;let p=bi.length;while(p>0&&bv[p-1]<v)p--;bi.splice(p,0,s);bv.splice(p,0,v);if(bi.length>K){bi.pop();bv.pop()}worst=bv[bv.length-1]}
   const sc=rank(bi.map((i,k)=>({idx:i,sim:bv[k]})),F.occ,loc,month),pr=softmax(sc);
   return{pBird,esAve:pBird>=CAL.thr,res:sc.slice(0,topK||5).map((s,i)=>({idx:s.idx,conf:pBird*pr[i],logP:s.logP}))};
+};
+
+/* Solo taxonomía + prior de presencia (sin el modelo de imagen): para "aves de la zona" */
+F.initLite=async function(d){
+  if(F.occ&&F.tax)return true;
+  try{
+    const b=d.base;
+    F.tax=JSON.parse(new TextDecoder().decode(new Uint8Array(await d.get(b+"taxo.json"))));
+    F.occ=parseOcc(await gunzip(new Uint8Array(await d.get(b+"occurrence.bin.gz"))));
+    return true;
+  }catch(e){F.err=String(e&&e.message||e);return false}
+};
+/* Especies más frecuentes en la celda de (lat,lon) para el mes dado: [{idx,p}] */
+F.mes=function(loc,month,n){
+  const xy=lonLatToEqualEarth(loc.lon,loc.lat),cell=xyToCell(xy.x,xy.y);
+  if(!cell)return[];
+  const m=occCell(F.occ,cell.row,cell.col,month);
+  if(!m)return[];
+  const out=[];m.forEach((lp,idx)=>out.push({idx,p:Math.exp(lp)}));
+  out.sort((a,b)=>b.p-a.p);return out.slice(0,n||80);
 };
 F.nombre=i=>{const x=F.tax[i];return{en:x[0],sci:x[1],es:x[2]||""}};
 F._t={preprocess,rank,parseOcc,lonLatToEqualEarth,xyToCell};
