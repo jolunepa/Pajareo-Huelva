@@ -69,7 +69,7 @@ function vistas(){
   const nombres=[...new Set(LIB.map(b=>b.name))].sort((a,b)=>a.localeCompare(b,"es"));
   return `<h2>Mis aves vistas</h2><div class="card" style="text-align:center"><div class="big">${esp}</div>${esp===1?"especie":"especies"} · ${S.seen.length} ${S.seen.length===1?"avistamiento":"avistamientos"}</div>`+
   `<form class="card" onsubmit="add('seen',this);return false"><b>Añadir ave vista</b><input name="name" list="dl" placeholder="Especie"><datalist id="dl">${nombres.map(n=>`<option value="${esc(n)}">`).join("")}</datalist><input name="fecha" type="date" value="${new Date().toISOString().slice(0,10)}"><input name="lugar" placeholder="Lugar"><button class="b">Añadir</button></form>`+
-  (l.map(f=>`<div class="card"><b>${esc(f.name)}</b><button class="x" onclick="rm('seen',${f.i})">🗑</button><br><small class="mu">${esc([fmtF(f.fecha),f.lugar].filter(Boolean).join(" · "))}</small></div>`).join("")||`<p class="mu">Todavía no has anotado ninguna.</p>`);
+  (l.map(f=>`<div class="card"><b>${esc(f.name)}</b><button class="x" onclick="rm('seen',${f.i})">🗑</button><br><small class="mu">${esc([fmtF(f.fecha),f.lugar].filter(Boolean).join(" · "))}</small><div><button class="chip" style="margin-top:8px;padding:6px 14px" onclick="compV(${f.i})">📤 Compartir</button></div></div>`).join("")||`<p class="mu">Todavía no has anotado ninguna.</p>`);
 }
 let R={w:null,ready:false,load:0,err:"",on:false,busy:false,stream:null,ctx:null,buf:null,n:0,timer:null,hist:[],top:[]};
 const RURL=f=>new URL(f,location.href).href;
@@ -353,6 +353,17 @@ function copia(){
   <div class="mu" style="margin:10px 0">${esc(CB.msg)}</div>
   <div class="card"><small class="mu"><b>Ojo:</b> los audios de Sonidos de aves no van en la copia (pesan demasiado). Si reinstalas la app, vuelve a cargar la carpeta SONIDOS AVES.</small></div>`;
 }
+
+window.compV=async i=>{
+  const f=S.seen[i];if(!f)return;
+  const txt="🐦 "+f.name+"\n"+[f.fecha?"📅 "+fmtF(f.fecha):"",f.lugar?"📍 "+f.lugar:""].filter(Boolean).join("\n")+"\n— Pajareo Huelva";
+  const P=window.Capacitor&&window.Capacitor.Plugins;
+  try{
+    if(P&&P.Share)await P.Share.share({title:f.name,text:txt,dialogTitle:"Compartir avistamiento"});
+    else if(navigator.share)await navigator.share({title:f.name,text:txt});
+    else{await navigator.clipboard.writeText(txt);toast("Texto copiado")}
+  }catch(e){if(!String(e&&e.message||e).toLowerCase().includes("cancel")){try{await navigator.clipboard.writeText(txt);toast("Texto copiado")}catch(_){toast("No se pudo compartir")}}}
+};
 
 loadLib();
 </script></body></html>
