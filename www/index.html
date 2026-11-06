@@ -22,27 +22,6 @@ a{color:var(--ac);word-break:break-word}.mu{color:var(--mu)}.sci{font-style:ital
 <main id="m"></main>
 <script src="js/foto.js"></script>
 <script>
-/* Lista de aves de Europa (nombres en español) para el buscador de la galería */
-(function(G){
-const E=[["Ánsar careto", ""], ["Ánsar chico", ""], ["Ánsar común", ""], ["Ánsar campestre", "Anser serrirostris"], ["Ánsar piquicorto", ""], ["Barnacla cariblanca", ""], ["Barnacla carinegra", ""], ["Barnacla cuellirroja", "Branta ruficollis"], ["Ganso del Nilo", ""], ["Tarro blanco", ""], ["Tarro canelo", ""], ["Cisne vulgar", ""], ["Cisne cantor", ""], ["Cisne chico", ""], ["Ánade real", "Anas platyrhynchos"], ["Ánade friso", ""], ["Ánade rabudo", ""], ["Ánade silbón", "Mareca penelope"], ["Ánade sombrío americano", "Anas rubripes"], ["Cerceta común", ""], ["Cerceta carretona", ""], ["Cerceta aliazul", ""], ["Cerceta pardilla", "Marmaronetta angustirostris"], ["Pato cuchara", "Spatula clypeata"], ["Pato colorado", ""], ["Porrón europeo", ""], ["Porrón moñudo", ""], ["Porrón pardo", ""], ["Porrón bastardo", ""], ["Porrón osculado", ""], ["Pato havelda", ""], ["Eider común", ""], ["Eider real", ""], ["Negrón común", ""], ["Negrón especulado", ""], ["Serreta grande", ""], ["Serreta mediana", ""], ["Serreta chica", ""], ["Malvasía cabeciblanca", "Oxyura leucocephala"], ["Malvasía canela", ""], ["Perdiz roja", ""], ["Perdiz pardilla", ""], ["Perdiz moruna", ""], ["Perdiz griega", ""], ["Chukar", "Alectoris chukar"], ["Codorniz común", ""], ["Faisán vulgar", ""], ["Urogallo", "Tetrao urogallus"], ["Gallo lira", "Lyrurus tetrix"], ["Lagópodo alpino", ""], ["Lagópodo escocés", "Lagopus lagopus"], ["Grévol", "Tetrastes bonasia"], ["Colín de California", ""], ["Pavo real", "Pavo cristatus"], ["Pintada común", ""], ["Zampullín común", ""], ["Zampullín cuellirrojo", ""], ["Somormujo lavanco", ""], ["Somormujo cuellirrojo", ""], ["Somormujo orejudo", "Podiceps auritus"], ["Zampullín cuellinegro", ""], ["Flamenco común", ""], ["Avetoro común", ""], ["Avetorillo común", "Botaurus minutus"], ["Martinete común", ""], ["Garza real", ""], ["Garza imperial", ""], ["Garceta común", ""], ["Garceta grande", ""], ["Garcilla bueyera", "Ardea ibis"], ["Garcilla cangrejera", ""], ["Garceta dimorfa", ""], ["Garceta azulada", "Egretta caerulea"], ["Cigüeña blanca", ""], ["Cigüeña negra", ""], ["Morito común", ""], ["Espátula común", ""], ["Ibis eremita", ""], ["Alimoche común", "Neophron percnopterus"], ["Buitre leonado", ""], ["Buitre negro", ""], ["Quebrantahuesos", "Gypaetus barbatus"], ["Águila real", ""], ["Águila imperial ibérica", ""], ["Águila perdicera", "Aquila fasciata"], ["Águila calzada", ""], ["Águila culebrera", "Circaetus gallicus"], ["Águila pescadora", ""], ["Águila pomerana", ""], ["Águila moteada", ""], ["Águila esteparia", ""], ["Águila-azor perdicera", "Aquila fasciata"], ["Azor común", "Accipiter gentilis"], ["Gavilán común", ""], ["Busardo ratonero", ""], ["Busardo moro", "Buteo rufinus"], ["Ratonero calzado", "Buteo lagopus"], ["Milano real", ""], ["Milano negro", ""], ["Aguilucho lagunero occidental", ""], ["Aguilucho pálido", ""], ["Aguilucho cenizo", ""], ["Aguilucho papialbo", ""], ["Cernícalo vulgar", ""], ["Cernícalo primilla", ""], ["Cernícalo patirrojo", ""], ["Alcotán europeo", ""], ["Esmerejón", ""], ["Halcón peregrino", ""], ["Halcón borní", "Falco biarmicus"], ["Halcón de Eleonora", "Falco eleonorae"], ["Halconcito africano", ""], ["Halcón sacre", "Falco cherrug"], ["Grulla común", ""], ["Grulla damisela", "Grus virgo"], ["Rascón europeo", ""], ["Polluela pintoja", ""], ["Polluela chica", ""], ["Polluela bastarda", ""], ["Polluela culirroja", ""], ["Gallineta común", ""], ["Calamón común", ""], ["Focha común", ""], ["Focha moruna", ""], ["Guión de codornices", ""], ["Avutarda común", "Otis tarda"], ["Sisón común", ""], ["Alcaraván común", ""], ["Canastera común", ""], ["Cigüeñuela común", ""], ["Avoceta común", ""], ["Ostrero euroasiático", ""], ["Chorlitejo chico", "Charadrius dubius"], ["Chorlitejo grande", ""], ["Chorlitejo patinegro", "Charadrius alexandrinus"], ["Chorlito gris", ""], ["Chorlito dorado europeo", ""], ["Chorlito carambolo", "Charadrius morinellus"], ["Avefría europea", ""], ["Avefría sociable", "Vanellus gregarius"], ["Chorlito asiático", "Anarhynchus asiaticus"], ["Chorlito mongol", "Charadrius mongolus"], ["Correlimos tridáctilo", ""], ["Correlimos común", ""], ["Correlimos menudo", ""], ["Correlimos zarapitín", ""], ["Correlimos gordo", ""], ["Correlimos oscuro", ""], ["Correlimos de Temminck", ""], ["Correlimos falcinelo", ""], ["Correlimos pectoral", ""], ["Correlimos canelo", ""], ["Combatiente", ""], ["Agachadiza común", ""], ["Agachadiza chica", ""], ["Agachadiza real", ""], ["Chocha perdiz", ""], ["Zarapito real", ""], ["Zarapito trinador", ""], ["Aguja colinegra", ""], ["Aguja colipinta", ""], ["Archibebe común", ""], ["Archibebe claro", ""], ["Archibebe oscuro", ""], ["Archibebe fino", ""], ["Andarríos chico", ""], ["Andarríos grande", ""], ["Andarríos bastardo", ""], ["Andarríos maculado", ""], ["Andarríos del Terek", ""], ["Vuelvepiedras común", ""], ["Falaropo picofino", ""], ["Falaropo picogrueso", ""], ["Gaviota reidora", ""], ["Gaviota cabecinegra", ""], ["Gaviota de Audouin", ""], ["Gaviota picofina", ""], ["Gaviota patiamarilla", ""], ["Gaviota sombría", ""], ["Gaviota argéntea", ""], ["Gaviota cana", ""], ["Gaviota tridáctila", ""], ["Gaviota enana", ""], ["Gaviota groenlandesa", ""], ["Gaviota de Delaware", ""], ["Gaviota de Bonaparte", ""], ["Gaviota de Sabine", ""], ["Gavión atlántico", ""], ["Gavión hiperbóreo", ""], ["Charrán común", ""], ["Charrán ártico", ""], ["Charrán patinegro", ""], ["Charrán rosado", ""], ["Charrancito común", ""], ["Fumarel común", ""], ["Fumarel cariblanco", ""], ["Fumarel aliblanco", ""], ["Pagaza piconegra", ""], ["Pagaza piquirroja", ""], ["Págalo grande", ""], ["Págalo parásito", ""], ["Págalo pomarino", ""], ["Págalo rabero", ""], ["Alca común", ""], ["Frailecillo atlántico", ""], ["Arao común", ""], ["Arao aliblanco", ""], ["Paíño europeo", ""], ["Paíño boreal", ""], ["Paíño de Wilson", "Oceanites oceanicus"], ["Fulmar boreal", ""], ["Pardela cenicienta", ""], ["Pardela balear", "Puffinus mauretanicus"], ["Pardela mediterránea", "Puffinus yelkouan"], ["Pardela pichoneta", ""], ["Pardela capirotada", "Ardenna gravis"], ["Albatros de ceja negra", "Thalassarche melanophris"], ["Cormorán grande", ""], ["Cormorán moñudo", "Gulosus aristotelis"], ["Cormorán pigmeo", "Microcarbo pygmaeus"], ["Alcatraz atlántico", ""], ["Paloma bravía", ""], ["Paloma zurita", ""], ["Paloma torcaz", ""], ["Paloma rabiche", "Columba junoniae"], ["Paloma turqué", "Columba bollii"], ["Tórtola europea", ""], ["Tórtola turca", ""], ["Tórtola senegalesa", "Spilopelia senegalensis"], ["Críalo europeo", ""], ["Cuco común", ""], ["Lechuza común", ""], ["Autillo europeo", ""], ["Mochuelo europeo", ""], ["Cárabo común", ""], ["Búho chico", ""], ["Búho campestre", ""], ["Búho real", ""], ["Búho nival", ""], ["Chotacabras europeo", ""], ["Chotacabras cuellirrojo", ""], ["Vencejo común", ""], ["Vencejo pálido", ""], ["Vencejo real", "Tachymarptis melba"], ["Vencejo cafre", ""], ["Martín pescador común", ""], ["Abejaruco europeo", ""], ["Carraca europea", ""], ["Abubilla", "Upupa epops"], ["Pito real ibérico", "Picus sharpei"], ["Pito negro", "Dryocopus martius"], ["Pico picapinos", ""], ["Pico menor", ""], ["Torcecuello euroasiático", ""], ["Alondra común", ""], ["Alondra totovía", ""], ["Terrera común", ""], ["Terrera marismeña", ""], ["Cogujada común", ""], ["Cogujada montesina", ""], ["Calandria común", ""], ["Alondra ricotí", ""], ["Avión común", ""], ["Avión roquero", ""], ["Avión zapador", ""], ["Golondrina común", ""], ["Golondrina dáurica", ""], ["Golondrina de rabadilla roja", "Cecropis daurica"], ["Bisbita pratense", ""], ["Bisbita arbóreo", ""], ["Bisbita campestre", ""], ["Bisbita alpino", ""], ["Lavandera blanca", ""], ["Lavandera cascadeña", ""], ["Lavandera boyera", ""], ["Mirlo acuático europeo", ""], ["Chochín común", "Troglodytes troglodytes"], ["Acentor común", ""], ["Acentor alpino", ""], ["Petirrojo europeo", ""], ["Ruiseñor común", ""], ["Ruiseñor pechiazul", ""], ["Colirrojo tizón", ""], ["Colirrojo real", ""], ["Tarabilla europea", ""], ["Tarabilla norteña", ""], ["Collalba gris", ""], ["Collalba rubia", "Oenanthe hispanica"], ["Collalba negra", ""], ["Roquero solitario", ""], ["Roquero rojo", ""], ["Mirlo común", ""], ["Mirlo capiblanco", ""], ["Zorzal común", ""], ["Zorzal alirrojo", ""], ["Zorzal charlo", ""], ["Zorzal real", ""], ["Cetia ruiseñor", ""], ["Buscarla pintoja", ""], ["Buscarla unicolor", ""], ["Carricerín común", ""], ["Carricerín cejudo", ""], ["Carricero común", ""], ["Carricero tordal", ""], ["Carricero políglota", ""], ["Zarcero común", "Hippolais polyglotta"], ["Zarcero pálido", ""], ["Curruca capirotada", ""], ["Curruca mosquitera", ""], ["Curruca zarcera", ""], ["Curruca carrasqueña", "Curruca cantillans"], ["Curruca tomillera", ""], ["Curruca rabilarga", ""], ["Curruca cabecinegra", ""], ["Curruca mirlona", "Curruca hortensis"], ["Curruca mirlona oriental", ""], ["Mosquitero común", ""], ["Mosquitero ibérico", ""], ["Mosquitero musical", ""], ["Mosquitero papialbo", ""], ["Mosquitero silbador", ""], ["Mosquitero bilistado", ""], ["Mosquitero de Pallas", ""], ["Reyezuelo listado", ""], ["Reyezuelo sencillo", ""], ["Mito", "Aegithalos caudatus"], ["Herrerillo común", ""], ["Herrerillo capuchino", ""], ["Herrerillo africano", "Cyanistes teneriffae"], ["Carbonero común", ""], ["Carbonero garrapinos", ""], ["Carbonero palustre", ""], ["Carbonero montano", ""], ["Trepador azul", ""], ["Trepador de roca", "Sitta neumayer"], ["Agateador europeo", ""], ["Agateador común", "Certhia brachydactyla"], ["Pájaro moscón", "Remiz pendulinus"], ["Oropéndola europea", ""], ["Alcaudón real", ""], ["Alcaudón común", ""], ["Alcaudón dorsirrojo", ""], ["Alcaudón chico", ""], ["Arrendajo euroasiático", ""], ["Rabilargo ibérico", ""], ["Urraca común", ""], ["Chova piquirroja", ""], ["Chova piquigualda", ""], ["Grajilla occidental", "Coloeus monedula"], ["Grajilla oriental", "Coloeus dauuricus"], ["Corneja negra", ""], ["Corneja cenicienta", ""], ["Cuervo grande", ""], ["Graja", ""], ["Estornino negro", ""], ["Estornino pinto", ""], ["Estornino rosado", ""], ["Gorrión común", ""], ["Gorrión molinero", ""], ["Gorrión moruno", ""], ["Gorrión chillón", ""], ["Pinzón vulgar", ""], ["Pinzón real", ""], ["Verdecillo", "Serinus serinus"], ["Verderón común", ""], ["Jilguero europeo", ""], ["Jilguero lúgano", ""], ["Pardillo común", ""], ["Piquituerto común", ""], ["Camachuelo común", ""], ["Picogordo común", ""], ["Escribano triguero", ""], ["Escribano cerillo", ""], ["Escribano soteño", ""], ["Escribano montesino", ""], ["Escribano palustre", ""], ["Escribano nival", ""], ["Escribano hortelano", ""], ["Escribano sahariano", ""], ["Gorrión alpino", ""], ["Verderón serrano", ""], ["Serín canario", ""], ["Camachuelo trompetero", ""], ["Pico de coral", ""], ["Estrilda común", ""]];
-const nz=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
-/* devuelve [{es, idx}] resolviendo contra la taxonomía [en,sci,es] */
-G.EUROPA=function(tax){
-  const byEs=new Map(),bySci=new Map(),byEpi=new Map();
-  tax.forEach((t,i)=>{if(t[2]&&!byEs.has(nz(t[2])))byEs.set(nz(t[2]),i);bySci.set(t[1].toLowerCase(),i);const e=t[1].split(" ").pop().toLowerCase();(byEpi.get(e)||byEpi.set(e,[]).get(e)).push(i)});
-  const res=[],seen=new Set();
-  for(const [es,sci] of E){
-    let i=byEs.get(nz(es));
-    if(i===undefined&&sci){i=bySci.get(sci.toLowerCase());
-      if(i===undefined){const a=byEpi.get(sci.split(" ").pop().toLowerCase());if(a&&a.length===1)i=a[0];else if(a){const g=a.find(k=>tax[k][1].split(" ")[0][0]===sci[0]);if(g!==undefined&&a.filter(k=>tax[k][1].split(" ")[0][0]===sci[0]).length===1)i=g}}}
-    res.push({es,idx:i===undefined?-1:i});
-  }
-  return res;
-};
-})(typeof window!=="undefined"?window:globalThis);
-
-</script>
-<script>
 const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["copia","💾","Copia de seguridad","Guarda y restaura tus datos"],["zona","🗓️","Aves de la zona","Qué se puede ver este mes"],["calendario","📅","Calendario","Tus avistamientos por días"],["vistas","✅","Mis aves vistas","Tu lista de especies observadas"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
 const LOCS=["Huelva","Almonte","El Rocío","Doñana","Isla Cristina","Ayamonte","Punta Umbría","Matalascañas","Moguer","Lepe","Cartaya","El Portil"];
 const FR=[["Cristóbal Crespo","https://www.instagram.com/cristobal_crespo_caro"],["Carlos Salguero","https://www.instagram.com/carlxsh"],["Tomás Gómez","https://www.instagram.com/toromy75"],["Fco. Rivas","https://www.instagram.com/francisco_rivas68"],["David (Zuma)","https://www.instagram.com/elzuma"],["Juanjo Cipriano","https://ebird.org/profile/OTEwMTk0/ES"],["Jose Manuel Reyes","https://www.instagram.com/josemreyesp"],["Seba","https://www.instagram.com/seba_wildlife"],["Jose Antonio (jolunepa)","https://www.instagram.com/jolunepa"],["Antonio Medina","https://www.instagram.com/antonio.jmedina"],["Loren","https://www.instagram.com/fotografiasdeloren"],["Felipe","https://www.instagram.com/felipe.felipe.1806"],["Isidro","https://www.instagram.com/donanaparadise"],["Enrique Pragom","https://www.instagram.com/enri_prax"],["Jose A. Diaz","https://www.instagram.com/diazregodon"],["Jose Luis","https://www.facebook.com/joseluis.cruzadoblanco"],["Feliciano","https://www.instagram.com/feliciano.esteban.9"],["Diego","https://www.instagram.com/spanishwildlife70"]];
@@ -300,129 +279,34 @@ async function ftModelo(){
   return FOTO.ready;
 }
 
-/* --- Biblioteca de fotos (IndexedDB, almacén "f") --- */
-const GL={fotos:[],load:false,sel:null,busy:false,msg:"",prog:0,esp:null,q:"",filtro:"todas",todas:false,cor:"",corR:[]};
-const norm=x=>String(x||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").trim();
-const GLOC={lat:37.26,lon:-6.94};
-const gAll=async()=>{const d=await IDB();return new Promise((res,rej)=>{const r=d.transaction("f").objectStore("f").getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})};
-const gPut=async o=>{const d=await IDB();return new Promise((res,rej)=>{const t=d.transaction("f","readwrite");t.objectStore("f").put(o);t.oncomplete=res;t.onerror=()=>rej(t.error)})};
-const gDel=async id=>{const d=await IDB();return new Promise((res,rej)=>{const t=d.transaction("f","readwrite");t.objectStore("f").delete(id);t.oncomplete=res;t.onerror=()=>rej(t.error)})};
-async function gLoad(){GL.load=true;try{GL.fotos=await gAll()}catch(e){GL.fotos=[]}if(tab==="foto")render()}
-async function gTax(){
-  if(FOTO.tax||GL.taxBusy)return;GL.taxBusy=true;
-  try{const r=await fetch(RURL("models/foto/taxo.json"));FOTO.tax=await r.json()}catch(e){GL.msg="No se encuentra la lista de especies."}
-  GL.taxBusy=false;if(tab==="foto")render();
-}
-const gUrl=(f,k)=>{const key=f.id+k;return URLS[key]||(URLS[key]=URL.createObjectURL(f[k]))};
-const nomE=i=>{if(!FOTO.tax||!FOTO.tax[i])return"…";const n=FOTO.nombre(i);return n.es||n.en};
-const gTxt=f=>{if(f.sp==null||!FOTO.tax)return"";const n=FOTO.nombre(f.sp);return norm(n.es+" "+n.en+" "+n.sci)};
-const qid=id=>String(id).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
-let EUR=null;
-const gEur=()=>{if(!EUR&&FOTO.tax&&window.EUROPA)EUR=EUROPA(FOTO.tax);return EUR||[]};
-async function gPrep(file){
-  const bm=await createImageBitmap(file);
-  const cv=(maxL,shortS)=>{let w=bm.width,h=bm.height,sc=maxL?Math.min(1,maxL/Math.max(w,h)):Math.min(1,shortS/Math.min(w,h));w=Math.max(1,Math.round(w*sc));h=Math.max(1,Math.round(h*sc));const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(bm,0,0,w,h);return c};
-  const toB=(c,qq)=>new Promise(r=>c.toBlob(r,"image/jpeg",qq));
-  const full=await toB(cv(1400),.85),thumb=await toB(cv(260),.8),rc=cv(0,496);
-  const d=rc.getContext("2d").getImageData(0,0,rc.width,rc.height);bm.close&&bm.close();
-  return{full,thumb,rgba:d.data,w:rc.width,h:rc.height};
-}
-async function gProcesa(file){
-  const id=file.name+"|"+file.size+"|"+(file.lastModified||0);
-  const ya=GL.fotos.find(x=>x.id===id);
-  const p=await gPrep(file);
-  const fecha=file.lastModified&&Math.abs(Date.now()-file.lastModified)<3e12?file.lastModified:Date.now();
-  const r=await FOTO.identify(p.rgba,p.w,p.h,GLOC,new Date(fecha).getMonth()+1,5);
-  const alts=r.res.map(x=>({i:x.idx,c:Math.round(x.conf*1000)/1000}));
-  if(ya&&ya.manual)return{f:ya,r,alts,dup:true};
-  const f={id,name:file.name,fecha,full:p.full,thumb:p.thumb,sp:r.esAve&&alts.length?alts[0].i:null,conf:r.esAve&&alts.length?alts[0].c:0,alts,manual:false};
-  await gPut(f);if(ya)GL.fotos=GL.fotos.filter(x=>x.id!==id);GL.fotos.push(f);
-  return{f,r,alts,dup:!!ya};
-}
-/* una foto (cámara o galería): reconoce, muestra resultado y la guarda */
 window.ftFoto=async file=>{
   if(!file||FT.busy)return;
   FT.busy=true;FT.res=[];FT.msg="Preparando el reconocimiento… ";if(FT.url)URL.revokeObjectURL(FT.url);FT.url=URL.createObjectURL(file);render();
   try{
     if(!await ftModelo())throw new Error(FOTO.err||"no se pudo preparar el modelo");
     FT.msg="Analizando la foto…";const m0=$("#fmsg");if(m0)m0.textContent=FT.msg;
-    const o=await gProcesa(file);
-    FT.esAve=o.r.esAve;FT.res=o.alts.map(x=>({i:x.i,c:x.c}));FT.msg="💾 Guardada en tu galería.";
+    const bm=await createImageBitmap(file);
+    const sc=Math.min(1,496/Math.min(bm.width,bm.height)),w=Math.max(1,Math.round(bm.width*sc)),h=Math.max(1,Math.round(bm.height*sc));
+    const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(bm,0,0,w,h);bm.close&&bm.close();
+    const d=c.getContext("2d").getImageData(0,0,w,h).data;
+    const fecha=file.lastModified&&Math.abs(Date.now()-file.lastModified)<3e12?new Date(file.lastModified):new Date();
+    const r=await FOTO.identify(d,w,h,{lat:37.26,lon:-6.94},fecha.getMonth()+1,5);
+    FT.esAve=r.esAve;FT.res=r.res.map(x=>({i:x.idx,c:x.conf}));FT.msg="";
   }catch(e){FT.msg="No se pudo reconocer la foto: "+(e.message||e)}
   FT.busy=false;render();
 };
-/* muchas fotos (carpeta) */
-window.ftLote=async files=>{
-  files=files.filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp|heic)$/i.test(f.name));
-  if(!files.length||FT.busy)return;
-  FT.busy=true;FT.res=[];FT.url="";FT.msg="Preparando el reconocimiento… ";render();
-  if(!await ftModelo()){FT.msg="No se pudo preparar el reconocimiento: "+(FOTO.err||"");FT.busy=false;render();return}
-  let n=0,bad=0,nuevas=0;
-  for(const file of files){
-    n++;FT.msg=`Identificando ${n} de ${files.length}… (no cierres la app)`;const e=$("#fmsg");if(e)e.textContent=FT.msg;
-    try{const id=file.name+"|"+file.size+"|"+(file.lastModified||0);if(GL.fotos.some(x=>x.id===id))continue;await gProcesa(file);nuevas++}catch(err){bad++;console.log(err)}
-    await new Promise(r=>setTimeout(r,0));
-  }
-  FT.busy=false;FT.msg=`Listo: ${nuevas} fotos nuevas en tu galería.`+(bad?` ${bad} no se pudieron leer.`:"");render();
-};
 window.anotaF=async i=>{const e={name:nomF(i),fecha:new Date().toISOString().slice(0,10),lugar:""};S.seen.push(e);keep();toast("Añadida: "+nomF(i));const g=await getPos();if(g){e.lat=g.lat;e.lon=g.lon;keep()}};
-window.gPick=i=>{GL.esp=i;GL.q=nomE(i);render()};
-window.gClr=()=>{GL.esp=null;GL.q="";render()};
-window.gOpen=id=>{GL.sel=id;GL.cor="";GL.corR=[];render()};
-window.gClose=()=>{GL.sel=null;render()};
-window.gSet=async(id,i)=>{const f=GL.fotos.find(x=>x.id===id);if(!f)return;f.sp=i;f.conf=1;f.manual=true;await gPut(f);GL.cor="";GL.corR=[];render()};
-window.gDelF=async id=>{if(!confirm("¿Quitar esta foto de la galería de la app? (no se borra de tu móvil)"))return;await gDel(id);GL.fotos=GL.fotos.filter(x=>x.id!==id);GL.sel=null;render()};
-window.gCorr=v=>{GL.cor=v;const n=norm(v);GL.corR=n.length<2||!FOTO.tax?[]:FOTO.tax.map((t,i)=>[i,norm((t[2]||"")+" "+t[0]+" "+t[1])]).filter(x=>x[1].includes(n)).sort((a,b)=>(FOTO.tax[b[0]][2]?1:0)-(FOTO.tax[a[0]][2]?1:0)).slice(0,8).map(x=>x[0]);const e=$("#gcr");if(e)e.innerHTML=gCorrHtml()};
-const gCorrHtml=()=>GL.corR.map(i=>`<button class="b" style="text-align:left" onclick="gSet('${qid(GL.sel)}',${i})">${esc(nomE(i))} <small>· ${esc(FOTO.nombre(i).sci)}</small></button>`).join("");
-function gVisor(){
-  const f=GL.fotos.find(x=>x.id===GL.sel);if(!f)return"";
-  const alts=(f.alts||[]).filter(a=>a.i!==f.sp&&a.c>=.02).slice(0,4).map(a=>`<button class="b" style="background:var(--mu);text-align:left" onclick="gSet('${qid(f.id)}',${a.i})">${esc(nomE(a.i))} <small>${Math.round(a.c*100)}%</small></button>`).join("");
-  return `<div style="position:fixed;inset:0;background:var(--bg);z-index:20;overflow:auto;padding:12px;padding-top:calc(12px + env(safe-area-inset-top))"><button class="b" onclick="gClose()" style="width:auto;padding:8px 16px">← Volver</button>
-  <img src="${gUrl(f,"full")}" style="width:100%;border-radius:12px;margin-top:8px">
-  <h2>${f.sp==null?"Sin identificar":esc(nomE(f.sp))}${f.sp!=null&&!f.manual&&f.conf<.5?" ❓":""}</h2>${f.sp!=null?`<div class="sci">${esc(FOTO.nombre(f.sp).sci)} · ${esc(FOTO.nombre(f.sp).en)}</div>`:""}
-  <small class="mu">${f.manual?"Elegida por ti":f.sp!=null?"Reconocida automáticamente ("+Math.round(f.conf*100)+"%)":"No se ha podido reconocer"} · ${esc(f.name)}</small>
-  ${alts?`<p class="mu" style="margin:10px 0 2px">¿Quizá es…?</p>${alts}`:""}
-  <p class="mu" style="margin:10px 0 2px">Cambiar especie a mano</p><input placeholder="Escribe el nombre del ave" value="${esc(GL.cor)}" oninput="gCorr(this.value)"><div id="gcr">${gCorrHtml()}</div>
-  <button class="b" style="background:#b3402f;margin-top:14px" onclick="gDelF('${qid(f.id)}')">🗑 Quitar de la galería</button></div>`;
-}
 function foto(){
-  if(!GL.load)gLoad();
-  if(!FOTO.tax)gTax();
-  const ready=!!FOTO.tax;
-  const rs=ready?FT.res.map((x,k)=>{const n=FOTO.nombre(x.i),p=Math.round(x.c*100);return `<div class="card"><b>${esc(nomF(x.i))}</b> <span class="mu">${p<1?"<1":p}%</span><div class="sci">${esc(n.sci)}${n.es?" · "+esc(n.en):""}</div><div class="bar"><div style="width:${Math.min(100,p)}%"></div></div>${k===0?`<button class="b" onclick="anotaF(${x.i})">✅ Añadir a Mis aves vistas</button>`:""}</div>`}).join(""):"";
-  /* búsqueda en la galería */
-  const cnt={};GL.fotos.forEach(f=>{if(f.sp!=null)cnt[f.sp]=(cnt[f.sp]||0)+1});
-  const n=norm(GL.q);
-  let l=GL.fotos.slice();const sin=l.filter(f=>f.sp==null).length;
-  if(GL.filtro==="sin")l=l.filter(f=>f.sp==null);
-  if(GL.esp!=null)l=l.filter(f=>f.sp===GL.esp);
-  else if(n&&ready)l=l.filter(f=>gTxt(f).includes(n)||norm(f.name).includes(n));
-  const mostrar=ready&&(GL.esp!=null||n||GL.todas||GL.filtro==="sin");
-  l.sort((a,b)=>(a.sp==null)-(b.sp==null)||(a.sp==null?0:nomE(a.sp).localeCompare(nomE(b.sp),"es"))||a.name.localeCompare(b.name));
-  const grid=mostrar?l.map(f=>`<div onclick="gOpen('${qid(f.id)}')" style="border-radius:10px;overflow:hidden;background:var(--card);border:1px solid var(--bd)"><img loading="lazy" src="${gUrl(f,"thumb")}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block"><div style="font-size:12px;padding:4px 6px;line-height:1.2">${f.sp==null?"<span class='mu'>Sin identificar</span>":esc(nomE(f.sp))+(!f.manual&&f.conf<.5?" ❓":"")}</div></div>`).join(""):"";
-  const row=e=>{const c=e.idx>=0?(cnt[e.idx]||0):0;return e.idx<0?"":`<div onclick="gPick(${e.idx})" style="padding:10px 4px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:8px"><span>${esc(e.es)}</span><b style="color:${c?"var(--ac)":"var(--mu)"}">${c?"✅ "+c:"—"}</b></div>`};
-  let sug="";
-  if(GL.esp==null&&n.length>=2&&ready){const m=gEur().filter(e=>e.idx>=0&&norm(e.es).includes(n)).slice(0,6);if(m.length)sug=`<div class="card" style="padding:4px 10px">${m.map(row).join("")}</div>`}
-  let banner="";
-  if(GL.esp!=null){const c=cnt[GL.esp]||0;banner=`<div class="card"><b>${esc(nomE(GL.esp))}</b><div class="sci">${esc(FOTO.nombre(GL.esp).sci)}</div>${c?`✅ Tienes <b>${c}</b> ${c===1?"foto":"fotos"} de esta especie.`:"❌ Todavía no tienes ninguna foto de esta especie."}<button class="b" style="background:var(--mu)" onclick="gClr()">✖ Quitar búsqueda</button></div>`}
-  const esps=Object.keys(cnt).length;
+  const rs=FT.res.map((x,k)=>{const n=FOTO.nombre(x.i),p=Math.round(x.c*100);return `<div class="card"><b>${esc(nomF(x.i))}</b> <span class="mu">${p<1?"<1":p}%</span><div class="sci">${esc(n.sci)}${n.es?" · "+esc(n.en):""}</div><div class="bar"><div style="width:${Math.min(100,p)}%"></div></div>${k===0?`<button class="b" onclick="anotaF(${x.i})">✅ Añadir a Mis aves vistas</button>`:""}</div>`}).join("");
   return `<h2>Reconocer por foto</h2>
   <input type="file" id="ftc" accept="image/*" capture="environment" style="display:none" onchange="ftFoto(this.files[0]);this.value=''">
   <input type="file" id="ftg" accept="image/*" style="display:none" onchange="ftFoto(this.files[0]);this.value=''">
-  <input type="file" id="ftl" accept="*/*" multiple style="display:none" onchange="ftLote([...this.files]);this.value=''">
-  <div class="row"><button class="b" onclick="$('#ftc').click()" ${FT.busy?"disabled":""}>📷 Hacer foto</button><button class="b" onclick="$('#ftg').click()" ${FT.busy?"disabled":""}>🖼️ Elegir una foto</button></div>
-  <button class="b" style="background:var(--mu)" onclick="$('#ftl').click()" ${FT.busy?"disabled":""}>📂 Añadir carpeta de aves (muchas fotos)</button>
+  <div class="row"><button class="b" onclick="$('#ftc').click()" ${FT.busy?"disabled":""}>📷 Hacer foto</button><button class="b" onclick="$('#ftg').click()" ${FT.busy?"disabled":""}>🖼️ Elegir de la galería</button></div>
   <div id="fmsg" class="mu" style="margin:8px 0">${esc(FT.msg)} ${FT.busy&&!FOTO.ready?`<span id="fpg">${FT.prog}%</span>`:""}</div>
   ${FT.url?`<img src="${FT.url}" style="width:100%;max-height:320px;object-fit:contain;border-radius:12px;background:#0002">`:""}
   ${FT.res.length&&!FT.esAve?`<div class="card">⚠️ No parece que haya un ave clara en la foto. Estas son las opciones más parecidas:</div>`:""}
   ${rs}
-  <h3 style="margin:18px 0 4px">🔎 Buscar en mi galería</h3>
-  <small class="mu">${GL.fotos.length} fotos guardadas · ${esps} especies. Las fotos que reconoces se guardan aquí solas.</small>
-  <input placeholder="Buscar ave (ej. flamenco, abubilla)" value="${esc(GL.q)}" oninput="GL.q=this.value;GL.esp=null;const p=this.selectionStart;render();const i=document.querySelector('#m h3+small+input');if(i){i.focus();i.setSelectionRange(p,p)}">
-  ${sug}${banner}
-  <div class="chips" style="margin:6px 0"><button class="chip ${GL.todas&&GL.filtro==="todas"?"on":""}" onclick="GL.todas=!GL.todas;GL.filtro='todas';render()">Ver todas (${GL.fotos.length})</button><button class="chip ${GL.filtro==="sin"?"on":""}" onclick="GL.filtro=GL.filtro==='sin'?'todas':'sin';render()">Sin identificar (${sin})</button></div>
-  ${grid?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${grid}</div>`:""}
-  <small class="mu" style="display:block;margin-top:10px">La primera vez que lo usas tarda unos segundos en preparar el modelo. Funciona mejor con el ave grande y centrada. Puede equivocarse con especies parecidas: toca una foto de tu galería para corregirla. Reconocimiento: WingCLIP (CC BY-NC 4.0) y datos de WingDex.</small>${GL.sel?gVisor():""}`;
+  <small class="mu" style="display:block;margin-top:10px">La primera vez que lo usas tarda unos segundos en preparar el modelo. Funciona mejor con el ave grande y centrada. Puede equivocarse con especies parecidas. Reconocimiento: WingCLIP (CC BY-NC 4.0) y datos de WingDex.</small>`;
 }
 
 /* ===== Copia de seguridad ===== */
@@ -520,6 +404,10 @@ function zona(){
   <small class="mu" style="display:block;margin-top:10px">La zona es la localidad elegida en "El tiempo". Datos de presencia de WingDex (observaciones de aves en cuadrículas de unos 27 km). Orientativo.</small>`;
 }
 
+/* ===== Fases de la luna ===== */
+const LUNA=["Luna nueva","Creciente","Cuarto creciente","Gibosa creciente","Luna llena","Gibosa menguante","Cuarto menguante","Menguante"],LEMO=["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
+function luna(y,m,d){const jd=Date.UTC(y,m,d,12)/86400000+2440587.5,age=(((jd-2451550.1)/29.530588853)%1+1)%1;return{i:Math.round(age*8)%8,ilu:Math.round((1-Math.cos(2*Math.PI*age))/2*100)}}
+
 /* ===== Calendario de avistamientos ===== */
 const CAL={y:new Date().getFullYear(),m:new Date().getMonth(),sel:null};
 window.calMes=d=>{CAL.m+=d;if(CAL.m<0){CAL.m=11;CAL.y--}if(CAL.m>11){CAL.m=0;CAL.y++}CAL.sel=null;render()};
@@ -530,13 +418,13 @@ function calendario(){
   const first=(new Date(CAL.y,CAL.m,1).getDay()+6)%7,nd=new Date(CAL.y,CAL.m+1,0).getDate(),hoy=new Date().toISOString().slice(0,10);
   let cells=["L","M","X","J","V","S","D"].map(x=>`<div class="mu" style="text-align:center;font-size:12px">${x}</div>`).join("")+"<div></div>".repeat(first);
   for(let d=1;d<=nd;d++){const k=key(d),n=(por[k]||[]).length,sel=CAL.sel===k;
-    cells+=`<button onclick="calDia('${k}')" style="border:${k===hoy?"2px solid var(--ac)":"1px solid var(--bd)"};border-radius:10px;padding:8px 0;font:inherit;background:${sel?"var(--ac)":n?"#2e8b3d33":"var(--card)"};color:${sel?"#fff":"var(--tx)"}">${d}${n?`<div style="font-size:11px;line-height:1">🐦${n}</div>`:""}</button>`}
+    cells+=`<button onclick="calDia('${k}')" style="border:${k===hoy?"2px solid var(--ac)":"1px solid var(--bd)"};border-radius:10px;padding:8px 0;font:inherit;background:${sel?"var(--ac)":n?"#2e8b3d33":"var(--card)"};color:${sel?"#fff":"var(--tx)"}">${d}<div style="font-size:15px;line-height:1.1">${LEMO[luna(CAL.y,CAL.m,d).i]}</div>${n?`<div style="font-size:11px;line-height:1">🐦${n}</div>`:""}</button>`}
   const delMes=S.seen.filter(f=>f.fecha&&f.fecha.startsWith(CAL.y+"-"+pad(CAL.m+1)));
   const esp=new Set(delMes.map(f=>nz(f.name))).size;
-  const lista=CAL.sel?`<h3 style="margin:14px 0 4px">${fmtF(CAL.sel)}</h3>`+((por[CAL.sel]||[]).map(f=>`<div class="card"><b>${esc(f.name)}</b><br><small class="mu">${esc(f.lugar||"")}</small>${f.lat&&f.lon?`<div><button class="chip" style="margin-top:6px;padding:6px 14px" onclick="go('https://www.google.com/maps?q=${esc(f.lat)},${esc(f.lon)}')">📍 Abrir mapa</button></div>`:""}</div>`).join("")||'<p class="mu">Ese día no anotaste ninguna ave.</p>'):"";
+  const lista=CAL.sel?`<h3 style="margin:14px 0 4px">${fmtF(CAL.sel)}</h3><p class="mu" style="margin:0 0 6px">${(()=>{const q=CAL.sel.split("-"),l=luna(+q[0],+q[1]-1,+q[2]);return LEMO[l.i]+" "+LUNA[l.i]+" · "+l.ilu+"% iluminada"})()}</p>`+((por[CAL.sel]||[]).map(f=>`<div class="card"><b>${esc(f.name)}</b><br><small class="mu">${esc(f.lugar||"")}</small>${f.lat&&f.lon?`<div><button class="chip" style="margin-top:6px;padding:6px 14px" onclick="go('https://www.google.com/maps?q=${esc(f.lat)},${esc(f.lon)}')">📍 Abrir mapa</button></div>`:""}</div>`).join("")||'<p class="mu">Ese día no anotaste ninguna ave.</p>'):"";
   return `<h2>Calendario</h2><div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0"><button class="chip" style="font-size:20px;padding:6px 16px" onclick="calMes(-1)">‹</button><b>${MESN[CAL.m]} ${CAL.y}</b><button class="chip" style="font-size:20px;padding:6px 16px" onclick="calMes(1)">›</button></div>
   <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${cells}</div>
-  <p class="mu" style="margin:10px 2px">Este mes: <b>${delMes.length}</b> ${delMes.length===1?"avistamiento":"avistamientos"} · <b>${esp}</b> ${esp===1?"especie":"especies"}</p>${lista}`;
+  <p class="mu" style="margin:8px 2px;font-size:13px">🌑 nueva · 🌓 cuarto creciente · 🌕 llena · 🌗 cuarto menguante</p><p class="mu" style="margin:10px 2px">Este mes: <b>${delMes.length}</b> ${delMes.length===1?"avistamiento":"avistamientos"} · <b>${esp}</b> ${esp===1?"especie":"especies"}</p>${lista}`;
 }
 
 loadLib();
