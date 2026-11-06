@@ -231,14 +231,26 @@ function mareas(){
 }
 const IDB=()=>new Promise((res,rej)=>{const r=indexedDB.open("pajareo",2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains("a"))d.createObjectStore("a",{keyPath:"id"});if(!d.objectStoreNames.contains("f"))d.createObjectStore("f",{keyPath:"id"})};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
 async function loadLib(){try{const d=await IDB();LIB=await new Promise((res,rej)=>{const r=d.transaction("a").objectStore("a").getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch(e){LIB=[]}render()}
-async function saveFiles(files){try{const d=await IDB();const tx=d.transaction("a","readwrite");const s=tx.objectStore("a");for(const f of files){const base=f.name.replace(/\.[^.]+$/,"");const p=base.split(/\s+[-–_]\s+/);s.put({id:f.name,name:(p[0]||base).trim(),sci:(p[1]||"").trim(),file:f})}await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}catch(e){alert("No se pudieron guardar los audios.")}loadLib()}
+let SMSG="";
+async function saveFiles(files){
+  files=[...files].filter(f=>/^audio\//.test(f.type)||/\.(mp3|m4a|wav|ogg|aac|flac|opus)$/i.test(f.name));
+  const ya=new Map(LIB.map(b=>[b.id,b.file&&b.file.size]));
+  const nuevos=files.filter(f=>ya.get(f.name)!==f.size),repes=files.length-nuevos.length;
+  if(!files.length){SMSG="No se ha elegido ningún audio.";render();return}
+  if(!nuevos.length){SMSG="Todo al día: los "+files.length+" audios elegidos ya estaban guardados.";render();return}
+  SMSG="Guardando "+nuevos.length+" audios…";render();
+  try{const d=await IDB();const tx=d.transaction("a","readwrite");const st=tx.objectStore("a");for(const f of nuevos){const base=f.name.replace(/\.[^.]+$/,"");const p=base.split(/\s+[-–_]\s+/);st.put({id:f.name,name:(p[0]||base).trim(),sci:(p[1]||"").trim(),file:f})}await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});
+    SMSG="✅ Añadidos "+nuevos.length+" audios nuevos"+(repes?" ("+repes+" ya estaban)":"")+".";
+  }catch(e){SMSG="No se pudieron guardar los audios.";alert("No se pudieron guardar los audios.")}
+  loadLib();
+}
 const au=b=>URLS[b.id]||(URLS[b.id]=URL.createObjectURL(b.file));
 window.loopT=b=>{const a=b.closest(".card").querySelector("audio");a.loop=!a.loop;b.textContent="🔁 Bucle: "+(a.loop?"sí":"no")};
 window.stopA=b=>{const a=b.closest(".card").querySelector("audio");a.pause();a.currentTime=0};
 function aves(){
   const n=q.toLowerCase();
   const l=LIB.filter(b=>b.name.toLowerCase().includes(n)).sort((a,b)=>a.name.localeCompare(b.name,"es"));
-  return `<h2>Sonidos de aves</h2><input type="file" id="fl" accept="audio/*" multiple style="display:none" onchange="saveFiles([...this.files])"><button class="b" onclick="$('#fl').click()">📂 Cargar carpeta SONIDOS AVES</button><small class="mu">Entra en la carpeta, selecciona todos los audios y acepta. ${LIB.length} audios guardados.</small><input id="sq" placeholder="Buscar por nombre común" value="${esc(q)}" oninput="q=this.value;render();const i=$('#sq');i.focus();i.setSelectionRange(q.length,q.length)">`+
+  return `<h2>Sonidos de aves</h2><input type="file" id="fl" accept="audio/*" multiple style="display:none" onchange="saveFiles([...this.files]);this.value=''"><button class="b" onclick="$('#fl').click()">${LIB.length?"🔄 Actualizar sonidos":"📂 Cargar carpeta SONIDOS AVES"}</button><small class="mu">${LIB.length?"Si has añadido sonidos nuevos a la carpeta: pulsa, entra en la carpeta, selecciona todos los audios y acepta. Solo se guardan los nuevos (los que ya están se saltan, es rápido).":"Entra en la carpeta, selecciona todos los audios y acepta."} ${LIB.length} audios guardados.</small><div class="mu" style="margin:6px 0">${esc(SMSG)}</div><input id="sq" placeholder="Buscar por nombre común" value="${esc(q)}" oninput="q=this.value;render();const i=$('#sq');i.focus();i.setSelectionRange(q.length,q.length)">`+
   (l.map(b=>`<div class="card"><b>${esc(b.name)}</b><div class="sci">${esc(b.sci)}</div><audio controls preload="none" src="${au(b)}"></audio><div class="row"><button class="b" onclick="loopT(this)">🔁 Bucle: no</button><button class="b" onclick="stopA(this)">⏹ Stop</button></div></div>`).join("")||`<p class="mu">Todavía no hay audios. Pulsa el botón de arriba.</p>`);
 }
 function toast(t){let e=document.getElementById("toast");if(!e){e=document.createElement("div");e.id="toast";e.style.cssText="position:fixed;left:50%;bottom:40px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:20px;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none";document.body.appendChild(e)}e.textContent=t;e.style.opacity=1;clearTimeout(e._t);e._t=setTimeout(()=>e.style.opacity=0,2000)}
