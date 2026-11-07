@@ -22,7 +22,7 @@ a{color:var(--ac);word-break:break-word}.mu{color:var(--mu)}.sci{font-style:ital
 <main id="m"></main>
 <script src="js/foto.js"></script>
 <script>
-const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["zona","🗓️","Aves de la zona","Qué se puede ver este mes"],["calendario","📅","Calendario","Tus avistamientos por días"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
+const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["calendario","📅","Calendario","Fases lunares día a día"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
 const LOCS=["Huelva","Almonte","El Rocío","Doñana","Isla Cristina","Ayamonte","Punta Umbría","Matalascañas","Moguer","Lepe","Cartaya","El Portil"];
 const FR=[["Cristóbal Crespo","https://www.instagram.com/cristobal_crespo_caro"],["Carlos Salguero","https://www.instagram.com/carlxsh"],["Tomás Gómez","https://www.instagram.com/toromy75"],["Fco. Rivas","https://www.instagram.com/francisco_rivas68"],["David (Zuma)","https://www.instagram.com/elzuma"],["Juanjo Cipriano","https://ebird.org/profile/OTEwMTk0/ES"],["Jose Manuel Reyes","https://www.instagram.com/josemreyesp"],["Seba","https://www.instagram.com/seba_wildlife"],["Jose Antonio (jolunepa)","https://www.instagram.com/jolunepa"],["Antonio Medina","https://www.instagram.com/antonio.jmedina"],["Loren","https://www.instagram.com/fotografiasdeloren"],["Felipe","https://www.instagram.com/felipe.felipe.1806"],["Isidro","https://www.instagram.com/donanaparadise"],["Enrique Pragom","https://www.instagram.com/enri_prax"],["Jose A. Diaz","https://www.instagram.com/diazregodon"],["Jose Luis","https://www.facebook.com/joseluis.cruzadoblanco"],["Feliciano","https://www.instagram.com/feliciano.esteban.9"],["Diego","https://www.instagram.com/spanishwildlife70"]];
 const SI=[["Camachuelo común","https://maps.app.goo.gl/Rh3Kthsp6KQoRNQ87"],["Camachuelo común","https://maps.app.goo.gl/Kh3F2EJNKzbcijPk9"],["Pechiazul","https://maps.app.goo.gl/xkopK4rHkDf1pMmh7"],["Búho campestre","https://maps.app.goo.gl/tkmkyvNb69Ak8EhGA"],["Chorlito gris","https://maps.app.goo.gl/qxTrqNCbBqarAwAcA"],["Malvasía cabeciblanca","https://maps.app.goo.gl/uGRr4QxcVu7taz7J7"],["Falaropo tricolor","https://maps.app.goo.gl/bLWZuV7Bf7KAjpb9A"]];
@@ -42,7 +42,7 @@ window.rm=(k,i)=>{if(confirm("¿Borrar?")){S[k].splice(i,1);keep();render()}};
 function render(){if(tab!=="home")ORD=false;
   const cur=TABS.find(t=>t[0]===tab);
   $("#ttl").textContent=cur?cur[2]:"Pajareo Huelva";
-  $("#m").innerHTML=cur?({amigos,aves,reconocer,foto,quiz,zona,calendario,telefonos,vistas,tiempo,mareas,sitios})[tab]():home();if(tab!=="reconocer"&&R.on)detenerR();if(tab==="quiz"&&Q.play){Q.play=false;const a=document.getElementById("qa");if(a)a.play().catch(()=>{})}
+  $("#m").innerHTML=cur?({amigos,aves,reconocer,foto,quiz,calendario,telefonos,vistas,tiempo,mareas,sitios})[tab]():home();if(tab!=="reconocer"&&R.on)detenerR();if(tab==="quiz"&&Q.play){Q.play=false;const a=document.getElementById("qa");if(a)a.play().catch(()=>{})}
 }
 const VER="__VERSION__";
 const verTxt=()=>VER.charAt(0)==="_"?"pruebas":"v."+VER.slice(1);
@@ -332,37 +332,8 @@ window.gpsForm=async b=>{const f=b.closest("form");b.textContent="📍 Buscando 
   if(g){f.querySelector("[name=lat]").value=g.lat;f.querySelector("[name=lon]").value=g.lon;b.textContent="✔ Ubicación guardada ("+g.lat+", "+g.lon+")"}
   else b.textContent=GPSERR===1?"📍 Sin permiso de ubicación. Actívalo en Ajustes del móvil → Apps → Pajareo Huelva → Permisos → Ubicación. Reintentar":GPSERR===3?"📍 Tarda demasiado (¿estás dentro de un edificio?). Reintentar":"📍 No se pudo: activa la ubicación del móvil. Reintentar"};
 
-/* ===== Aves de la zona según la época ===== */
+/* ===== Meses ===== */
 const MESN=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-const ZN={mes:new Date().getMonth()+1,lista:null,busy:false,msg:"",solo:false};
-async function zonaCarga(){
-  if(ZN.busy)return;ZN.busy=true;ZN.msg="Cargando datos de la zona (la primera vez tarda unos segundos)…";render();
-  const get=async u=>{const r=await fetch(u);if(!r.ok)throw new Error("Falta el archivo "+u);return r.arrayBuffer()};
-  const ok=await FOTO.initLite({base:RURL("models/foto/"),get});
-  ZN.busy=false;
-  if(!ok){ZN.msg="No se pudieron cargar los datos: "+FOTO.err;render();return}
-  ZN.msg="";zonaCalc();render();
-}
-function zonaCalc(){ZN.lista=FOTO.mes({lat:tloc.lat,lon:tloc.lon},ZN.mes,120)}
-window.zonaMes=m=>{ZN.mes=m;if(FOTO.occ)zonaCalc();render()};
-const nz=x=>String(x||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").trim();
-function zona(){
-  if(!FOTO.occ&&!ZN.busy&&!ZN.msg)zonaCarga();
-  if(FOTO.occ&&!ZN.lista)zonaCalc();
-  const vistas=new Set(S.seen.map(x=>nz(x.name)));
-  const chips=MESN.map((m,i)=>`<button class="chip ${ZN.mes===i+1?"on":""}" onclick="zonaMes(${i+1})">${m.slice(0,3)}</button>`).join("");
-  let body="";
-  if(ZN.lista){
-    const max=ZN.lista[0]?ZN.lista[0].p:1;
-    const rows=ZN.lista.map(x=>{const n=FOTO.nombre(x.idx),nom=n.es||n.en,v=vistas.has(nz(n.es))||vistas.has(nz(n.en));return{x,n,nom,v}});
-    body=rows.map(r=>`<div class="card" style="padding:8px 12px"><b>${esc(r.nom)}</b><div class="sci">${esc(r.n.sci)}</div><div class="bar"><div style="width:${Math.round(r.x.p/max*100)}%"></div></div></div>`).join("")||'<p class="mu">¡Las has visto todas!</p>';
-  }
-  return `<h2>Aves de la zona</h2><p class="mu" style="margin:2px 0 8px">Las más probables en <b>${esc(tloc.name)}</b> en <b>${MESN[ZN.mes-1]}</b>.</p>
-  <div class="chips" style="margin-bottom:8px">${chips}</div>
-  
-  <div class="mu" style="margin:6px 0">${esc(ZN.msg)}</div>${body}
-  <small class="mu" style="display:block;margin-top:10px">La zona es la localidad elegida en "El tiempo". Datos de presencia de WingDex (observaciones de aves en cuadrículas de unos 27 km). Orientativo.</small>`;
-}
 
 /* ===== Fases de la luna ===== */
 const LUNA=["Luna nueva","Creciente","Cuarto creciente","Gibosa creciente","Luna llena","Gibosa menguante","Cuarto menguante","Menguante"],LEMO=["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
