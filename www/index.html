@@ -22,7 +22,7 @@ a{color:var(--ac);word-break:break-word}.mu{color:var(--mu)}.sci{font-style:ital
 <main id="m"></main>
 <script src="js/foto.js"></script>
 <script>
-const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["calendario","📅","Calendario","Fases lunares día a día"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
+const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["creditos","⚖️","Créditos y licencias","Autores, licencias y aviso legal"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["calendario","📅","Calendario","Fases lunares día a día"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
 const LOCS=["Huelva","Almonte","El Rocío","Doñana","Isla Cristina","Ayamonte","Punta Umbría","Matalascañas","Moguer","Lepe","Cartaya","El Portil"];
 const FR=[["Cristóbal Crespo","https://www.instagram.com/cristobal_crespo_caro"],["Carlos Salguero","https://www.instagram.com/carlxsh"],["Tomás Gómez","https://www.instagram.com/toromy75"],["Fco. Rivas","https://www.instagram.com/francisco_rivas68"],["David (Zuma)","https://www.instagram.com/elzuma"],["Juanjo Cipriano","https://ebird.org/profile/OTEwMTk0/ES"],["Jose Manuel Reyes","https://www.instagram.com/josemreyesp"],["Seba","https://www.instagram.com/seba_wildlife"],["Jose Antonio (jolunepa)","https://www.instagram.com/jolunepa"],["Antonio Medina","https://www.instagram.com/antonio.jmedina"],["Loren","https://www.instagram.com/fotografiasdeloren"],["Felipe","https://www.instagram.com/felipe.felipe.1806"],["Isidro","https://www.instagram.com/donanaparadise"],["Enrique Pragom","https://www.instagram.com/enri_prax"],["Jose A. Diaz","https://www.instagram.com/diazregodon"],["Jose Luis","https://www.facebook.com/joseluis.cruzadoblanco"],["Feliciano","https://www.instagram.com/feliciano.esteban.9"],["Diego","https://www.instagram.com/spanishwildlife70"]];
 const SI=[["Camachuelo común","https://maps.app.goo.gl/Rh3Kthsp6KQoRNQ87"],["Camachuelo común","https://maps.app.goo.gl/Kh3F2EJNKzbcijPk9"],["Pechiazul","https://maps.app.goo.gl/xkopK4rHkDf1pMmh7"],["Búho campestre","https://maps.app.goo.gl/tkmkyvNb69Ak8EhGA"],["Chorlito gris","https://maps.app.goo.gl/qxTrqNCbBqarAwAcA"],["Malvasía cabeciblanca","https://maps.app.goo.gl/uGRr4QxcVu7taz7J7"],["Falaropo tricolor","https://maps.app.goo.gl/bLWZuV7Bf7KAjpb9A"]];
@@ -42,7 +42,7 @@ window.rm=(k,i)=>{if(confirm("¿Borrar?")){S[k].splice(i,1);keep();render()}};
 function render(){if(tab!=="home")ORD=false;
   const cur=TABS.find(t=>t[0]===tab);
   $("#ttl").textContent=cur?cur[2]:"Pajareo Huelva";
-  $("#m").innerHTML=cur?({amigos,aves,reconocer,foto,quiz,calendario,telefonos,vistas,tiempo,mareas,sitios})[tab]():home();if(tab!=="reconocer"&&R.on)detenerR();if(tab==="quiz"&&Q.play){Q.play=false;const a=document.getElementById("qa");if(a)a.play().catch(()=>{})}
+  $("#m").innerHTML=cur?({amigos,aves,reconocer,foto,quiz,creditos,calendario,telefonos,vistas,tiempo,mareas,sitios})[tab]():home();if(tab!=="reconocer"&&R.on)detenerR();if(tab==="quiz"&&Q.play){Q.play=false;const a=document.getElementById("qa");if(a)a.play().catch(()=>{})}
 }
 const VER="__VERSION__";
 const verTxt=()=>VER.charAt(0)==="_"?"pruebas":"v."+VER.slice(1);
@@ -405,6 +405,26 @@ function PEGAR(){return `<button class="b" style="background:var(--mu);margin-to
   const h=u=>{if(u&&/^pajareohuelva:\/\//i.test(u))recibeLoc(parseLoc(u),true)};
   try{A.addListener("appUrlOpen",e=>h(e&&e.url));A.getLaunchUrl().then(r=>h(r&&r.url)).catch(()=>{})}catch(e){}
 })();
+
+/* ===== Créditos y licencias ===== */
+function creditos(){
+  const L=(t,u)=>`<a href="${u}" target="_blank" style="color:var(--ac)">${t}</a>`;
+  const c=(t,b)=>`<div class="card"><b>${t}</b><div style="margin-top:6px;font-size:14px;line-height:1.45">${b}</div></div>`;
+  return `<h2>Créditos y licencias</h2>`+
+  c("🐦 Sobre esta aplicación","Pajareo Huelva es un proyecto <b>personal, gratuito y sin ánimo de lucro</b>, hecho por afición a la fotografía y a la observación de aves, para uso de un grupo de amigos con la misma afición. No se vende, no lleva publicidad y no recoge datos: todo lo que guardas se queda en tu móvil. Creada por jolunepa.")+
+  c("⚖️ Aviso legal y responsabilidad","La aplicación se ofrece <b>«tal cual»</b>, sin garantías de ningún tipo. Quien la usa lo hace <b>bajo su propia responsabilidad</b> y es el único responsable del uso que haga de ella y de lo que cargue, haga o comparta con ella. Su autor no se hace responsable de daños, pérdidas o perjuicios derivados de su uso.<br><br>Esta aplicación no puede usarse con fines comerciales: los modelos de reconocimiento que incorpora tienen licencias que lo prohíben.")+
+  c("⚠️ Información orientativa","El reconocimiento de aves por sonido y por foto, el tiempo, las mareas y las fases lunares son <b>orientativos y pueden contener errores</b>. No los uses para decisiones de seguridad (navegación, mareas en zonas peligrosas, meteorología adversa…). Comprueba siempre los teléfonos de emergencia y los datos importantes en fuentes oficiales.")+
+  c("🌿 Respeto a la naturaleza","Cada usuario debe cumplir la normativa de los espacios naturales y de protección de la fauna, respetar a las aves y sus lugares de cría, y valorar si es conveniente difundir localizaciones de especies sensibles. Usar reclamos o sonidos para atraer aves puede estar prohibido o molestar a la fauna, sobre todo en época de cría y en zonas protegidas: es responsabilidad de quien lo haga.")+
+  c("🎵 Sonidos, fotos y datos de cada usuario","La aplicación <b>no incluye ningún audio</b>. Los sonidos de la carpeta «SONIDOS AVES», las fotos y los enlaces que cada persona cargue o comparta son de su responsabilidad, así como respetar los derechos de autor y las licencias de sus autores. Si proceden de bases de datos como Xeno-canto, deben citarse y respetarse sus licencias.")+
+  c("🔒 Privacidad","No hay servidores ni cuentas. El micrófono, la cámara y la ubicación solo se usan cuando pulsas el botón correspondiente, y los datos no salen del móvil. Se usa internet únicamente para consultar el tiempo, las mareas y si hay una versión nueva. La lista de Redes Sociales contiene enlaces a perfiles públicos de los miembros del grupo.")+
+  `<h3 style="margin:16px 0 6px">Créditos de terceros</h3>`+
+  c("🎤 Reconocer ave (sonido)",`Modelo <b>BirdNET</b>, de ${L("Cornell Lab of Ornithology y Chemnitz University of Technology","https://birdnet.cornell.edu")}, en la versión web ${L("BirdNET real-time PWA","https://github.com/birdnet-team/real-time-pwa")}. Licencia Creative Commons (atribución y compartir igual); uso no comercial. Referencia: Kahl et al., 2021, <i>Ecological Informatics</i>.`)+
+  c("📷 Reconocer por foto",`Modelo <b>WingCLIP</b> (derivado de BioCLIP 2 / TinyCLIP) y datos de presencia de ${L("WingDex","https://github.com/jlian/wingdex")} (autor: jlian). Pesos del modelo con licencia <b>CC BY-NC 4.0</b> (solo uso no comercial). BioCLIP: ${L("Imageomics Institute","https://imageomics.github.io/bioclip-2/")}.`)+
+  c("⚡ El tiempo",`Datos de ${L("Open-Meteo.com","https://open-meteo.com")}, licencia CC BY 4.0, gratuita para uso no comercial.`)+
+  c("🌊 Tablas de mareas",`Datos orientativos tomados de ${L("tablademareas.com","https://tablademareas.com/es/huelva/huelva")}. Consulta la web para la información oficial.`)+
+  c("🛠️ Tecnología",`${L("Capacitor","https://capacitorjs.com")} (MIT), ${L("ONNX Runtime Web","https://onnxruntime.ai")} (MIT) y ${L("TensorFlow.js","https://www.tensorflow.org/js")} (Apache 2.0).`)+
+  `<p class="mu" style="font-size:13px;margin:14px 2px">Todas las marcas, nombres y obras citadas pertenecen a sus respectivos autores y se mencionan solo a efectos de atribución.</p>`;
+}
 
 loadLib();
 </script></body></html>
