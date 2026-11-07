@@ -50,7 +50,7 @@ let ORD=false;
 function ordenados(){return TABS.slice().sort((a,b)=>a[2].localeCompare(b[2],"es",{sensitivity:"base"}))}
 window.mover=(id,d)=>{const l=ordenados().map(t=>t[0]),i=l.indexOf(id),j=i+d;if(j<0||j>=l.length)return;[l[i],l[j]]=[l[j],l[i]];S.order=l;keep();render()};
 window.togOrd=()=>{ORD=!ORD;render()};
-function home(){const L=ordenados();return L.map((t,i)=>false?`<div class="topic"><span class="ic">${t[1]}</span><div style="flex:1"><b>${t[2]}</b></div><button class="chip" style="font-size:20px;padding:6px 14px" ${i?"":"disabled"} onclick="mover('${t[0]}',-1)">▲</button><button class="chip" style="font-size:20px;padding:6px 14px" ${i<L.length-1?"":"disabled"} onclick="mover('${t[0]}',1)">▼</button></div>`:`<div class="topic" onclick="tab='${t[0]}';q='';render()"><span class="ic">${t[1]}</span><div><b>${t[2]}</b><br><small class="mu">${t[3]}</small></div></div>`).join("")+`<div class="foot">Creado por <a href="https://www.instagram.com/jolunepa" target="_blank">jolunepa</a><br>${verTxt()}</div>`}
+function home(){const L=ordenados();return L.map((t,i)=>false?`<div class="topic"><span class="ic">${t[1]}</span><div style="flex:1"><b>${t[2]}</b></div><button class="chip" style="font-size:20px;padding:6px 14px" ${i?"":"disabled"} onclick="mover('${t[0]}',-1)">▲</button><button class="chip" style="font-size:20px;padding:6px 14px" ${i<L.length-1?"":"disabled"} onclick="mover('${t[0]}',1)">▼</button></div>`:`<div class="topic" onclick="tab='${t[0]}';q='';render()"><span class="ic">${t[1]}</span><div><b>${t[2]}</b><br><small class="mu">${t[3]}</small></div></div>`).join("")+(UP.nuevo?`<div class="card" style="background:#2e8b3d22;border-color:var(--ac)"><b>🔄 Hay una versión nueva (${esc(UP.nuevo.v)})</b><button class="b" onclick="instalaAct()">⬇️ Descargar e instalar</button><small class="mu">Se descarga el archivo; ábrelo para instalar (se mantiene todo lo que tienes guardado).</small></div>`:"")+`<div style="text-align:center"><button class="chip" onclick="buscaAct(true)">🔄 Buscar actualización</button></div><div class="foot">Creado por <a href="https://www.instagram.com/jolunepa" target="_blank">jolunepa</a><br>${verTxt()}</div>`}
 function lista(k,tit,ph1,ph2,btn,lbl){
   const l=S[k].map((f,i)=>({...f,i}));if(k==="friends")l.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:"base"}));
   return `<h2>${tit}</h2>`+l.map(f=>{const u=safe(f.url);return `<div class="card"><b>${esc(f.name)}</b>${k==="friends"?"":`<button class="x" onclick="rm('${k}',${f.i})">🗑</button>`}<br>${u?`<a href="${esc(u)}" target="_blank">${k==="sights"?"Ver localización":esc(corto(u))}</a>`:""}</div>`}).join("")+
@@ -436,6 +436,21 @@ function calendario(){
   <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${cells}</div>
   <p class="mu" style="margin:8px 2px;font-size:13px">🌑 nueva · 🌓 cuarto creciente · 🌕 llena · 🌗 cuarto menguante</p><p class="mu" style="margin:10px 2px">Este mes: <b>${delMes.length}</b> ${delMes.length===1?"avistamiento":"avistamientos"} · <b>${esp}</b> ${esp===1?"especie":"especies"}</p>${lista}`;
 }
+
+/* ===== Actualizaciones (desde GitHub Releases) ===== */
+const BUILD="__BUILD__",REPO="jolunepa/Pajareo-Huelva",UP={nuevo:null};
+async function buscaAct(manual){
+  if(BUILD.charAt(0)==="_"){if(manual)toast("Versión de pruebas: no se puede comprobar");return}
+  try{
+    const r=await fetch("https://api.github.com/repos/"+REPO+"/releases/latest");if(!r.ok)throw new Error("http "+r.status);
+    const j=await r.json(),n=parseInt(String(j.tag_name||"").replace(/\D/g,"")),a=(j.assets||[]).find(x=>/\.apk$/i.test(x.name));
+    if(n>parseInt(BUILD)&&a){UP.nuevo={v:(j.name||j.tag_name).replace(/^Pajareo Huelva\s*/,""),url:a.browser_download_url};if(tab==="home")render();else if(manual)toast("Hay versión nueva: mira en el menú principal")}
+    else if(manual)toast("Ya tienes la última versión")
+  }catch(e){if(manual)toast("No se pudo comprobar (¿tienes internet?)")}
+}
+window.buscaAct=buscaAct;
+window.instalaAct=()=>{if(UP.nuevo)go(UP.nuevo.url)};
+setTimeout(()=>buscaAct(false),3000);
 
 loadLib();
 </script></body></html>
