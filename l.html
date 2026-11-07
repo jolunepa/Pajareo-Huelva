@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pajareo Huelva · Localización</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#f3f6f1;color:#1d2b22;margin:0;padding:20px;display:flex;justify-content:center}
+.c{max-width:420px;width:100%;background:#fff;border-radius:16px;padding:22px;box-shadow:0 2px 12px #0002;text-align:center}
+h1{font-size:20px;margin:0 0 4px}.n{font-size:22px;font-weight:700;margin:14px 0 4px}.m{color:#5b6b60;font-size:14px}
+a.b{display:block;margin:10px 0;padding:14px;border-radius:10px;background:#2f7d4a;color:#fff;text-decoration:none;font-weight:600}
+a.g{background:#6b7a70}
+</style></head><body><div class="c">
+<h1>🐦 Pajareo Huelva</h1>
+<div class="m">Te han compartido una localización</div>
+<div class="n" id="n"></div><div class="m" id="t"></div>
+<a class="b" id="abrir" href="#">📲 Abrir en la app</a>
+<a class="b g" id="mapa" href="#" style="display:none">📍 Ver solo el mapa</a>
+<a class="b g" id="bajar" href="https://github.com/jolunepa/Pajareo-Huelva/releases/latest">⬇️ No tengo la app: descargarla</a>
+<div class="m">Si no se abre, pulsa «Abrir en la app» de nuevo. Si lo has abierto desde Telegram o WhatsApp, usa el menú (⋮) → «Abrir en Chrome».</div>
+</div>
+<script>
+var q=new URLSearchParams(location.search),n=q.get("n")||"Localización",u=q.get("u")||"",f=q.get("f")||"",t=q.get("t")||"";
+document.getElementById("n").textContent=n;
+document.getElementById("t").textContent=[t,f].filter(Boolean).join(" · ");
+var p="n="+encodeURIComponent(n)+(u?"&u="+encodeURIComponent(u):"")+(f?"&f="+encodeURIComponent(f):"")+(t?"&t="+encodeURIComponent(t):"");
+var fb=encodeURIComponent("https://github.com/jolunepa/Pajareo-Huelva/releases/latest");
+var android=/android/i.test(navigator.userAgent);
+var link=android?"intent://loc?"+p+"#Intent;scheme=pajareohuelva;package=com.pajareo.huelva;S.browser_fallback_url="+fb+";end":"pajareohuelva://loc?"+p;
+document.getElementById("abrir").href=link;
+if(/^https?:\/\//i.test(u)){var m=document.getElementById("mapa");m.href=u;m.style.display="block"}
+if(android)setTimeout(function(){location.href=link},500);
+</script></body></html>
