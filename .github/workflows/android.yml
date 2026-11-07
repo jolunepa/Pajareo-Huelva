@@ -2,9 +2,13 @@ name: Crear APK
 on:
   push:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      HAS_KS: ${{ secrets.KEYSTORE_B64 != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -12,15 +16,18 @@ jobs:
       - name: Calcular version
         id: ver
         run: |
-          OFFSET=3
+          OFFSET=6
           BASE=$(git log -1 --format=%H -- .github/workflows/android.yml)
           K=$(( $(git rev-list --count "$BASE"..HEAD) + OFFSET ))
           MAJOR=$(( 1 + K / 9 ))
           MINOR=$(( K % 9 + 1 ))
           if [ $MINOR -eq 1 ]; then V="v$MAJOR"; else V="v$MAJOR.$MINOR"; fi
           echo "v=$V" >> "$GITHUB_OUTPUT"
+          echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
       - name: Poner la version dentro de la app
-        run: sed -i "s/__VERSION__/${{ steps.ver.outputs.v }}/" www/index.html
+        run: |
+          sed -i "s/__VERSION__/${{ steps.ver.outputs.v }}/" www/index.html
+          sed -i "s/__BUILD__/${{ steps.ver.outputs.build }}/" www/index.html
       - name: Descargar modelo de reconocimiento BirdNET
         run: |
           SHA=6ab67ac09fa64d98858b90f14318229aca9bb7dc
@@ -69,9 +76,24 @@ jobs:
           cp $D/ort-wasm-simd-threaded.wasm www/js/ort-simd.wasm
           ls -la www/js
       - run: npx cap add android
+      - name: Firma fija y numero de version
+        env:
+          KS: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          G=android/app/build.gradle
+          sed -i "s/versionCode 1/versionCode ${{ steps.ver.outputs.build }}/" $G
+          sed -i "s/versionName \"1.0\"/versionName \"${{ steps.ver.outputs.v }}\"/" $G
+          if [ -n "$KS" ]; then
+            echo "$KS" | base64 -d > "$RUNNER_TEMP/pajareo.jks"
+            sed -i "s#^    defaultConfig {#    signingConfigs {\n        debug {\n            storeFile file('$RUNNER_TEMP/pajareo.jks')\n            storePassword 'pajareo-huelva-2026'\n            keyAlias 'pajareo'\n            keyPassword 'pajareo-huelva-2026'\n        }\n    }\n    defaultConfig {#" $G
+            echo "Firma fija activada"
+          else
+            echo "AVISO: no hay clave KEYSTORE_B64; se firma con clave temporal (no se podra actualizar encima)"
+          fi
+          sed -n 1,30p $G
       - name: Permiso de microfono
         run: |
-          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.CAMERA" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
+          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
           grep -n "RECORD_AUDIO" android/app/src/main/AndroidManifest.xml
       - run: npx @capacitor/assets generate --android --iconBackgroundColor "#2f7d4a" --iconBackgroundColorDark "#2f7d4a"
       - run: npx cap sync android
@@ -84,3 +106,11 @@ jobs:
         with:
           name: "Pajareo Huelva.${{ steps.ver.outputs.v }}"
           path: out/*.apk
+      - name: Publicar en Releases
+        if: env.HAS_KS == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          N=${{ steps.ver.outputs.build }}
+          gh release delete "b$N" --yes --cleanup-tag || true
+          gh release create "b$N" "out/Pajareo Huelva.${{ steps.ver.outputs.v }}.apk" --title "Pajareo Huelva ${{ steps.ver.outputs.v }}" --notes "Version ${{ steps.ver.outputs.v }} (compilacion $N)" --latest
