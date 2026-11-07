@@ -52,9 +52,9 @@ window.mover=(id,d)=>{const l=ordenados().map(t=>t[0]),i=l.indexOf(id),j=i+d;if(
 window.togOrd=()=>{ORD=!ORD;render()};
 function home(){const L=ordenados();return `<div style="text-align:right"><button onclick="togOrd()" style="border:1px solid var(--bd);background:${ORD?"var(--ac)":"var(--card)"};color:${ORD?"#fff":"var(--tx)"};border-radius:18px;padding:6px 14px;font:inherit;font-size:14px">${ORD?"✔ Listo":"↕ Ordenar menú"}</button></div>`+L.map((t,i)=>ORD?`<div class="topic"><span class="ic">${t[1]}</span><div style="flex:1"><b>${t[2]}</b></div><button class="chip" style="font-size:20px;padding:6px 14px" ${i?"":"disabled"} onclick="mover('${t[0]}',-1)">▲</button><button class="chip" style="font-size:20px;padding:6px 14px" ${i<L.length-1?"":"disabled"} onclick="mover('${t[0]}',1)">▼</button></div>`:`<div class="topic" onclick="tab='${t[0]}';q='';render()"><span class="ic">${t[1]}</span><div><b>${t[2]}</b><br><small class="mu">${t[3]}</small></div></div>`).join("")+`<div class="foot">Creado por <a href="https://www.instagram.com/jolunepa" target="_blank">jolunepa</a><br>${verTxt()}</div>`}
 function lista(k,tit,ph1,ph2,btn,lbl){
-  const l=S[k].map((f,i)=>({...f,i}));if(k==="friends")l.sort((a,b)=>a.name.localeCompare(b.name,"es"));
-  return `<h2>${tit}</h2>`+l.map(f=>{const u=safe(f.url);return `<div class="card"><b>${esc(f.name)}</b><button class="x" onclick="rm('${k}',${f.i})">🗑</button><br>${u?`<a href="${esc(u)}" target="_blank">${k==="sights"?"Ver localización":esc(corto(u))}</a>`:""}</div>`}).join("")+
-  `<form class="card" onsubmit="add('${k}',this);return false"><b>${lbl}</b><input name="name" placeholder="${ph1}"><input name="url" placeholder="${ph2}"><button class="b">${btn}</button></form>`;
+  const l=S[k].map((f,i)=>({...f,i}));if(k==="friends")l.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:"base"}));
+  return `<h2>${tit}</h2>`+l.map(f=>{const u=safe(f.url);return `<div class="card"><b>${esc(f.name)}</b>${k==="friends"?"":`<button class="x" onclick="rm('${k}',${f.i})">🗑</button>`}<br>${u?`<a href="${esc(u)}" target="_blank">${k==="sights"?"Ver localización":esc(corto(u))}</a>`:""}</div>`}).join("")+
+  (k==="friends"?"":`<form class="card" onsubmit="add('${k}',this);return false"><b>${lbl}</b><input name="name" placeholder="${ph1}"><input name="url" placeholder="${ph2}"><button class="b">${btn}</button></form>`);
 }
 function amigos(){return lista("friends","Amigos y redes","Nombre","Enlace (Instagram, web...)","Añadir","Añadir amigo")}
 const fmtF=d=>d?d.split("-").reverse().join("/"):"";
