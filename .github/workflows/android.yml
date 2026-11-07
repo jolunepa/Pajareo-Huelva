@@ -95,6 +95,24 @@ jobs:
         run: |
           sed -i 's#</manifest>#    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
           grep -n "RECORD_AUDIO" android/app/src/main/AndroidManifest.xml
+      - name: Abrir enlaces de localizaciones
+        run: |
+          python3 - <<'PY'
+          p="android/app/src/main/AndroidManifest.xml"
+          s=open(p,encoding="utf-8").read()
+          f="""
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="pajareohuelva" android:host="loc" />
+            </intent-filter>
+          """
+          i=s.index("</intent-filter>")+len("</intent-filter>")
+          s=s[:i]+f+s[i:]
+          open(p,"w",encoding="utf-8").write(s)
+          PY
+          sed -n 10,40p android/app/src/main/AndroidManifest.xml
       - run: npx @capacitor/assets generate --android --iconBackgroundColor "#2f7d4a" --iconBackgroundColorDark "#2f7d4a"
       - run: npx cap sync android
       - run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
