@@ -17,7 +17,7 @@ a.g{background:#6b7a70}
 <div class="m">Si no se abre, pulsa «Abrir en la app» de nuevo. Si lo has abierto desde Telegram o WhatsApp, usa el menú (⋮) → «Abrir en Chrome».</div>
 </div>
 <script>
-var q=new URLSearchParams(location.search),n=q.get("n")||"Localización",u=q.get("u")||"",f=q.get("f")||"",t=q.get("t")||"";
+var q=new URLSearchParams(location.search),n=q.get("n")||"Localización",u=q.get("g")?"https://maps.app.goo.gl/"+q.get("g"):(q.get("u")||""),f=q.get("f")||"",t=q.get("t")||"";
 document.getElementById("n").textContent=n;
 document.getElementById("t").textContent=[t,f].filter(Boolean).join(" · ");
 var p="n="+encodeURIComponent(n)+(u?"&u="+encodeURIComponent(u):"")+(f?"&f="+encodeURIComponent(f):"")+(t?"&t="+encodeURIComponent(t):"");
