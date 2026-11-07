@@ -377,10 +377,17 @@ window.compV=async i=>{
 };
 
 /* ===== Ubicación GPS ===== */
-function getPos(ms){return new Promise(res=>{if(!navigator.geolocation)return res(null);let done=false;const f=v=>{if(!done){done=true;res(v)}};setTimeout(()=>f(null),ms||8000);try{navigator.geolocation.getCurrentPosition(p=>f({lat:+p.coords.latitude.toFixed(5),lon:+p.coords.longitude.toFixed(5)}),()=>f(null),{enableHighAccuracy:true,timeout:ms||8000,maximumAge:60000})}catch(e){f(null)}})}
+let GPSERR=0;
+function getPos(ms){return new Promise(res=>{
+  if(!navigator.geolocation){GPSERR=-1;return res(null)}
+  const ok=p=>res({lat:+p.coords.latitude.toFixed(5),lon:+p.coords.longitude.toFixed(5)});
+  const intenta=(alta,t,fallo)=>{try{navigator.geolocation.getCurrentPosition(ok,e=>{GPSERR=e&&e.code||2;fallo()},{enableHighAccuracy:alta,timeout:t,maximumAge:120000})}catch(e){GPSERR=2;fallo()}};
+  /* 1º ubicación rápida (red/wifi); si falla, GPS preciso con más tiempo */
+  intenta(false,8000,()=>{if(GPSERR===1)return res(null);intenta(true,20000,()=>res(null))});
+})}
 window.gpsForm=async b=>{const f=b.closest("form");b.textContent="📍 Buscando ubicación…";const g=await getPos(10000);
   if(g){f.querySelector("[name=lat]").value=g.lat;f.querySelector("[name=lon]").value=g.lon;b.textContent="✔ Ubicación guardada ("+g.lat+", "+g.lon+")"}
-  else b.textContent="📍 No se pudo (activa el GPS y el permiso). Reintentar"};
+  else b.textContent=GPSERR===1?"📍 Sin permiso de ubicación. Actívalo en Ajustes del móvil → Apps → Pajareo Huelva → Permisos → Ubicación. Reintentar":GPSERR===3?"📍 Tarda demasiado (¿estás dentro de un edificio?). Reintentar":"📍 No se pudo: activa la ubicación del móvil. Reintentar"};
 
 /* ===== Aves de la zona según la época ===== */
 const MESN=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
