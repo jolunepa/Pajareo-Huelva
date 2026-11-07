@@ -375,8 +375,9 @@ const WEB="https://jolunepa.github.io/Pajareo-Huelva/l.html";
 const PEG={abierto:false,txt:""};
 window.compL=async i=>{
   const f=S.sights[i];if(!f)return;
-  const u=safe(f.url),q=new URLSearchParams({n:f.name||""});if(u)q.set("u",u);if(f.fecha)q.set("f",f.fecha);if(f.nota)q.set("t",f.nota);
-  const txt="📍 "+f.name+(f.nota?" — "+f.nota:"")+(f.fecha?"\n📅 "+fmtF(f.fecha):"")+(u?"\n🗺️ "+u:"")+"\n\n➕ Añadir a Pajareo Huelva:\n"+WEB+"?"+q.toString();
+  const u=safe(f.url),q=new URLSearchParams({n:f.name||""}),g=u.match(/^https:\/\/maps\.app\.goo\.gl\/([\w-]+)\/?$/);
+  if(u)g?q.set("g",g[1]):q.set("u",u);if(f.fecha)q.set("f",f.fecha);if(f.nota)q.set("t",f.nota);
+  const txt="➕ Añadir a Pajareo Huelva\n📍 "+f.name+(f.fecha?" · "+fmtF(f.fecha):"")+"\n"+WEB+"?"+q.toString();
   const P=window.Capacitor&&window.Capacitor.Plugins;
   try{
     if(P&&P.Share)await P.Share.share({title:f.name,text:txt,dialogTitle:"Compartir localización"});
@@ -387,7 +388,7 @@ window.compL=async i=>{
 function parseLoc(text){
   text=String(text||"");
   const m=text.match(/(?:pajareohuelva:\/\/loc|l\.html)\?[^\s]+/i);
-  if(m){try{const q=new URLSearchParams(m[0].split("?")[1].replace(/[)\]>.,]+$/,""));const n=(q.get("n")||"").trim();if(n)return{name:n,url:safe(q.get("u")||""),fecha:q.get("f")||"",nota:q.get("t")||""}}catch(e){}}
+  if(m){try{const q=new URLSearchParams(m[0].split("?")[1].replace(/[)\]>.,]+$/,""));const n=(q.get("n")||"").trim();if(n)return{name:n,url:q.get("g")?"https://maps.app.goo.gl/"+q.get("g"):safe(q.get("u")||""),fecha:q.get("f")||"",nota:q.get("t")||""}}catch(e){}}
   const u=text.match(/https?:\/\/(?!jolunepa\.github\.io)[^\s]+/i);
   if(u){const nom=text.split("\n").map(x=>x.replace(/[📍📅🗺️➕]/gu,"").trim()).find(x=>x&&!/https?:\/\//i.test(x)&&!/^Añadir/i.test(x))||"Localización";return{name:nom.split(" — ")[0].slice(0,60),url:safe(u[0]),fecha:"",nota:(nom.split(" — ")[1]||"")}}
   return null;
