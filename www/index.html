@@ -269,10 +269,8 @@ window.addTel=f=>{const name=f.querySelector("[name=n]").value.trim(),nums=f.que
 window.rmTel=i=>{if(confirm("¿Borrar este teléfono?")){S.tels.splice(i,1);keep();render()}};
 window.resetTel=()=>{if(confirm("¿Volver a la lista original? Se perderán los que hayas añadido.")){S.tels=TEL0.map(([name,nums])=>({name,nums}));keep();render()}};
 function telefonos(){
-  const l=S.tels.map((t,i)=>`<div class="card"><button class="x" onclick="rmTel(${i})" title="Borrar">✕</button><b>${esc(t.name)}</b><div class="row" style="margin-top:6px">${t.nums.map(n=>`<a class="b" href="tel:${esc(n.replace(/[^\d+]/g,""))}" style="display:block;flex:1;text-align:center;text-decoration:none;background:${/^(112|061|062|091|011)$/.test(n)?"#b3402f":"var(--ac)"};color:#fff;padding:10px;border-radius:8px;font-weight:600;word-break:normal">📞 ${esc(n)}</a>`).join("")}</div></div>`).join("");
-  return `<h2>Teléfonos de interés</h2><small class="mu">Toca un número para llamar.</small>${l}
-  <form class="card" onsubmit="addTel(this);return false"><b>Añadir teléfono</b><input name="n" placeholder="Nombre"><input name="t" placeholder="Teléfono (si hay dos, sepáralos con -)" inputmode="tel"><button class="b" type="submit">➕ Añadir</button></form>
-  <button class="b" style="background:var(--mu)" onclick="resetTel()">↺ Restaurar lista original</button>`;
+  const l=TEL0.slice().sort((a,b)=>a[0].localeCompare(b[0],"es",{sensitivity:"base"})).map(([name,nums])=>`<div class="card"><b>${esc(name)}</b><div class="row" style="margin-top:6px">${nums.map(n=>`<a class="b" href="tel:${esc(n.replace(/[^\d+]/g,""))}" style="display:block;flex:1;text-align:center;text-decoration:none;background:${/^(112|061|062|091|011)$/.test(n)?"#b3402f":"var(--ac)"};color:#fff;padding:10px;border-radius:8px;font-weight:600;word-break:normal">📞 ${esc(n)}</a>`).join("")}</div></div>`).join("");
+  return `<h2>Teléfonos de interés</h2><small class="mu">Toca un número para llamar.</small>${l}`;
 }
 
 /* ===== Reconocer ave por foto (todo en el móvil) ===== */
