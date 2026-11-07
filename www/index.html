@@ -22,7 +22,7 @@ a{color:var(--ac);word-break:break-word}.mu{color:var(--mu)}.sci{font-style:ital
 <main id="m"></main>
 <script src="js/foto.js"></script>
 <script>
-const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["copia","💾","Copia de seguridad","Guarda y restaura tus datos"],["zona","🗓️","Aves de la zona","Qué se puede ver este mes"],["calendario","📅","Calendario","Tus avistamientos por días"],["vistas","✅","Mis aves vistas","Tu lista de especies observadas"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
+const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["copia","💾","Copia de seguridad","Guarda y restaura tus datos"],["zona","🗓️","Aves de la zona","Qué se puede ver este mes"],["calendario","📅","Calendario","Tus avistamientos por días"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"]];
 const LOCS=["Huelva","Almonte","El Rocío","Doñana","Isla Cristina","Ayamonte","Punta Umbría","Matalascañas","Moguer","Lepe","Cartaya","El Portil"];
 const FR=[["Cristóbal Crespo","https://www.instagram.com/cristobal_crespo_caro"],["Carlos Salguero","https://www.instagram.com/carlxsh"],["Tomás Gómez","https://www.instagram.com/toromy75"],["Fco. Rivas","https://www.instagram.com/francisco_rivas68"],["David (Zuma)","https://www.instagram.com/elzuma"],["Juanjo Cipriano","https://ebird.org/profile/OTEwMTk0/ES"],["Jose Manuel Reyes","https://www.instagram.com/josemreyesp"],["Seba","https://www.instagram.com/seba_wildlife"],["Jose Antonio (jolunepa)","https://www.instagram.com/jolunepa"],["Antonio Medina","https://www.instagram.com/antonio.jmedina"],["Loren","https://www.instagram.com/fotografiasdeloren"],["Felipe","https://www.instagram.com/felipe.felipe.1806"],["Isidro","https://www.instagram.com/donanaparadise"],["Enrique Pragom","https://www.instagram.com/enri_prax"],["Jose A. Diaz","https://www.instagram.com/diazregodon"],["Jose Luis","https://www.facebook.com/joseluis.cruzadoblanco"],["Feliciano","https://www.instagram.com/feliciano.esteban.9"],["Diego","https://www.instagram.com/spanishwildlife70"]];
 const SI=[["Camachuelo común","https://maps.app.goo.gl/Rh3Kthsp6KQoRNQ87"],["Camachuelo común","https://maps.app.goo.gl/Kh3F2EJNKzbcijPk9"],["Pechiazul","https://maps.app.goo.gl/xkopK4rHkDf1pMmh7"],["Búho campestre","https://maps.app.goo.gl/tkmkyvNb69Ak8EhGA"],["Chorlito gris","https://maps.app.goo.gl/qxTrqNCbBqarAwAcA"],["Malvasía cabeciblanca","https://maps.app.goo.gl/uGRr4QxcVu7taz7J7"],["Falaropo tricolor","https://maps.app.goo.gl/bLWZuV7Bf7KAjpb9A"]];
@@ -103,7 +103,7 @@ function barraR(){
 }
 function listaR(){
   if(!R.top.length)return R.on?`<div class="card mu">Todavía no he reconocido ningún ave...</div>`:"";
-  return R.top.map((x,i)=>`<div class="card"><b>${esc(x.name)}</b> <span class="mu">${Math.round(x.c*100)}%</span><div class="sci">${esc(x.sci)}</div><div class="bar"><div style="width:${Math.min(100,Math.round(x.c*100))}%"></div></div><button class="b" onclick="anotaR(${i})">✅ Añadir a Mis aves vistas</button></div>`).join("");
+  return R.top.map((x,i)=>`<div class="card"><b>${esc(x.name)}</b> <span class="mu">${Math.round(x.c*100)}%</span><div class="sci">${esc(x.sci)}</div><div class="bar"><div style="width:${Math.min(100,Math.round(x.c*100))}%"></div></div><button class="b" onclick="anotaR(${i})">✅ Anotar en el calendario</button></div>`).join("");
 }
 function pintaR(){
   if(tab!=="reconocer")return;
@@ -307,7 +307,7 @@ window.ftFoto=async file=>{
 };
 window.anotaF=async i=>{const e={name:nomF(i),fecha:new Date().toISOString().slice(0,10),lugar:""};S.seen.push(e);keep();toast("Añadida: "+nomF(i));const g=await getPos();if(g){e.lat=g.lat;e.lon=g.lon;keep()}};
 function foto(){
-  const rs=FT.res.map((x,k)=>{const n=FOTO.nombre(x.i),p=Math.round(x.c*100);return `<div class="card"><b>${esc(nomF(x.i))}</b> <span class="mu">${p<1?"<1":p}%</span><div class="sci">${esc(n.sci)}${n.es?" · "+esc(n.en):""}</div><div class="bar"><div style="width:${Math.min(100,p)}%"></div></div>${k===0?`<button class="b" onclick="anotaF(${x.i})">✅ Añadir a Mis aves vistas</button>`:""}</div>`}).join("");
+  const rs=FT.res.map((x,k)=>{const n=FOTO.nombre(x.i),p=Math.round(x.c*100);return `<div class="card"><b>${esc(nomF(x.i))}</b> <span class="mu">${p<1?"<1":p}%</span><div class="sci">${esc(n.sci)}${n.es?" · "+esc(n.en):""}</div><div class="bar"><div style="width:${Math.min(100,p)}%"></div></div>${k===0?`<button class="b" onclick="anotaF(${x.i})">✅ Anotar en el calendario</button>`:""}</div>`}).join("");
   return `<h2>Reconocer por foto</h2>
   <input type="file" id="ftc" accept="image/*" capture="environment" style="display:none" onchange="ftFoto(this.files[0]);this.value=''">
   <input type="file" id="ftg" accept="image/*" style="display:none" onchange="ftFoto(this.files[0]);this.value=''">
@@ -347,7 +347,7 @@ window.cbRestaurar=async file=>{
     if(!j||j.app!=="pajareo-huelva"||!j.datos||typeof j.datos!=="object")throw new Error("Este archivo no es una copia de Pajareo Huelva.");
     const ks=Object.keys(j.datos).filter(k=>k.startsWith("ph"));
     if(!ks.length)throw new Error("La copia está vacía.");
-    if(!confirm("Se sustituirán tus datos actuales (aves vistas, localizaciones, amigos, teléfonos, orden del menú…) por los de la copia del "+(j.fecha||"?")+". ¿Continuar?"))return;
+    if(!confirm("Se sustituirán tus datos actuales (aves anotadas, localizaciones, amigos, teléfonos, orden del menú…) por los de la copia del "+(j.fecha||"?")+". ¿Continuar?"))return;
     for(const k of ks)localStorage.setItem(k,String(j.datos[k]));
     alert("Copia restaurada. La app se va a reiniciar.");location.reload();
   }catch(e){CB.msg="No se pudo restaurar: "+(e&&e.message||e);render()}
@@ -355,7 +355,7 @@ window.cbRestaurar=async file=>{
 function copia(){
   const d=cbDatos(),n=(()=>{try{const x=JSON.parse(d.ph||"{}");return{v:(x.seen||[]).length,l:(x.sights||[]).length,a:(x.friends||[]).length,t:(x.tels||[]).length}}catch(e){return{v:0,l:0,a:0,t:0}}})();
   return `<h2>Copia de seguridad</h2>
-  <div class="card">Ahora mismo tienes guardado: <b>${n.v}</b> aves vistas, <b>${n.l}</b> localizaciones, <b>${n.a}</b> amigos y <b>${n.t}</b> teléfonos, además de tu orden del menú y tu localidad del tiempo.</div>
+  <div class="card">Ahora mismo tienes guardado: <b>${n.v}</b> aves anotadas, <b>${n.l}</b> localizaciones, <b>${n.a}</b> amigos y <b>${n.t}</b> teléfonos, además de tu orden del menú y tu localidad del tiempo.</div>
   <button class="b" onclick="cbGuardar()">💾 Guardar copia</button>
   <small class="mu">Crea un archivo que puedes mandarte por Telegram, guardar en Drive o pasar al ordenador.</small>
   <input type="file" id="cbf" accept="*/*" style="display:none" onchange="cbRestaurar(this.files[0]);this.value=''">
@@ -414,7 +414,7 @@ function zona(){
     const rows=ZN.lista.map(x=>{const n=FOTO.nombre(x.idx),nom=n.es||n.en,v=vistas.has(nz(n.es))||vistas.has(nz(n.en));return{x,n,nom,v}}).filter(r=>!ZN.solo||!r.v);
     body=rows.map(r=>`<div class="card" style="padding:8px 12px"><b>${esc(r.nom)}</b> ${r.v?"✅":""}<div class="sci">${esc(r.n.sci)}</div><div class="bar"><div style="width:${Math.round(r.x.p/max*100)}%"></div></div></div>`).join("")||'<p class="mu">¡Las has visto todas!</p>';
   }
-  return `<h2>Aves de la zona</h2><p class="mu" style="margin:2px 0 8px">Las más probables en <b>${esc(tloc.name)}</b> en <b>${MESN[ZN.mes-1]}</b>. ✅ = ya la tienes en Mis aves vistas.</p>
+  return `<h2>Aves de la zona</h2><p class="mu" style="margin:2px 0 8px">Las más probables en <b>${esc(tloc.name)}</b> en <b>${MESN[ZN.mes-1]}</b>. ✅ = ya la has anotado en el calendario.</p>
   <div class="chips" style="margin-bottom:8px">${chips}</div>
   <label style="display:block;margin:4px 0"><input type="checkbox" style="width:auto" ${ZN.solo?"checked":""} onchange="ZN.solo=this.checked;render()"> Ocultar las que ya he visto</label>
   <div class="mu" style="margin:6px 0">${esc(ZN.msg)}</div>${body}
@@ -441,7 +441,7 @@ function calendario(){
   const lista=CAL.sel?`<h3 style="margin:14px 0 4px">${fmtF(CAL.sel)}</h3><p class="mu" style="margin:0 0 6px">${(()=>{const q=CAL.sel.split("-"),l=luna(+q[0],+q[1]-1,+q[2]);return LEMO[l.i]+" "+LUNA[l.i]+" · "+l.ilu+"% iluminada"})()}</p>`+((por[CAL.sel]||[]).map(f=>`<div class="card"><b>${esc(f.name)}</b><br><small class="mu">${esc(f.lugar||"")}</small>${f.lat&&f.lon?`<div><button class="chip" style="margin-top:6px;padding:6px 14px" onclick="go('https://www.google.com/maps?q=${esc(f.lat)},${esc(f.lon)}')">📍 Abrir mapa</button></div>`:""}</div>`).join("")||'<p class="mu">Ese día no anotaste ninguna ave.</p>'):"";
   return `<h2>Calendario</h2><div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0"><button class="chip" style="font-size:20px;padding:6px 16px" onclick="calMes(-1)">‹</button><b>${MESN[CAL.m]} ${CAL.y}</b><button class="chip" style="font-size:20px;padding:6px 16px" onclick="calMes(1)">›</button></div>
   <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${cells}</div>
-  <p class="mu" style="margin:8px 2px;font-size:13px">🌑 nueva · 🌓 cuarto creciente · 🌕 llena · 🌗 cuarto menguante</p><p class="mu" style="margin:10px 2px">Este mes: <b>${delMes.length}</b> ${delMes.length===1?"avistamiento":"avistamientos"} · <b>${esp}</b> ${esp===1?"especie":"especies"}</p>${lista}`;
+  <p class="mu" style="margin:8px 2px;font-size:13px">🌑 nueva · 🌓 cuarto creciente · 🌕 llena · 🌗 cuarto menguante</p><p class="mu" style="margin:10px 2px">Anota aves desde «Reconocer ave» o «Reconocer por foto».</p><p class="mu" style="margin:10px 2px">Este mes: <b>${delMes.length}</b> ${delMes.length===1?"avistamiento":"avistamientos"} · <b>${esp}</b> ${esp===1?"especie":"especies"}</p>${lista}`;
 }
 
 /* ===== Actualizaciones (desde GitHub Releases) ===== */
