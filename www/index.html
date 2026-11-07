@@ -60,7 +60,7 @@ function amigos(){return lista("friends","Amigos y redes","Nombre","Enlace (Inst
 const fmtF=d=>d?d.split("-").reverse().join("/"):"";
 function sitios(){
   const l=S.sights.map((f,i)=>({...f,i})).reverse();
-  return `<h2>Avistamientos</h2>`+(l.map(f=>{const u=safe(f.url),sub=[fmtF(f.fecha),f.nota].filter(Boolean).join(" · ");return `<div class="card"><b>${esc(f.name)}</b><button class="x" onclick="rm('sights',${f.i})">🗑</button>${sub?`<br><small class="mu">${esc(sub)}</small>`:""}${u?`<a class="b" href="${esc(u)}" target="_blank">📍 Abrir mapa</a>`:""}<button class="b" style="background:var(--mu)" onclick="compL(${f.i})">📤 Compartir</button></div>`}).join("")||`<p class="mu">Aún no hay localizaciones.</p>`)+PEGAR()+
+  return `<h2>Avistamientos</h2>`+(l.map(f=>{const u=safe(f.url),sub=[fmtF(f.fecha),f.nota].filter(Boolean).join(" · ");return `<div class="card"><b>${esc(f.name)}</b><button class="x" onclick="rm('sights',${f.i})">🗑</button>${sub?`<br><small class="mu">${esc(sub)}</small>`:""}${u?`<a class="b" href="${esc(u)}" target="_blank">📍 Abrir mapa</a>`:""}<button class="b" style="background:var(--mu)" onclick="compL(${f.i})">📤 Compartir</button></div>`}).join("")||`<p class="mu">Aún no hay localizaciones.</p>`)+
   `<form class="card" onsubmit="add('sights',this);return false"><b>Nueva localización</b><input name="name" placeholder="Especie"><input name="url" placeholder="Enlace del lugar (Google Maps...)"><input name="fecha" type="date" value="${new Date().toISOString().slice(0,10)}"><input name="nota" placeholder="Nota (macho en el carrizal...)"><button class="b">Guardar</button></form>`;
 }
 function vistas(){
