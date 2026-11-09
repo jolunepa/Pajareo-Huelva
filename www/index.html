@@ -460,7 +460,7 @@ const HU=[
 {n:"Cigüeña blanca",s:"Ciconia ciconia",c:"Ave",tags:["Membrana en la base"],
  dib:[["",`<path d="M35 40L16 21Q35 15 54 21Z"/>`+hToe(35,40,35,8,7,4,1)+hToe(35,40,15,18,6,3.5,1)+hToe(35,40,55,18,6,3.5,1)+`<ellipse cx="35" cy="48" rx="3" ry="5.5"/>`]],
  txt:"Dedos cortos y gruesos con una pequeña membrana en la base. Unos 12-14 cm.",conf:"Grulla y otras zancudas.",src:[SRC_B]},
-{n:"Ánade",s:"Anas platyrhynchos",c:"Ave",tags:["Membrana","Dedo trasero pequeño"],
+{n:"Ánade real",s:"Anas platyrhynchos",c:"Ave",tags:["Membrana","Dedo trasero pequeño"],
  dib:[["",hWeb("M35 52Q25 50 15 28Q22 19 35 17Q48 19 55 28Q45 50 35 52Z","M35 52L16 28M35 52L35 17M35 52L54 28")+hTe(35,59,2,3)]],
  txt:"Tres dedos delanteros unidos por una membrana y un dedo trasero pequeño. Unos 6-7 cm.",conf:"Gaviotas y otros patos.",src:[SRC_B]},
 {n:"Flamenco",s:"Phoenicopterus roseus",c:"Ave",tags:["Membrana"],
@@ -532,6 +532,79 @@ const HU2=[
 HU.push(...HU2);
 {const j=HU.find(e=>e.n==="Jabalí");j.med=[["Largo","≈ 6,7 cm","≈ 6,6 cm"],["Ancho","≈ 6,1 cm","≈ 5,8 cm"],["Largo con guardas","≈ 10,3 cm","≈ 10,0 cm"]];j.txt="Dos pezuñas principales y dos guardas (espolones) que se separan de forma llamativa y casi siempre se marcan. Aspecto de trapecio, más ancho por detrás; las puntas son redondeadas en adultos y más afiladas en jóvenes. La huella delantera es más ancha y profunda que la trasera.";j.src=[SC("Sus scrofa"),SRC_I]}
 HU.sort((a,b)=>a.n.localeCompare(b.n,"es",{sensitivity:"base"}));
+
+/* ===== Ampliación: resto de especies (borrador sin contrastar salvo indicación) ===== */
+const hB=(o)=>{const cx=35,cy=o.cy||44,k=o.k||1,L=(o.L||26)*k,sp=o.sp||50,H=(o.H===undefined?12:o.H)*k,w=(o.w||4)*k,j=o.j===undefined?1:o.j;
+ const ang=[-sp*HR,0,sp*HR],len=[L*.88,L,L*.88],tip=ang.map((a,i)=>[cx+Math.sin(a)*len[i],cy-Math.cos(a)*len[i]]);let s="";
+ if(o.web!==undefined){const pts=[...tip];let d=`M${cx} ${cy}L${tip[0]}`;for(let i=0;i<2;i++){const a=tip[i],b=tip[i+1],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;const px=mx+(cx-mx)*o.web,py=my+(cy-my)*o.web;d+=`Q${px} ${py} ${b}`}d+="Z";s+=`<path d="${d}"/><path d="M${cx} ${cy}L${tip[0]}M${cx} ${cy}L${tip[1]}M${cx} ${cy}L${tip[2]}" stroke="#f3f6f1" stroke-width="1.4" fill="none" opacity=".8"/>`}
+ else tip.forEach((t,i)=>{s+=hToe(cx,cy,t[0],t[1],w*1.25,w*.55,j)});
+ if(o.lobes)tip.forEach((t,i)=>{for(let q=.35;q<=.9;q+=.28){const x=cx+(t[0]-cx)*q,y=cy+(t[1]-cy)*q;s+=hTe(x,y,4.6*k,3.2*k,ang[i]/HR+90)}});
+ if(o.talon)tip.forEach((t,i)=>{s+=hClaw(t[0],t[1]+1,ang[i]/HR*1.1,9*k,4*k,i==0?-2:i==2?2:0)});
+ if(H>0){const hy=cy+H;if(o.tot)s+=`<path d="M${cx} ${cy}L${tip[0]}L${cx} ${hy}Z" opacity="0"/>`;s+=o.web!==undefined?hTe(cx,hy+3,2.4*k,4*k):hToe(cx,cy,cx,hy,w*1.1,w*.6,0)}
+ return s+`<circle cx="${cx}" cy="${cy}" r="${w*.9}"/>`};
+const hMus=(k,cl)=>`<g transform="translate(${35-35*k} ${35-35*k}) scale(${k})">`+hTe(35,50,6.4,8)+[[18,43,-40],[22,33,-20],[31,27,-6],[42,28,6],[51,36,26]].map((t,i)=>hTe(t[0],t[1],i==0?2.4:3.3,i==0?3.4:4.5,t[2])+(i?hClaw(t[0]+Math.sin(t[2]*HR)*4,t[1]-4,t[2]*.8,cl,1.9):"")).join("")+`</g>`;
+const hPaw=(k,cl)=>`<g transform="translate(${35-35*k} ${35-35*k}) scale(${k})">`+hTe(35,52,8,5.6)+[[21,44,-24],[29,35,-8],[41,35,8],[49,44,24]].map(t=>hTe(t[0],t[1],3.2,5,t[2])+(cl?hClaw(t[0]+Math.sin(t[2]*HR)*4,t[1]-4.4,t[2]*.8,cl,1.6):"")).join("")+`</g>`;
+const hWebFoot=(k,n)=>`<g transform="translate(${35-35*k} ${35-35*k}) scale(${k})"><path d="M35 54L8 26Q20 16 35 20Q50 16 62 26Z" opacity=".95"/><path d="M35 54L8 26M35 54L21 20M35 54L35 20M35 54L49 20M35 54L62 26" stroke="#f3f6f1" stroke-width="1.3" fill="none" opacity=".8"/><ellipse cx="35" cy="60" rx="3.4" ry="5"/>${hClaw(8,26,-60,6,3)}${hClaw(21,20,-20,6,3)}${hClaw(35,20,0,6,3)}${hClaw(49,20,20,6,3)}${hClaw(62,26,60,6,3)}</g>`;
+const hCab=`<g><rect x="19" y="14" width="14" height="46" rx="6"/><rect x="37" y="14" width="14" height="46" rx="6"/></g>`;
+const hSerp=`<path d="M8 62Q20 44 30 56T50 46T64 22" stroke="#0d0d0d" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M14 52L18 57M24 49L27 55M38 55L40 50M46 49L50 54M56 38L60 42" stroke="#f3f6f1" stroke-width="1.2" opacity=".7"/>`;
+const hLagarto=(k)=>`<g transform="translate(${35-35*k} ${35-35*k}) scale(${k})"><path d="M31 66Q33 54 35 44" stroke="#0d0d0d" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="35" cy="41" rx="7" ry="5.5"/>`+[[-62,18],[-34,21],[-8,21],[20,19],[48,16]].map(a=>{const x=35+Math.sin(a[0]*HR)*8,y=41-Math.cos(a[0]*HR)*6;return hToe(x,y,x+Math.sin(a[0]*HR)*a[1],y-Math.cos(a[0]*HR)*a[1],3,2,1)}).join("")+`</g>`;
+const E=(n,s,c,tags,d,txt,conf,med)=>({n,s,c,tags,dib:[["",d]],txt,conf,src:[SRC_B],med});
+const B3="aprox.";
+HU.push(
+/* mamíferos sin ficha SECEM abierta */
+E("Garduña","Martes foina","Mamífero",["5 dedos","Uñas marcadas"],hMus(1.05,7),"Huella de mustélido, de unos 3,5-4 cm: cinco dedos bien separados, almohadilla central redonda y uñas que suelen marcarse. Según la ficha del turón de la SECEM, en garduña y marta los dedos van más separados y la almohadilla central es redonda.","Marta, turón y gato doméstico."),
+E("Marta","Martes martes","Mamífero",["5 dedos","Uñas marcadas"],hMus(1.1,7),"Muy parecida a la de la garduña, algo mayor (≈ 4-5 cm). Dedos separados y almohadilla central redonda.","Garduña."),
+E("Comadreja","Mustela nivalis","Mamífero",["5 dedos","Muy pequeña"],hMus(.6,5),"Huella diminuta (≈ 1,5-2 cm), con dedos y uñas finos. Suele verse en rastros de saltos agrupados de dos en dos.","Ratones y otros mustélidos pequeños."),
+E("Visón americano","Neogale vison","Mamífero",["5 dedos","Dedos muy separados"],hMus(.9,6),"Huella de ≈ 3-4 cm, de forma estrellada por los dedos muy separados, con almohadilla central redonda y uñas cortas.","Turón, nutria joven y garduña."),
+E("Gamo","Dama dama","Mamífero",["2 pezuñas"],hHoofs(.8,3),"Dos pezuñas alargadas y algo más pequeñas que las del ciervo (≈ 5-6 cm). Las guardas solo se marcan a veces.","Ciervo y corzo."),
+E("Cabra montés","Capra pyrenaica","Mamífero",["2 pezuñas","Bordes cuadrados"],hCab,"Pezuñas de bordes más rectos y cuadrados que las de ciervo o corzo, de ≈ 5-6 cm, y más abiertas en terreno blando.","Muflón, rebeco y cabra doméstica."),
+E("Rebeco","Rupicapra rupicapra","Mamífero",["2 pezuñas","Puntas separadas"],hHoofs(.7,7),"Pezuñas pequeñas y estrechas (≈ 5 cm), con las puntas algo separadas. Vive en montaña (Pirineos y cordillera Cantábrica).","Cabra montés, corzo."),
+E("Perro doméstico","Canis lupus familiaris","Mamífero",["4 dedos","Uñas marcadas"],`<path d="M35 40Q23 40 22 50Q23 60 35 60Q47 60 48 50Q47 40 35 40Z"/>`+hTe(23,30,4.4,6.4,-12)+hTe(31,23,4.4,7,-4)+hTe(40,23,4.4,7,4)+hTe(48,30,4.4,6.4,12)+hClaw(22,25,-12,5,2.4)+hClaw(30,17,-4,5,2.4)+hClaw(41,17,4,5,2.4)+hClaw(49,25,12,5,2.4),"Muy variable según la raza. Suele ser más redonda que la del lobo y menos simétrica, con uñas visibles y almohadilla más grande que la del zorro.","Zorro y lobo."),
+E("Gato doméstico","Felis catus","Mamífero",["4 dedos","Sin uñas"],hCat({pad:"M24 46Q25 40 30 41Q33 43 35 41Q37 43 40 41Q45 40 46 46Q47 56 35 58Q23 56 24 46Z",t:[[23,35,-16],[30,28,-5],[40,28,5],[47,35,16]],rx:3.4,ry:4.2}),"Unos 3 cm, casi redonda, con cuatro dedos y sin uñas (retráctiles). Algo menor que la del gato montés, pero los tamaños se solapan.","Gato montés y gineta."),
+E("Castor","Castor fiber","Mamífero",["5 dedos","Pie palmeado grande"],hWebFoot(.95),"Pie trasero grande y palmeado, con cinco dedos con uñas (≈ 11-15 cm). Cerca del agua puede verse el arrastre de la cola. En la península vive en la cuenca del Ebro.","Nutria (más pequeña) y coipú."),
+E("Coipú","Myocastor coypus","Mamífero",["Pie palmeado","Especie invasora"],hWebFoot(.8),"Pie trasero palmeado, con cuatro dedos unidos y el quinto libre (≈ 8-10 cm). Es una especie invasora de ríos y humedales.","Nutria y castor."),
+E("Rata de agua","Arvicola sapidus","Mamífero",["4-5 dedos","Muy pequeña"],hPaw(.8,3),"Huella pequeña (≈ 2-3 cm) junto al agua, con dedos separados. Suele aparecer cerca de orillas y galerías.","Rata común y topillos."),
+E("Rata común","Rattus norvegicus","Mamífero",["4 dedos mano · 5 pie"],hPaw(.85,3),"Huella de ≈ 2-3 cm con dedos finos y separados; a veces se ve el rastro de la cola arrastrada.","Rata de agua y ratones."),
+E("Ratones y topillos","Muridae / Cricetidae","Mamífero",["Huellas diminutas"],hPaw(.55,2),"Huellas muy pequeñas (≈ 1 cm) en grupos de cuatro, con saltos cortos. Muy difícil llegar a la especie por la huella.","Musarañas y crías de otros roedores."),
+/* aves */
+E("Garcilla bueyera","Bubulcus ibis","Ave",["3 dedos + 1 trasero"],hB({L:24,sp:52,H:10,w:3.4,j:2}),"Huella de garza pequeña (≈ 8-9 cm), con tres dedos delanteros finos y largos y uno trasero. Habitual en prados y arrozales.","Garceta común y otras garzas pequeñas."),
+E("Garceta común","Egretta garzetta","Ave",["3 dedos + 1 trasero"],hB({L:25,sp:52,H:11,w:3.4,j:2}),"Parecida a la de la garcilla (≈ 9-10 cm), con dedos delgados y bien abiertos.","Garcilla bueyera y garza real (mayor)."),
+E("Cigüeña negra","Ciconia nigra","Ave",["Dedos cortos"],hB({L:21,sp:50,H:9,w:5.5,j:1}),"Huella grande de dedos relativamente cortos y gruesos (≈ 11-13 cm) y pequeña membrana en la base.","Cigüeña blanca."),
+E("Grulla común","Grus grus","Ave",["3 dedos + 1 trasero pequeño"],hB({L:30,sp:48,H:7,w:4.2,j:2}),"Huella muy grande (≈ 14-16 cm), con tres dedos largos y un dedo trasero corto que a menudo no se marca. Frecuente en dehesas en invierno.","Garza real y avutarda."),
+E("Espátula común","Platalea leucorodia","Ave",["Dedos largos","Membrana en la base"],hB({L:27,sp:52,H:9,w:3.8,j:2}),"Dedos largos y finos con algo de membrana en la base (≈ 9-10 cm). Aparece en marismas y fangos.","Garzas e ibis."),
+E("Cisne vulgar","Cygnus olor","Ave",["Palmeada","Muy grande"],hB({L:30,sp:42,web:.15,H:4}),"Pie grande y palmeado (≈ 11-13 cm), con tres dedos unidos por una membrana ancha y un pequeño dedo trasero.","Ánsares y ánades grandes."),
+E("Ánsar común","Anser anser","Ave",["Palmeada"],hB({L:26,sp:42,web:.15,H:4}),"Pie palmeado (≈ 8-9 cm) con la membrana más curva que el del ánade. Común en Doñana en invierno.","Ánade real y cisne."),
+E("Focha común","Fulica atra","Ave",["Dedos lobulados"],hB({L:26,sp:48,H:9,w:3,j:0,lobes:true}),"Característica: cada dedo lleva lóbulos a los lados, no una membrana completa (≈ 9-12 cm).","Gallineta común y somormujos."),
+E("Gallineta común","Gallinula chloropus","Ave",["Dedos largos y finos"],hB({L:24,sp:48,H:10,w:2.6,j:2}),"Dedos muy largos y finos, sin membrana (≈ 6-9 cm). Marca el dedo trasero.","Focha y rascones."),
+E("Cormorán grande","Phalacrocorax carbo","Ave",["4 dedos unidos por membrana"],hB({L:26,sp:48,web:.2,H:12}),"Los cuatro dedos van unidos por membrana (≈ 9-11 cm); el trasero también forma parte de la membrana.","Alcatraces y otros palmípedos."),
+E("Gaviotas","Larus sp.","Ave",["Palmeada","3 dedos"],hB({L:22,sp:42,web:.25,H:4}),"Tres dedos delanteros unidos por una membrana de bordes curvos, con un pequeño dedo trasero que a veces no marca (≈ 6-8 cm según la especie).","Ánades y charranes."),
+E("Avefría","Vanellus vanellus","Ave",["3 dedos + 1 trasero corto"],hB({L:17,sp:46,H:5,w:2.8,j:1}),"Huella de ≈ 4-5 cm con tres dedos y un dedo trasero muy corto que puede no verse.","Chorlitos y limícolas."),
+E("Chorlitos","Charadrius / Pluvialis","Ave",["3 dedos"],hB({L:14,sp:46,H:0,w:2.6,j:0}),"Tres dedos delanteros finos y sin dedo trasero marcado (≈ 3-4 cm).","Limícolas pequeños."),
+E("Limícolas pequeños","Calidris sp.","Ave",["3 dedos + 1 trasero"],hB({L:12,sp:48,H:4,w:2.2,j:0}),"Huellas diminutas (≈ 2-3 cm) con tres dedos finos y un trasero corto. Muy parecidas entre especies.","Chorlitos y andarríos."),
+E("Archibebe","Tringa sp.","Ave",["3 dedos + 1 trasero"],hB({L:17,sp:46,H:6,w:2.6,j:1}),"Huella de ≈ 4-5 cm con dedos largos y finos y un dedo trasero.","Otros limícolas."),
+E("Avoceta común","Recurvirostra avosetta","Ave",["Membrana parcial"],hB({L:20,sp:44,web:.55,H:0}),"Tres dedos delanteros unidos en parte por membrana y sin dedo trasero (≈ 5-6 cm).","Cigüeñuela y gaviotas."),
+E("Cigüeñuela común","Himantopus himantopus","Ave",["3 dedos","Sin dedo trasero"],hB({L:22,sp:46,H:0,w:2.6,j:1}),"Tres dedos finos y largos sin dedo trasero (≈ 7-9 cm).","Avoceta."),
+E("Avutarda común","Otis tarda","Ave",["3 dedos gruesos"],hB({L:26,sp:44,H:0,w:6,j:0,talon:false}),"Huella muy grande (≈ 10-14 cm) con tres dedos gruesos, sin dedo trasero. Vive en llanuras cerealistas.","Sisón (menor) y grulla."),
+E("Sisón común","Tetrax tetrax","Ave",["3 dedos gruesos"],hB({L:20,sp:44,H:0,w:4.8,j:0}),"Parecida a la de la avutarda pero más pequeña (≈ 6-8 cm).","Avutarda y perdiz."),
+E("Perdiz roja","Alectoris rufa","Ave",["3 dedos + 1 trasero corto"],hB({L:17,sp:44,H:6,w:3.6,j:0}),"Huella de ≈ 3,5-4 cm con tres dedos y un trasero corto, de ave gallinácea.","Codorniz y faisán."),
+E("Faisán","Phasianus colchicus","Ave",["3 dedos + 1 trasero corto"],hB({L:22,sp:44,H:7,w:4,j:0}),"Mayor que la de la perdiz (≈ 6-8 cm), de ave gallinácea.","Perdiz y gallina."),
+E("Paloma torcaz","Columba palumbus","Ave",["3 dedos + 1 trasero"],hB({L:17,sp:46,H:8,w:3.4,j:0}),"Huella de ≈ 4-5 cm con tres dedos delanteros y uno trasero.","Palomas y tórtolas."),
+E("Urraca y corvidos","Pica pica / Corvus sp.","Ave",["3 dedos + 1 trasero largo"],hB({L:17,sp:44,H:13,w:3,j:0}),"Tres dedos y uno trasero largo (≈ 3,5-6 cm según la especie). Caminan y dejan huellas alternas.","Paseriformes grandes y palomas."),
+E("Mirlo y zorzales","Turdus sp.","Ave",["3 dedos + 1 trasero largo"],hB({L:13,sp:42,H:11,w:2.4,j:0}),"Huella de ≈ 4-5 cm con un dedo trasero largo, típico de pájaros que caminan y saltan.","Otros paseriformes."),
+E("Gorriones y pajarillos","Passer sp.","Ave",["Muy pequeña","Salta"],hB({L:8,sp:44,H:8,w:1.8,j:0}),"Huellas de ≈ 1,5-2 cm, a saltos con dos patas a la vez, con dedo trasero largo. Muy difícil llegar a la especie.","Otros pájaros pequeños."),
+E("Águilas y busardos","Aquila / Buteo","Ave",["Garras grandes"],hB({L:19,sp:44,H:10,w:5.6,j:0,talon:true}),"Rapaces de pies fuertes con garras largas y curvas, que a veces se marcan. Rara vez se ven huellas claras (≈ 10-15 cm en águilas).","Buitres."),
+E("Buitre leonado","Gyps fulvus","Ave",["Dedos cortos y romos"],hB({L:21,sp:46,H:9,w:6,j:0,talon:true}),"Dedos cortos y fuertes con garras poco afiladas. Suele dejar huellas cerca de cadáveres, bebederos y charcas (≈ 12-15 cm).","Águilas y milanos."),
+/* anfibios y reptiles */
+E("Rana común","Pelophylax perezi","Anfibio",["Pata trasera palmeada"],`<g>${[[-34,12],[-17,5],[0,3],[17,5],[34,12]].map(a=>hToe(35,48,35+Math.sin(a[0]*HR)*26,48-Math.cos(a[0]*HR)*26,2.6,2,1)).join("")}<path d="M35 48L12 28Q35 16 58 28Z" opacity=".35"/><circle cx="35" cy="48" r="4.6"/></g>`,"Pata trasera con cinco dedos largos y unidos por una membrana que rara vez se marca. Se encuentra siempre cerca del agua.","Sapos y ranitas."),
+E("Tritones y salamandras","Pleurodeles / Salamandra","Anfibio",["4 dedos delante · 5 detrás","Arrastre de cola"],`<path d="M30 64Q33 52 35 44" stroke="#0d0d0d" stroke-width="3.2" fill="none" stroke-linecap="round"/><circle cx="35" cy="42" r="3.6"/>`+[[-55,12],[-20,14],[20,14],[55,12]].map(a=>hToe(35,42,35+Math.sin(a[0]*HR)*a[1],42-Math.cos(a[0]*HR)*a[1],2,1.4,0)).join(""),"Huellas muy pequeñas con cuatro dedos delante y cinco detrás, y a veces la línea de arrastre de la cola. Poco frecuentes de ver.","Lagartijas pequeñas."),
+E("Lagartija","Podarcis / Psammodromus","Reptil",["5 dedos","Muy pequeña"],hLagarto(.6),"Huellas minúsculas con cinco dedos y una fina línea de cola entre ellas. Solo se ven en arena fina o limo.","Salamanquesas y crías de lagarto."),
+E("Culebras","Natrix / Malpolon / Rhinechis","Reptil",["Sin patas","Rastro sinuoso"],hSerp,"No dejan huellas, sino un surco sinuoso con marcas de las escamas ventrales. Es el rastro típico de culebras de arena o barro.","Víboras y lagartos de cola larga."),
+E("Víbora hocicuda","Vipera latastei","Reptil",["Sin patas","Surco ondulado"],hSerp,"Surco más corto y ondulado que el de las culebras grandes, con el cuerpo algo más grueso. Rastro poco habitual.","Culebras."),
+E("Tortuga mora","Testudo graeca","Reptil",["Patas fuertes","Dedos romos"],`<path d="M35 52Q24 50 20 40Q28 33 35 35Q42 33 50 40Q46 50 35 52Z"/>`+[[-62,13],[-30,17],[0,18],[30,17],[62,13]].map(a=>hTe(35+Math.sin(a[0]*HR)*17,38-Math.cos(a[0]*HR)*13,3.2,4,a[0])+hClaw(35+Math.sin(a[0]*HR)*20,36-Math.cos(a[0]*HR)*17,a[0],5,3)).join(""),"Huella redondeada de patas fuertes, con dedos cortos y uñas romas y gruesas. Suele verse junto a un surco ancho del caparazón.","Galápagos y otras tortugas."),
+E("Camaleón común","Chamaeleo chamaeleon","Reptil",["Dedos soldados en pinza"],`<g>${[0,26].map(o=>`<g transform="translate(${o-8} 0)"><rect x="22" y="22" width="5" height="16" rx="2.5"/><rect x="29" y="22" width="5" height="16" rx="2.5"/><rect x="36" y="22" width="5" height="16" rx="2.5"/><rect x="22" y="40" width="9" height="12" rx="4"/><rect x="33" y="40" width="9" height="12" rx="4"/></g>`).join("")}</g>`,"Característica de la especie: los dedos van soldados en dos grupos opuestos, como una pinza. Rara vez deja huellas visibles en el suelo.","Otros lagartos.")
+);
+HU.sort((a,b)=>a.n.localeCompare(b.n,"es",{sensitivity:"base"}));
+{const m={Sapo:1};}
 
 let hq="",hc="Todas",hopen=-1;
 const hSvg=(d)=>`<svg viewBox="0 0 70 70" style="width:100%;max-width:150px;fill:#0d0d0d"><g filter="url(#hr)">${d}</g></svg>`;
