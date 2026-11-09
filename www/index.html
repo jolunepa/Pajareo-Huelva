@@ -476,6 +476,63 @@ const HU=[
  dib:[["",`<path d="M35 50Q25 48 21 40Q28 35 35 37Q42 35 49 40Q45 48 35 50Z"/>`+[[-70,16],[-38,19],[-8,20],[24,19],[56,16]].map(a=>{const x=35+Math.sin(a[0]*HR)*9,y=43-Math.cos(a[0]*HR)*6;return hToe(x,y,x+Math.sin(a[0]*HR)*a[1],y-Math.cos(a[0]*HR)*a[1],3.6,2.2,1)}).join("")]],
  txt:"Cinco dedos con uñas y algo de membrana. Suele aparecer junto al surco que deja el caparazón.",conf:"Galápago europeo.",src:[SRC_B]}
 ];
+const SC=(sp)=>`SECEM, Guía de indicios de los mamíferos de España, ficha de ${sp} (secem.es)`;
+const hCat=(o)=>{ // felinos/ginetas: dedos + almohadilla
+ let s=`<path d="${o.pad}"/>`;o.t.forEach(t=>{s+=hTe(t[0],t[1],o.rx,o.ry,t[2]);if(o.cl)s+=hClaw(t[0]+Math.sin(t[2]*HR)*o.ry,t[1]-o.ry*.9,t[2]*.8,o.cl,o.cw||2.2)});return s};
+const hHoofs=(k,w)=>`<g transform="translate(${35-35*k} 2) scale(${k})"><path d="M47 12C${37-w} 18 ${31-w} 38 ${31-w} 56C${31-w} 68 36 77 43 76C49 75 49.5 66 49.5 56C49.5 40 50 24 47 12Z"/><path d="M47 12C${37-w} 18 ${31-w} 38 ${31-w} 56C${31-w} 68 36 77 43 76C49 75 49.5 66 49.5 56C49.5 40 50 24 47 12Z" transform="translate(100 0) scale(-1 1)"/></g>`;
+const hLeb=(k)=>`<g transform="translate(${35-35*k} ${35-35*k}) scale(${k})"><ellipse cx="35" cy="48" rx="6.5" ry="13"/>`+[[-14,22],[-5,19],[5,19],[14,22]].map(a=>hTe(35+a[0],a[1]+2,2.8,5.2,a[0]*.5)+hClaw(35+a[0]*1.2,a[1]-3,a[0]*.7,6,1.8)).join("")+`</g>`;
+const hErizo=(k)=>`<g transform="translate(${35-35*k} ${35-35*k}) scale(${k})">`+hTe(35,48,10,8)+[[14,34,-40],[23,25,-20],[35,21,0],[47,25,20],[56,34,40]].map(t=>hTe(t[0],t[1],3.3,4.2,t[2])+hClaw(t[0]+Math.sin(t[2]*HR)*4,t[1]-3.5,t[2]*.8,9,2)).join("")+`</g>`;
+const HU2=[
+{n:"Nutria",s:"Lutra lutra",c:"Mamífero",tags:["5 dedos","Uñas cortas","Forma de lágrima"],
+ dib:[["",hCat({pad:"M18 48Q18 38 35 38Q52 38 52 48Q52 62 35 63Q18 62 18 48Z",t:[[11,36,-32],[19,26,-16],[35,21,0],[51,26,16],[59,36,32]],rx:4.4,ry:5.6,cl:4,cw:1.8})]],
+ med:[["Largo (sin talón)","≈ 5,3 cm","≈ 5,3 cm"],["Ancho","≈ 5,3 cm","≈ 6,1 cm"]],
+ txt:"Cinco dedos en manos y pies, con almohadillas ovaladas y uñas cortas (hasta 5 mm) que en barro se unen a los dedos y dan un conjunto en forma de lágrima. La almohadilla central es trapezoidal. La membrana entre los dedos casi nunca se marca, y el pulgar sale más en la mano que en el pie.",conf:"Lince ibérico (si no se marcan pulgar, uñas ni talón) y crías de garduña, visón o turón.",src:[SC("Lutra lutra")]},
+{n:"Meloncillo",s:"Herpestes ichneumon",c:"Mamífero",tags:["4-5 dedos","Uñas marcadas","Semiplantígrado"],
+ dib:[["",hCat({pad:"M22 46Q23 38 35 38Q47 38 48 46Q49 57 35 59Q21 57 22 46Z",t:[[20,32,-14],[29,25,-5],[41,25,5],[50,32,14]],rx:3.8,ry:5,cl:7,cw:2.2})]],
+ med:[["Largo (sin talón)","≈ 3,7 cm","≈ 3,8 cm"],["Ancho","≈ 3,6 cm","≈ 3,3 cm"]],
+ txt:"Casi siempre se ven cuatro dedos y la almohadilla, a veces los cinco y el talón. Las uñas no se retraen y casi siempre se marcan. La almohadilla es un trapecio con cuatro lóbulos. Es asimétrica: las manos son más redondeadas y los pies más estilizados.",conf:"Cachorro de zorro, perro pequeño, garduña o turón (en estos la almohadilla es más alargada hacia el lado del pulgar).",src:[SC("Herpestes ichneumon")]},
+{n:"Gineta",s:"Genetta genetta",c:"Mamífero",tags:["4-5 dedos","Sin uñas","Parecida a un gato"],
+ dib:[["",hCat({pad:"M22 52Q21 41 35 41Q49 41 48 52Q48 61 41 59Q35 57 29 59Q22 61 22 52Z",t:[[21,35,-18],[30,27,-6],[40,27,6],[49,35,18]],rx:4,ry:5.2})]],
+ med:[["Largo (sin talón)","≈ 3,0 cm","≈ 2,9 cm"],["Ancho","≈ 3,0 cm","≈ 2,6 cm"]],
+ txt:"Huella redondeada y algo ovalada. Las uñas semirretráctiles casi nunca se marcan. Los dedos delanteros van alineados y la almohadilla central, con forma de U invertida, es grande en proporción. El talón se marca muy poco.",conf:"Gato doméstico (en el gato un dedo se adelanta y la almohadilla tiene tres lóbulos alineados).",src:[SC("Genetta genetta")]},
+{n:"Lobo",s:"Canis lupus",c:"Mamífero",tags:["4 dedos","Uñas marcadas","Grande y simétrica"],
+ dib:[["",`<path d="M35 38Q22 38 21 50Q22 62 35 62Q48 62 49 50Q48 38 35 38Z"/>`+hTe(22,28,4.4,7.6,-10)+hTe(31,21,4.4,8.2,-3)+hTe(40,21,4.4,8.2,3)+hTe(49,28,4.4,7.6,10)+hClaw(20.5,21,-10,5.5,2.4)+hClaw(30.5,13,-3,5.5,2.4)+hClaw(40.5,13,3,5.5,2.4)+hClaw(50.5,21,10,5.5,2.4)]],
+ med:[["Largo (sin uñas)","≈ 9,8 cm","≈ 9,3 cm"],["Ancho","≈ 8,2 cm","≈ 7,3 cm"]],
+ txt:"Huella grande, estilizada y simétrica. Se marcan casi siempre almohadilla, dedos y uñas, que salen anchas y separadas. En la mano hay cinco dedos pero solo se imprimen cuatro. Los autores avisan de que no hay certeza absoluta para distinguirla de la de un perro grande.",conf:"Perro grande (huella más redondeada y menos simétrica) y zorro (mucho más pequeño).",src:[SC("Canis lupus")]},
+{n:"Gato montés",s:"Felis silvestris",c:"Mamífero",tags:["4 dedos","Sin uñas","Casi circular"],
+ dib:[["",hCat({pad:"M22 46Q23 38 29 40Q32 42 35 40Q38 42 41 40Q47 38 48 46Q49 58 35 61Q21 58 22 46Z",t:[[21,34,-16],[29,26,-5],[41,26,5],[49,34,16]],rx:4,ry:5})]],
+ med:[["Largo","≈ 4,0 cm",""],["Ancho","≈ 3,9 cm",""]],
+ txt:"Huella casi circular, de 4 dedos con almohadillas ovaladas. Las uñas son retráctiles y normalmente no se marcan. La almohadilla central tiene tres lóbulos a la misma altura en su borde delantero.",conf:"Gato doméstico (algo más pequeño, aunque los tamaños se solapan) y lince ibérico.",src:[SC("Felis silvestris")]},
+{n:"Corzo",s:"Capreolus capreolus",c:"Mamífero",tags:["2 pezuñas","Estrecha y alargada"],
+ dib:[["",hHoofs(.75,5)]],
+ txt:"Dos pezuñas estrechas y alargadas, de unos 4,5-5 cm de largo por 3,5 de ancho. Las guardas solo se marcan a veces.",conf:"Ciervo (más grande y ancho) y jabalí.",src:[SRC_I]},
+{n:"Conejo",s:"Oryctolagus cuniculus",c:"Mamífero",tags:["4-5 dedos","Con uñas","Rastro a saltos"],
+ dib:[["",hLeb(1)]],
+ med:[["Largo","≈ 3,6 cm","≈ 3,7 cm"],["Ancho","≈ 2,4 cm","≈ 2,4 cm"]],
+ txt:"Huella ovalada y apuntada, con uñas cortas y afiladas. Se mueve a saltos: las patas traseras caen por delante de las delanteras y las huellas forman grupos de cuatro; al huir salen en forma de Y.",conf:"Liebre (mayor y con grupos en L invertida).",src:[SC("Oryctolagus cuniculus"),SRC_I]},
+{n:"Liebre",s:"Lepus granatensis",c:"Mamífero",tags:["4-5 dedos","Con uñas","Mayor que el conejo"],
+ dib:[["",hLeb(1.18)]],
+ txt:"Parecida a la del conejo pero mayor y más alargada. Los grupos de huellas forman una L invertida.",conf:"Conejo.",src:[SRC_I]},
+{n:"Turón",s:"Mustela putorius",c:"Mamífero",tags:["5 dedos","Uñas marcadas","Almohadilla ovalada"],
+ dib:[["",hTe(35,50,6,8)+[[18,42,-40],[22,33,-20],[31,27,-6],[42,28,6],[50,36,26]].map((t,i)=>hTe(t[0],t[1],i==0?2.4:3.3,i==0?3.4:4.5,t[2])+(i?hClaw(t[0]+Math.sin(t[2]*HR)*4,t[1]-4,t[2]*.8,7,1.9):"")).join("")]],
+ txt:"Huella ovalada de 2,6 a 4,4 cm de largo. Cinco dedos ovalados que se marcan mejor que la almohadilla (el pulgar, pequeño, a menudo no sale). La almohadilla central es ovalada, más larga que ancha, y es uno de sus mejores rasgos. Las uñas miden hasta 1 cm en las manos. Los machos pueden tener el doble de tamaño que las hembras.",conf:"Visón, garduña y marta (dedos más separados y almohadilla central redonda); el hurón es indistinguible.",src:[SC("Mustela putorius")]},
+{n:"Ardilla roja",s:"Sciurus vulgaris",c:"Mamífero",tags:["4 dedos mano · 5 pie","Rastro a saltos"],
+ dib:[["",hTe(23,50,3.4,5.6,-12)+hTe(31,44,3.6,6,-4)+hTe(41,44,3.6,6,4)+hTe(49,50,3.4,5.6,12)+hTe(35,57,6,3.6)+[[23,41,-12],[31,34,-4],[41,34,4],[49,41,12]].map(t=>hClaw(t[0],t[1],t[2],5,1.6)).join("")]],
+ med:[["Largo","≈ 2,5 cm","≈ 2,1 cm"],["Ancho","≈ 1,5 cm","≈ 1,9 cm"]],
+ txt:"En la mano, cuatro pequeños orificios de uñas seguidos de las almohadillas; en el pie, cinco. Se mueve a saltos: huellas agrupadas de cuatro en cuatro, con los pies por delante de las manos. Los rastros son cortos y empiezan o acaban al pie de un árbol. La cola no deja marca. (Medidas sobre pocas huellas.)",conf:"Otros pequeños roedores arborícolas.",src:[SC("Sciurus vulgaris")]},
+{n:"Erizo europeo",s:"Erinaceus europaeus",c:"Mamífero",tags:["5 dedos separados","Uñas largas"],
+ dib:[["",hErizo(1)]],
+ med:[["Ancho","≈ 2,6 cm","≈ 2,2 cm"],["Largo (con carpianas)","≈ 3,1 cm","≈ 3,2 cm"]],
+ txt:"Cinco dedos bien separados y con uñas largas, sobre todo tras la hibernación, más una almohadilla metacarpiana compacta. Anda al paso, sin trotar ni galopar. Suelen marcarse uñas, dedos y almohadillas.",conf:"Erizo moruno (más pequeño y con uñas algo más cortas).",src:[SC("Erinaceus europaeus")]},
+{n:"Erizo moruno",s:"Atelerix algirus",c:"Mamífero",tags:["5 dedos","Uñas prominentes","Más pequeño"],
+ dib:[["",hErizo(.8)]],
+ med:[["Ancho","≈ 1,9 cm","≈ 1,6 cm"],["Largo (con carpianas)","≈ 2,3 cm","≈ 2,5 cm"]],
+ txt:"Cinco dedos y uñas prominentes, algo más cortas que en el europeo. En el pie el pulgar casi no existe, así que suelen verse cuatro dedos. Las almohadillas forman un conjunto compacto.",conf:"Erizo europeo (mayor).",src:[SC("Atelerix algirus")]}
+];
+HU.push(...HU2);
+{const j=HU.find(e=>e.n==="Jabalí");j.med=[["Largo","≈ 6,7 cm","≈ 6,6 cm"],["Ancho","≈ 6,1 cm","≈ 5,8 cm"],["Largo con guardas","≈ 10,3 cm","≈ 10,0 cm"]];j.txt="Dos pezuñas principales y dos guardas (espolones) que se separan de forma llamativa y casi siempre se marcan. Aspecto de trapecio, más ancho por detrás; las puntas son redondeadas en adultos y más afiladas en jóvenes. La huella delantera es más ancha y profunda que la trasera.";j.src=[SC("Sus scrofa"),SRC_I]}
+HU.sort((a,b)=>a.n.localeCompare(b.n,"es",{sensitivity:"base"}));
+
 let hq="",hc="Todas",hopen=-1;
 const hSvg=(d)=>`<svg viewBox="0 0 70 70" style="width:100%;max-width:150px;fill:#0d0d0d"><g filter="url(#hr)">${d}</g></svg>`;
 function hList(){const f=hq.trim().toLowerCase();let n=0;const h=HU.map((e,i)=>({e,i})).filter(({e})=>(hc==="Todas"||e.c===hc||(hc==="Anfibios y reptiles"&&(e.c==="Anfibio"||e.c==="Reptil")))&&(!f||(e.n+" "+e.s+" "+e.c).toLowerCase().includes(f))).map(({e,i})=>{n++;const o=hopen===i;
