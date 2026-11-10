@@ -265,6 +265,7 @@ function salirDlg(A){if(document.getElementById("sal"))return;const tt=document.
   A.addListener("backButton",()=>{
     const dlg=document.getElementById("sal");if(dlg){dlg.remove();return}
     if(tab!=="home"){tab="home";q="";render();window.scrollTo(0,0);return}
+    if(Object.keys(MNO).length){for(const k in MNO)delete MNO[k];render();window.scrollTo(0,0);last=0;return}
     const n=Date.now();
     if(n-last<2000){last=0;salirDlg(A)}
     else{last=n;toast("Pulsa otra vez atrás para salir")}
