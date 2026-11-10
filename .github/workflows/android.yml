@@ -1,4 +1,4 @@
-name: Crear APK
+name: Crear APK (pruebas)
 on:
   push:
   workflow_dispatch:
@@ -22,8 +22,16 @@ jobs:
           MAJOR=$(( 1 + K / 9 ))
           MINOR=$(( K % 9 + 1 ))
           if [ $MINOR -eq 1 ]; then V="v$MAJOR"; else V="v$MAJOR.$MINOR"; fi
+          V="_p"
           echo "v=$V" >> "$GITHUB_OUTPUT"
           echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
+      - name: App de pruebas (otro nombre y otro id, no pisa la real)
+        run: |
+          sed -i 's/"appId":"com.pajareo.huelva"/"appId":"com.pajareo.huelva.pruebas"/; s/"appName":"Pajareo Huelva"/"appName":"Pajareo Pruebas"/' capacitor.config.json
+          cat capacitor.config.json
+      - name: Descargar fotos libres de serpientes
+        continue-on-error: true
+        run: node scripts/fotos-serpientes.js
       - name: Poner la version dentro de la app
         run: |
           sed -i "s/__VERSION__/${{ steps.ver.outputs.v }}/" www/index.html
@@ -119,16 +127,15 @@ jobs:
       - name: Poner nombre al APK
         run: |
           mkdir -p out
-          cp android/app/build/outputs/apk/debug/app-debug.apk "out/Pajareo Huelva.${{ steps.ver.outputs.v }}.apk"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "out/Pajareo Pruebas.apk"
       - uses: actions/upload-artifact@v4
         with:
-          name: "Pajareo Huelva.${{ steps.ver.outputs.v }}"
+          name: "Pajareo Pruebas"
           path: out/*.apk
-      - name: Publicar en Releases
+      - name: Publicar como PRUEBA (no la ve nadie mas en la app)
         if: env.HAS_KS == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          N=${{ steps.ver.outputs.build }}
-          gh release delete "b$N" --yes --cleanup-tag || true
-          gh release create "b$N" "out/Pajareo Huelva.${{ steps.ver.outputs.v }}.apk" --title "Pajareo Huelva ${{ steps.ver.outputs.v }}" --notes "Version ${{ steps.ver.outputs.v }} (compilacion $N)" --latest
+          gh release delete pruebas --yes --cleanup-tag || true
+          gh release create pruebas "out/Pajareo Pruebas.apk" --prerelease --target "${{ github.sha }}" --title "Pajareo Pruebas (solo para probar)" --notes "Version de pruebas. No es la version oficial."
