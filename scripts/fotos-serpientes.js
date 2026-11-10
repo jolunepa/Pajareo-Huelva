@@ -21,7 +21,8 @@ const SP={
  "culebrilla-ciega":["Blanus cinereus"]
 };
 const MAX=3;
-const BAD=/skull|cr[aá]neo|map|mapa|distribution|range|egg|huevo|sloughed|exuvia|shed|track|diagram|svg|drawing|illustration|museum|preserved|dead|road kill|atropell|jar|specimen/i;
+const BADCAT=/protein|molecul|structur|\bPDB\b|toxin|enzyme|chemi|biochem|diagram|drawing|illustrat|painting|engrav|lithograph|stamp|coin|\bmaps?\b|skeleton|skull|museum|specimen|taxiderm|fossil|scientific plate|book plate|logo|icon/i;
+const BAD=/protein|toxin|enzyme|molecul|structure|PDB|crystal|phospholipase|metalloprot|disintegrin|plate|lithograph|engraving|painting|stamp|brehm|skull|cr[aá]neo|map|mapa|distribution|range|egg|huevo|sloughed|exuvia|shed|track|diagram|svg|drawing|illustration|museum|preserved|dead|road kill|atropell|jar|specimen/i;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function get(url,bin){
   for(let i=0;i<4;i++){
@@ -43,6 +44,8 @@ async function categoria(cat){
     if(ii.mime!=="image/jpeg")continue;
     if(BAD.test(p.title))continue;
     const m=ii.extmetadata||{};
+    const cats=txt(m.Categories&&m.Categories.value);
+    if(BADCAT.test(cats))continue;
     const lic=txt(m.LicenseShortName&&m.LicenseShortName.value);
     const aut=txt(m.Artist&&m.Artist.value).slice(0,110);
     if(!libre(lic)||!aut)continue;
