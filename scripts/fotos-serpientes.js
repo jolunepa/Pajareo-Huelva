@@ -6,7 +6,7 @@ const fs=require("fs"),path=require("path");
 const UA="PajareoHuelva/1.0 (app gratuita sin animo de lucro; https://github.com/jolunepa/Pajareo-Huelva)";
 const API="https://commons.wikimedia.org/w/api.php";
 const SP={
- "esculapio":["Zamenis longissimus"]
+ "esculapio":["Zamenis longissimus","Elaphe longissima"]
 };
 const MAX=3;
 const BADCAT=/protein|molecul|structur|\bPDB\b|toxin|enzyme|chemi|biochem|diagram|drawing|illustrat|painting|engrav|lithograph|stamp|coin|\bmaps?\b|skeleton|skull|museum|specimen|taxiderm|fossil|scientific plate|book plate|logo|icon/i;
@@ -24,22 +24,35 @@ async function get(url,bin){
 }
 const txt=h=>String(h||"").replace(/<[^>]*>/g," ").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#0?39;/g,"'").replace(/&nbsp;/g," ").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/\s+/g," ").trim();
 const libre=l=>{l=String(l||"").trim();if(!l)return false;if(/-NC|-ND|\bNC\b|\bND\b/.test(l))return false;return /^(CC0|Public domain|PD\b|CC BY(-SA)?\b)/i.test(l)};
-async function categoria(cat){
-  const u=API+"?action=query&format=json&generator=categorymembers&gcmtitle="+encodeURIComponent("Category:"+cat)+"&gcmtype=file&gcmlimit=60&prop=imageinfo&iiprop=url|mime|extmetadata&iiurlwidth=640";
-  const j=await get(u);const out=[];
-  for(const p of Object.values((j.query&&j.query.pages)||{})){
+function filtra(pages,tag){
+  const out=[],rz={tipo:0,titulo:0,cats:0,lic:0};
+  for(const p of Object.values(pages||{})){
     const ii=p.imageinfo&&p.imageinfo[0];if(!ii)continue;
-    if(ii.mime!=="image/jpeg")continue;
-    if(BAD.test(p.title))continue;
+    if(ii.mime!=="image/jpeg"){rz.tipo++;continue}
+    if(BAD.test(p.title)){rz.titulo++;continue}
     const m=ii.extmetadata||{};
     const cats=txt(m.Categories&&m.Categories.value);
-    if(BADCAT.test(cats))continue;
+    if(BADCAT.test(cats)){rz.cats++;continue}
     const lic=txt(m.LicenseShortName&&m.LicenseShortName.value);
     const aut=txt(m.Artist&&m.Artist.value).slice(0,110);
-    if(!libre(lic)||!aut)continue;
+    if(!libre(lic)||!aut){rz.lic++;continue}
     out.push({t:p.title,thumb:ii.thumburl,aut,lic,url:ii.descriptionurl});
   }
+  console.log("  ",tag,"-> validas",out.length,"rechazadas",JSON.stringify(rz));
   return out;
+}
+const IIP="&prop=imageinfo&iiprop=url|mime|extmetadata&iiurlwidth=640";
+async function categoria(cat){
+  const u=API+"?action=query&format=json&generator=categorymembers&gcmtitle="+encodeURIComponent("Category:"+cat)+"&gcmtype=file&gcmlimit=60"+IIP;
+  const j=await get(u);return filtra(j.query&&j.query.pages,"cat "+cat);
+}
+async function subcats(cat){
+  const u=API+"?action=query&format=json&list=categorymembers&cmtitle="+encodeURIComponent("Category:"+cat)+"&cmtype=subcat&cmlimit=30";
+  const j=await get(u);return((j.query&&j.query.categorymembers)||[]).map(x=>x.title.replace(/^Category:/,""));
+}
+async function busca(txtq){
+  const u=API+"?action=query&format=json&generator=search&gsrnamespace=6&gsrlimit=40&gsrsearch="+encodeURIComponent(txtq+" filetype:bitmap")+IIP;
+  const j=await get(u);return filtra(j.query&&j.query.pages,"busqueda "+txtq);
 }
 (async()=>{
   const res={};
@@ -50,8 +63,16 @@ async function categoria(cat){
       for(const c of cats){
         let l=[];try{l=await categoria(c)}catch(e){console.log("  fallo categoria",c,e.message)}
         await sleep(800);
+        if(l.length<3){try{
+          for(const sc of (await subcats(c)).filter(x=>!BADCAT.test(x)).slice(0,10)){
+            await sleep(700);try{l=l.concat(await categoria(sc))}catch(e){console.log("  fallo subcat",sc,e.message)}
+            if(l.length>=8)break}
+        }catch(e){console.log("  fallo subcats",c,e.message)}}
+        if(!l.length){try{l=await busca(c)}catch(e){console.log("  fallo busqueda",c,e.message)}await sleep(800)}
+        const vistos=new Set();
         for(const f of l){
           if(res[id].length>=MAX)break;
+          if(vistos.has(f.t))continue;vistos.add(f.t);
           try{
             const b=await get(f.thumb,true);
             if(b.length<5000)continue;
