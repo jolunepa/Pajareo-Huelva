@@ -6,19 +6,7 @@ const fs=require("fs"),path=require("path");
 const UA="PajareoHuelva/1.0 (app gratuita sin animo de lucro; https://github.com/jolunepa/Pajareo-Huelva)";
 const API="https://commons.wikimedia.org/w/api.php";
 const SP={
- "vibora-hocicuda":["Vipera latastei"],
- "vibora-aspid":["Vipera aspis"],
- "vibora-seoane":["Vipera seoanei"],
- "bastarda":["Malpolon monspessulanus"],
- "escalera":["Rhinechis scalaris","Zamenis scalaris"],
- "herradura":["Hemorrhois hippocrepis"],
- "viperina":["Natrix maura"],
- "collar":["Natrix astreptophora","Natrix helvetica"],
- "lisa-meridional":["Coronella girondica"],
- "lisa-europea":["Coronella austriaca"],
- "cogulla":["Macroprotodon brevis","Macroprotodon cucullatus"],
- "esculapio":["Zamenis longissimus"],
- "culebrilla-ciega":["Blanus cinereus"]
+ "esculapio":["Zamenis longissimus"]
 };
 const MAX=3;
 const BADCAT=/protein|molecul|structur|\bPDB\b|toxin|enzyme|chemi|biochem|diagram|drawing|illustrat|painting|engrav|lithograph|stamp|coin|\bmaps?\b|skeleton|skull|museum|specimen|taxiderm|fossil|scientific plate|book plate|logo|icon/i;
