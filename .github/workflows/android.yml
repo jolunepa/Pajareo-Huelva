@@ -24,6 +24,9 @@ jobs:
           if [ $MINOR -eq 1 ]; then V="v$MAJOR"; else V="v$MAJOR.$MINOR"; fi
           echo "v=$V" >> "$GITHUB_OUTPUT"
           echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Descargar fotos libres de serpientes
+        continue-on-error: true
+        run: node scripts/fotos-serpientes.js
       - name: Poner la version dentro de la app
         run: |
           sed -i "s/__VERSION__/${{ steps.ver.outputs.v }}/" www/index.html
@@ -75,6 +78,19 @@ jobs:
           cp $D/ort-wasm-simd-threaded.mjs www/js/ort-simd.js
           cp $D/ort-wasm-simd-threaded.wasm www/js/ort-simd.wasm
           ls -la www/js
+      - name: Cerrar la app por completo al salir
+        run: |
+          python3 - <<'PY'
+          p="node_modules/@capacitor/app/android/src/main/java/com/capacitorjs/plugins/app/AppPlugin.java"
+          s=open(p,encoding="utf-8").read()
+          a="        getBridge().getActivity().finish();"
+          assert s.count(a)==1,"no encontrado"
+          b="""        getBridge().getActivity().finishAndRemoveTask();
+                  new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() { public void run() { android.os.Process.killProcess(android.os.Process.myPid()); } }, 400);"""
+          s=s.replace(a,b)
+          open(p,"w",encoding="utf-8").write(s)
+          print("parche aplicado")
+          PY
       - run: npx cap add android
       - name: Firma fija y numero de version
         env:
