@@ -457,11 +457,11 @@ function PEGAR(){return `<button class="b" style="background:var(--mu);margin-to
 })();
 
 /* ===== Créditos y licencias ===== */
-let EB={m:0,q:"",busy:false,msg:"",data:null,mode:-1,t:0,sq:"",sp:null,d:7,obs:null,tax:null,map:null,smsg:""};
+let EB={m:0,q:"",busy:false,msg:"",data:null,mode:-1,t:0,reg:null,sq:"",sp:null,d:7,obs:null,tax:null,map:null,smsg:""};
 const EBC={};
 const ebKey=()=>String(S.ebkey||"").trim();
 window.ebSave=()=>{const v=(document.getElementById("ebk").value||"").trim();if(v.length<8){toast("Pega tu clave de eBird");return}S.ebkey=v;keep();EB.data=null;EB.mode=-1;render()};
-window.ebForget=()=>{if(confirm("¿Quitar tu clave de eBird de este móvil?")){delete S.ebkey;keep();EB.data=null;EB.mode=-1;render()}};
+window.ebForget=()=>{if(confirm("¿Quitar tu clave de eBird de este móvil?")){delete S.ebkey;try{localStorage.removeItem("ph_reg_h")}catch(e){}EB.reg=null;keep();EB.data=null;EB.mode=-1;render()}};
 window.ebMode=m=>{EB.m=m;EB.q="";EB.data=null;EB.msg="";render();if(m!==3)ebLoad()};
 window.ebQ=v=>{EB.q=v;ebList()};
 const ebPos=()=>new Promise(res=>{if(!navigator.geolocation)return res(null);try{navigator.geolocation.getCurrentPosition(p=>res(p.coords),()=>res(null),{enableHighAccuracy:false,timeout:15000,maximumAge:300000})}catch(e){res(null)}});
@@ -472,20 +472,36 @@ async function ebLoad(){
     let u;
     if(EB.m===0){const c=await ebPos();if(!c){EB.msg="No he podido saber dónde estás. Activa la ubicación del móvil o usa «Huelva».";EB.busy=false;EB.data=[];return ebList()}
       u="https://api.ebird.org/v2/data/obs/geo/recent?lat="+c.latitude.toFixed(2)+"&lng="+c.longitude.toFixed(2)+"&dist=25&back=7&maxResults=150&sppLocale=es_ES"}
-    else if(EB.m===1)u="https://api.ebird.org/v2/data/obs/ES-AN-H/recent?back=7&maxResults=150&sppLocale=es_ES";
-    else u="https://api.ebird.org/v2/data/obs/ES-AN-H/recent/notable?back=14&maxResults=100&sppLocale=es_ES";
-    const ck=u,hit=EBC[ck];let j;
+    let j;
+    if(EB.m!==0){j=(await ebHuelvaObs(EB.m===2?"notable":"",EB.m===2?"back=14&maxResults=100&sppLocale=es_ES":"back=7&maxResults=150&sppLocale=es_ES")).j}
+    else{const ck=u,hit=EBC[ck];
     if(hit&&Date.now()-hit.t<300000)j=hit.j;
     else{const r=await fetch(u,{headers:{"X-eBirdApiToken":ebKey()}});
       if(r.status===401||r.status===403)throw new Error("key");
       if(!r.ok)throw new Error("http "+r.status);
-      j=await r.json();EBC[ck]={t:Date.now(),j}}
+      j=await r.json();EBC[ck]={t:Date.now(),j}}}
     const m={};
     for(const o of j){const k=o.speciesCode||o.comName,x=m[k];if(!x||o.obsDt>x.obsDt)m[k]=Object.assign({},o,{n:(x?x.n:0)+1});else x.n++}
     EB.data=Object.values(m).sort((a,b)=>a.obsDt<b.obsDt?1:-1);EB.msg=EB.data.length?"":"No hay avistamientos recientes."
   }catch(e){EB.data=[];EB.msg=e.message==="key"?"eBird no acepta tu clave. Compruébala o pega una nueva.":"No he podido conectar con eBird. Comprueba tu conexión."}
   EB.busy=false;ebList()}
 
+async function ebReg(){
+  if(EB.reg)return EB.reg;
+  try{const c=localStorage.getItem("ph_reg_h");if(c){EB.reg=c;return c}}catch(e){}
+  try{const L=await ebGet("https://api.ebird.org/v2/ref/region/list/subnational2/ES-AN");const h=Array.isArray(L)&&L.find(x=>/huelva/i.test(x.name||""));
+    if(h){EB.reg=h.code;try{localStorage.setItem("ph_reg_h",h.code)}catch(e){}return h.code}}catch(e){if(e.message==="key")throw e}
+  return null}
+async function ebHuelvaObs(kind,qs){
+  const tail=kind==="notable"?"/notable":kind?"/"+encodeURIComponent(kind):"";let j=[];
+  const reg=await ebReg();
+  if(reg){try{const r=await ebGet("https://api.ebird.org/v2/data/obs/"+reg+"/recent"+tail+"?"+qs);if(Array.isArray(r))j=r}catch(e){if(e.message==="key")throw e}}
+  if(j.length)return{j,via:"provincia"};
+  const seen={};
+  for(const c of [[37.30,-6.95],[37.75,-6.70],[37.55,-7.35]]){
+    try{const r=await ebGet("https://api.ebird.org/v2/data/obs/geo/recent"+tail+"?lat="+c[0]+"&lng="+c[1]+"&dist=50&"+qs);
+      if(Array.isArray(r))r.forEach(o=>{const k=o.subId+"|"+o.speciesCode;if(!seen[k]){seen[k]=1;j.push(o)}})}catch(e){if(e.message==="key")throw e}}
+  return{j,via:"zona"}}
 const nmz=x=>String(x||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 async function ebGet(u){const hit=EBC[u];if(hit&&Date.now()-hit.t<300000)return hit.j;const r=await fetch(u,{headers:{"X-eBirdApiToken":ebKey()}});if(r.status===401||r.status===403)throw new Error("key");if(!r.ok)throw new Error("http "+r.status);const j=await r.json();EBC[u]={t:Date.now(),j};return j}
 async function ebTax(){
@@ -511,12 +527,7 @@ async function ebMapDraw(){
   try{
     nEl.textContent="Cargando…";
     const sc=encodeURIComponent(sp),qs="&back="+d+"&maxResults=500&sppLocale=es_ES";
-    const lf=ebLeaf();let j=[],via="región";
-    try{const r0=await ebGet("https://api.ebird.org/v2/data/obs/ES-AN-H/recent/"+sc+"?"+qs.slice(1));if(Array.isArray(r0))j=r0}catch(e){if(e.message==="key")throw e}
-    if(!j.length){via="zona";const seen={};
-      for(const c of [[37.30,-6.95],[37.75,-6.70],[37.55,-7.35]]){
-        try{const r1=await ebGet("https://api.ebird.org/v2/data/obs/geo/recent/"+sc+"?lat="+c[0]+"&lng="+c[1]+"&dist=50"+qs);
-          if(Array.isArray(r1))r1.forEach(o=>{const k=o.subId+o.obsId;if(!seen[k]){seen[k]=1;j.push(o)}})}catch(e){if(e.message==="key")throw e}}}
+    const lf=ebLeaf();const R=await ebHuelvaObs(sp,qs.slice(1)),j=R.j,via=R.via;
     await lf;
     if(EB.sp.c!==sp||EB.d!==d||document.getElementById("ebmap")!==el)return;
     EB.obs=j;
