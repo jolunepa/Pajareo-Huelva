@@ -471,9 +471,9 @@ async function ebLoad(){
   try{
     let u;
     if(EB.m===0){const c=await ebPos();if(!c){EB.msg="No he podido saber dónde estás. Activa la ubicación del móvil o usa «Huelva».";EB.busy=false;EB.data=[];return ebList()}
-      u="https://api.ebird.org/v2/data/obs/geo/recent?lat="+c.latitude.toFixed(2)+"&lng="+c.longitude.toFixed(2)+"&dist=25&back=7&maxResults=150&locale=es"}
-    else if(EB.m===1)u="https://api.ebird.org/v2/data/obs/ES-AN-H/recent?back=7&maxResults=150&locale=es";
-    else u="https://api.ebird.org/v2/data/obs/ES-AN-H/recent/notable?back=14&maxResults=100&locale=es";
+      u="https://api.ebird.org/v2/data/obs/geo/recent?lat="+c.latitude.toFixed(2)+"&lng="+c.longitude.toFixed(2)+"&dist=25&back=7&maxResults=150&locale=es_ES"}
+    else if(EB.m===1)u="https://api.ebird.org/v2/data/obs/ES-AN-H/recent?back=7&maxResults=150&locale=es_ES";
+    else u="https://api.ebird.org/v2/data/obs/ES-AN-H/recent/notable?back=14&maxResults=100&locale=es_ES";
     const ck=u,hit=EBC[ck];let j;
     if(hit&&Date.now()-hit.t<300000)j=hit.j;
     else{const r=await fetch(u,{headers:{"X-eBirdApiToken":ebKey()}});
