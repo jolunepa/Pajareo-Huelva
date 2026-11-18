@@ -498,10 +498,10 @@ async function ebHuelvaObs(kind,qs){
   if(reg){try{const r=await ebGet("https://api.ebird.org/v2/data/obs/"+reg+"/recent"+tail+"?"+qs);if(Array.isArray(r))j=r}catch(e){if(e.message==="key")throw e}}
   if(j.length)return{j,via:"provincia"};
   const seen={};
-  for(const c of [[37.30,-6.95],[37.75,-6.70],[37.55,-7.35]]){
+  for(const c of [[37.30,-7.10],[37.30,-6.50],[37.75,-7.10],[37.75,-6.50],[38.10,-6.90],[38.10,-7.30]]){
     try{const r=await ebGet("https://api.ebird.org/v2/data/obs/geo/recent"+tail+"?lat="+c[0]+"&lng="+c[1]+"&dist=50&"+qs);
-      if(Array.isArray(r))r.forEach(o=>{const k=o.subId+"|"+o.speciesCode;if(!seen[k]){seen[k]=1;j.push(o)}})}catch(e){if(e.message==="key")throw e}}
-  return{j,via:"zona"}}
+      if(Array.isArray(r))r.forEach(o=>{const k=o.subId+"|"+o.speciesCode;if(!seen[k]&&o.lat>=37.13&&o.lat<=38.22&&o.lng>=-7.52&&o.lng<=-6.03){seen[k]=1;j.push(o)}})}catch(e){if(e.message==="key")throw e}}
+  return{j,via:"zona aproximada de Huelva"}}
 const nmz=x=>String(x||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 async function ebGet(u){const hit=EBC[u];if(hit&&Date.now()-hit.t<300000)return hit.j;const r=await fetch(u,{headers:{"X-eBirdApiToken":ebKey()}});if(r.status===401||r.status===403)throw new Error("key");if(!r.ok)throw new Error("http "+r.status);const j=await r.json();EBC[u]={t:Date.now(),j};return j}
 async function ebTax(){
