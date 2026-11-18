@@ -457,13 +457,46 @@ function PEGAR(){return `<button class="b" style="background:var(--mu);margin-to
 })();
 
 /* ===== Créditos y licencias ===== */
+let EB={m:0,q:"",busy:false,msg:"",data:null,mode:-1,t:0};
+const EBC={};
+const ebKey=()=>String(S.ebkey||"").trim();
+window.ebSave=()=>{const v=(document.getElementById("ebk").value||"").trim();if(v.length<8){toast("Pega tu clave de eBird");return}S.ebkey=v;keep();EB.data=null;EB.mode=-1;render()};
+window.ebForget=()=>{if(confirm("¿Quitar tu clave de eBird de este móvil?")){delete S.ebkey;keep();EB.data=null;EB.mode=-1;render()}};
+window.ebMode=m=>{EB.m=m;EB.q="";EB.data=null;EB.msg="";render();ebLoad()};
+window.ebQ=v=>{EB.q=v;ebList()};
+const ebPos=()=>new Promise(res=>{if(!navigator.geolocation)return res(null);try{navigator.geolocation.getCurrentPosition(p=>res(p.coords),()=>res(null),{enableHighAccuracy:false,timeout:15000,maximumAge:300000})}catch(e){res(null)}});
+async function ebLoad(){
+  if(!ebKey()||EB.busy)return;
+  EB.busy=true;EB.msg="Cargando…";ebList();
+  try{
+    let u;
+    if(EB.m===0){const c=await ebPos();if(!c){EB.msg="No he podido saber dónde estás. Activa la ubicación del móvil o usa «Huelva».";EB.busy=false;EB.data=[];return ebList()}
+      u="https://api.ebird.org/v2/data/obs/geo/recent?lat="+c.latitude.toFixed(2)+"&lng="+c.longitude.toFixed(2)+"&dist=25&back=7&maxResults=150&locale=es"}
+    else if(EB.m===1)u="https://api.ebird.org/v2/data/obs/ES-AN-H/recent?back=7&maxResults=150&locale=es";
+    else u="https://api.ebird.org/v2/data/obs/ES-AN-H/recent/notable?back=14&maxResults=100&locale=es";
+    const ck=u,hit=EBC[ck];let j;
+    if(hit&&Date.now()-hit.t<300000)j=hit.j;
+    else{const r=await fetch(u,{headers:{"X-eBirdApiToken":ebKey()}});
+      if(r.status===401||r.status===403)throw new Error("key");
+      if(!r.ok)throw new Error("http "+r.status);
+      j=await r.json();EBC[ck]={t:Date.now(),j}}
+    const m={};
+    for(const o of j){const k=o.speciesCode||o.comName,x=m[k];if(!x||o.obsDt>x.obsDt)m[k]=Object.assign({},o,{n:(x?x.n:0)+1});else x.n++}
+    EB.data=Object.values(m).sort((a,b)=>a.obsDt<b.obsDt?1:-1);EB.msg=EB.data.length?"":"No hay avistamientos recientes."
+  }catch(e){EB.data=[];EB.msg=e.message==="key"?"eBird no acepta tu clave. Compruébala o pega una nueva.":"No he podido conectar con eBird. Comprueba tu conexión."}
+  EB.busy=false;ebList()}
+function ebFecha(d){try{const x=new Date(d.replace(" ","T")),h=new Date(),dd=Math.round((new Date(h.getFullYear(),h.getMonth(),h.getDate())-new Date(x.getFullYear(),x.getMonth(),x.getDate()))/864e5);const hm=d.slice(11,16);return dd<=0?"hoy "+hm:dd===1?"ayer "+hm:"hace "+dd+" días"}catch(e){return d}}
+function ebList(){
+  const el=document.getElementById("ebl");if(!el)return;
+  if(!EB.data){el.innerHTML=`<div class="mu" style="padding:8px 0">${esc(EB.msg||"")}</div>`;return}
+  const nm=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(),t=nm(EB.q.trim()),L=EB.data.filter(o=>!t||nm(o.comName).includes(t)||nm(o.sciName).includes(t));
+  el.innerHTML=(EB.msg&&!L.length?`<div class="mu" style="padding:8px 0">${esc(EB.msg)}</div>`:"")+L.map(o=>`<div class="topic" style="cursor:pointer;gap:10px" onclick="go('https://ebird.org/checklist/${esc(o.subId)}')"><div style="flex:1;min-width:0"><b>${esc(o.comName)}</b><div class="sci">${esc(o.sciName)}</div><div class="mu" style="font-size:12px">${esc(o.locName||"")} · ${esc(ebFecha(o.obsDt))}</div></div><div style="text-align:right;white-space:nowrap"><b style="font-size:16px">${o.howMany!=null?o.howMany:"x"}</b><div class="mu" style="font-size:11px">${o.howMany!=null?"ejemplares":"presente"}</div></div></div>`).join("")}
 function ebird(){
-  const B=(ic,t,d,u)=>`<button class="card" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;color:var(--tx);cursor:pointer;margin:8px 0" onclick="go('${u}')"><span style="font-size:26px">${ic}</span><span style="flex:1"><b>${t}</b><br><span class="mu" style="font-size:13px">${d}</span></span><span class="mu">↗</span></button>`;
-  return `<div class="card"><div style="font-size:14px;line-height:1.5">eBird es la mayor base de datos de observaciones de aves del mundo, mantenida por el <b>Cornell Lab of Ornithology</b>. Estos botones abren su web en el navegador del móvil.</div></div>`+
-  B("🗺️","Mapa de observaciones","Dónde se han visto aves cerca de ti","https://ebird.org/map")+
-  B("🔎","Explorar especies","Busca un ave y mira dónde se ve","https://ebird.org/explore")+
-  B("🔭","Aves en Huelva","Especies y avistamientos de la provincia","https://ebird.org/region/ES-AN-H")+
-  `<p class="mu" style="font-size:12px;text-align:center;margin:12px 4px">Datos y web: <a href="https://ebird.org" target="_blank">eBird.org</a> · Cornell Lab of Ornithology. Pajareo Huelva no tiene relación oficial con eBird.</p>`}
+  const cred=`<p class="mu" style="font-size:12px;text-align:center;margin:12px 4px">Datos: <a href="https://ebird.org" target="_blank">eBird.org</a> · Cornell Lab of Ornithology. Pajareo Huelva no tiene relación oficial con eBird.</p>`;
+  if(!ebKey())return `<div class="card"><div style="font-size:14px;line-height:1.5">Para ver avistamientos recientes de <b>eBird</b> dentro de la app necesitas tu clave personal. Es gratis y se pide con tu cuenta de eBird.</div><p><a href="https://ebird.org/api/keygen" target="_blank">Conseguir mi clave en ebird.org</a></p><input id="ebk" placeholder="Pega aquí tu clave" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="b" onclick="ebSave()">Guardar clave</button><div class="mu" style="font-size:12px">La clave se guarda solo en tu móvil y solo se envía a eBird.</div></div>`+cred;
+  setTimeout(()=>{if(EB.mode!==EB.m||!EB.data){EB.mode=EB.m;ebLoad()}},0);
+  const ch=["Cerca de mí","Huelva","Raras"].map((n,i)=>`<button class="chip ${i===EB.m?"on":""}" style="flex:1" onclick="ebMode(${i})">${n}</button>`).join("");
+  return `<div class="chips" style="margin:2px 0 8px">${ch}</div><input placeholder="Buscar un ave…" value="${esc(EB.q)}" oninput="ebQ(this.value)"><div id="ebl"></div>`+cred+`<div style="text-align:center"><button class="x" style="float:none;font-size:13px" onclick="ebForget()">Quitar mi clave</button></div>`}
 function creditos(){
   const L=(t,u)=>`<a href="${u}" target="_blank" style="color:var(--ac)">${t}</a>`;
   const c=(t,b)=>`<div class="card"><b>${t}</b><div style="margin-top:6px;font-size:14px;line-height:1.45">${b}</div></div>`;
@@ -479,7 +512,7 @@ function creditos(){
   c("📷 Reconocer por foto",`Modelo <b>WingCLIP</b> (derivado de BioCLIP 2 / TinyCLIP) y datos de presencia de ${L("WingDex","https://github.com/jlian/wingdex")} (autor: jlian). Pesos del modelo con licencia <b>CC BY-NC 4.0</b> (solo uso no comercial). BioCLIP: ${L("Imageomics Institute","https://imageomics.github.io/bioclip-2/")}.`)+
   c("⚡ El tiempo",`Datos de ${L("Open-Meteo.com","https://open-meteo.com")}, licencia CC BY 4.0, gratuita para uso no comercial.`)+
   c("🌊 Tablas de mareas",`Datos orientativos tomados de ${L("tablademareas.com","https://tablademareas.com/es/huelva/huelva")}. Consulta la web para la información oficial.`)+
-  c("🔭 Buscador eBird",`Enlaces a la web de ${L("eBird.org","https://ebird.org")}, del Cornell Lab of Ornithology. La aplicación no copia ni almacena sus datos; solo abre su web en el navegador. eBird es una marca de sus propietarios y Pajareo Huelva no tiene relación oficial con ellos.`)+
+  c("🔭 Buscador eBird",`Avistamientos recientes obtenidos de la API de ${L("eBird.org","https://ebird.org")} (Cornell Lab of Ornithology) con la clave personal de cada usuario, de uso no comercial. La aplicación no almacena ni redistribuye sus datos. eBird es una marca de sus propietarios y Pajareo Huelva no tiene relación oficial con ellos.`)+
   c("🐍 Fotos de serpientes",(()=>{const m={};if(SJ)Object.entries(SJ).forEach(([k,a])=>{if(SB[k]&&SB[k].length)return;a.forEach(f=>{m[f.u]=f})});if(0)Object.values(SJ).forEach(a=>a.forEach(f=>{m[f.u]=f}));const l=Object.values(m);return true?`Fotografías de <a href="https://www.instagram.com/seba_wildlife" target="_blank" style="color:var(--ac)">Seba</a> (@seba_wildlife), cedidas con su permiso para esta aplicación; no se pueden copiar ni reutilizar sin su autorización.<br><br>Resto de fotografías de ${L("Wikimedia Commons","https://commons.wikimedia.org")} con licencias libres (dominio público, CC0, CC BY y CC BY-SA). Cada foto indica su autor y licencia; las licencias CC BY-SA exigen compartir igual esa misma foto con la misma licencia.<br><br>`+l.map(f=>`• ${esc(f.a)} · ${esc(f.l)} · ${L("ver foto","")}`.replace('href=""','href="'+esc(f.u)+'"')).join("<br>"):"Las fotos de la guía de serpientes proceden de Wikimedia Commons con licencias libres; sus autores y licencias aparecen aquí y bajo cada foto."})())+
   c("🛠️ Tecnología",`${L("Capacitor","https://capacitorjs.com")} (MIT), ${L("ONNX Runtime Web","https://onnxruntime.ai")} (MIT) y ${L("TensorFlow.js","https://www.tensorflow.org/js")} (Apache 2.0).`)+
   `<p class="mu" style="font-size:13px;margin:14px 2px">Todas las marcas, nombres y obras citadas pertenecen a sus respectivos autores y se mencionan solo a efectos de atribución.</p>`;
