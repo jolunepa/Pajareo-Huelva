@@ -510,7 +510,14 @@ async function ebMapDraw(){
   const sp=EB.sp.c,d=EB.d,nEl=document.getElementById("ebn");
   try{
     nEl.textContent="Cargando…";
-    const [j]=await Promise.all([ebGet("https://api.ebird.org/v2/data/obs/ES-AN-H/recent/"+encodeURIComponent(sp)+"?back="+d+"&maxResults=500&sppLocale=es_ES"),ebLeaf()]);
+    const sc=encodeURIComponent(sp),qs="&back="+d+"&maxResults=500&sppLocale=es_ES";
+    const lf=ebLeaf();let j=[],via="región";
+    try{const r0=await ebGet("https://api.ebird.org/v2/data/obs/ES-AN-H/recent/"+sc+"?"+qs.slice(1));if(Array.isArray(r0))j=r0}catch(e){if(e.message==="key")throw e}
+    if(!j.length){via="zona";const seen={};
+      for(const c of [[37.30,-6.95],[37.75,-6.70],[37.55,-7.35]]){
+        try{const r1=await ebGet("https://api.ebird.org/v2/data/obs/geo/recent/"+sc+"?lat="+c[0]+"&lng="+c[1]+"&dist=50"+qs);
+          if(Array.isArray(r1))r1.forEach(o=>{const k=o.subId+o.obsId;if(!seen[k]){seen[k]=1;j.push(o)}})}catch(e){if(e.message==="key")throw e}}}
+    await lf;
     if(EB.sp.c!==sp||EB.d!==d||document.getElementById("ebmap")!==el)return;
     EB.obs=j;
     if(EB.map){EB.map.remove();EB.map=null}
@@ -520,7 +527,7 @@ async function ebMapDraw(){
     j.forEach(o=>{if(o.lat==null||o.lng==null)return;pts.push([o.lat,o.lng]);
       L.circleMarker([o.lat,o.lng],{radius:8,color:"#fff",weight:2,fillColor:"#d33",fillOpacity:.9}).addTo(map).bindPopup(`<b>${esc(o.locName||"")}</b><br>${esc(ebFecha(o.obsDt))} · ${o.howMany!=null?o.howMany+" ejemplares":"presente"}<br><a href="#" onclick="go('https://ebird.org/checklist/${esc(o.subId)}');return false">Ver en eBird</a>`)});
     if(pts.length)map.fitBounds(pts,{padding:[24,24],maxZoom:13});
-    nEl.textContent=j.length?j.length+" avistamientos en los últimos "+d+" días · toca un punto para ver el detalle":"Sin avistamientos en los últimos "+d+" días en Huelva.";
+    nEl.textContent=j.length?j.length+" avistamientos en los últimos "+d+" días ("+via+") · toca un punto para ver el detalle":"Sin avistamientos en los últimos "+d+" días en Huelva (eBird no devuelve registros de esta especie).";
     const el2=document.getElementById("ebl");
     if(el2)el2.innerHTML=j.slice().sort((a,b)=>a.obsDt<b.obsDt?1:-1).slice(0,40).map(o=>`<div class="topic" style="cursor:pointer;gap:10px" onclick="go('https://ebird.org/checklist/${esc(o.subId)}')"><div style="flex:1;min-width:0"><b>${esc(o.locName||"")}</b><div class="mu" style="font-size:12px">${esc(ebFecha(o.obsDt))}</div></div><b>${o.howMany!=null?o.howMany:"x"}</b></div>`).join("")
   }catch(e){if(nEl)nEl.textContent=e.message==="key"?"eBird no acepta tu clave.":e.message==="mapa"?"No he podido cargar el mapa.":"No he podido conectar con eBird. Comprueba tu conexión."}}
