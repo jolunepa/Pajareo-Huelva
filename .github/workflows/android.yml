@@ -27,6 +27,15 @@ jobs:
       - name: Descargar fotos libres de serpientes
         continue-on-error: true
         run: node scripts/fotos-serpientes.js
+      - name: Copiar el mapa Leaflet (libreria libre BSD-2)
+        run: |
+          T=$(mktemp -d)
+          (cd "$T" && npm pack leaflet@1.9.4 --silent && tar xzf leaflet-1.9.4.tgz)
+          mkdir -p www/js/leaflet/images
+          cp "$T/package/dist/leaflet.js" "$T/package/dist/leaflet.css" www/js/leaflet/
+          cp "$T"/package/dist/images/layers*.png www/js/leaflet/images/
+          cp "$T/package/LICENSE" www/js/leaflet/LICENSE.txt
+          ls -la www/js/leaflet
       - name: Poner la version dentro de la app
         run: |
           sed -i "s/__VERSION__/${{ steps.ver.outputs.v }}/" www/index.html
