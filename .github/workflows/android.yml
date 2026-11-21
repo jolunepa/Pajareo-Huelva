@@ -16,7 +16,7 @@ jobs:
       - name: Calcular version
         id: ver
         run: |
-          OFFSET=0
+          OFFSET=2
           BASE=$(git log -1 --format=%H -- .github/workflows/android.yml)
           K=$(( $(git rev-list --count "$BASE"..HEAD) + OFFSET ))
           MAJOR=$(( 1 + K / 9 ))
