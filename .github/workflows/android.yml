@@ -1,4 +1,4 @@
-name: Crear APK
+name: Crear APK (pruebas)
 on:
   push:
   workflow_dispatch:
@@ -16,14 +16,19 @@ jobs:
       - name: Calcular version
         id: ver
         run: |
-          OFFSET=2
+          OFFSET=0
           BASE=$(git log -1 --format=%H -- .github/workflows/android.yml)
           K=$(( $(git rev-list --count "$BASE"..HEAD) + OFFSET ))
           MAJOR=$(( 1 + K / 9 ))
           MINOR=$(( K % 9 + 1 ))
           if [ $MINOR -eq 1 ]; then V="v$MAJOR"; else V="v$MAJOR.$MINOR"; fi
+          V="_p"
           echo "v=$V" >> "$GITHUB_OUTPUT"
           echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
+      - name: App de pruebas (otro nombre y otro id, no pisa la real)
+        run: |
+          sed -i 's/"appId":"com.pajareo.huelva"/"appId":"com.pajareo.huelva.pruebas"/; s/"appName":"Pajareo Huelva"/"appName":"Pajareo Pruebas"/' capacitor.config.json
+          cat capacitor.config.json
       - name: Descargar fotos libres de serpientes
         continue-on-error: true
         run: node scripts/fotos-serpientes.js
@@ -80,6 +85,7 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
       - run: npm install
+      - run: npm install @capacitor/local-notifications@^6
       - name: Copiar motor ONNX
         run: |
           D=node_modules/onnxruntime-web/dist
@@ -118,7 +124,7 @@ jobs:
           sed -n 1,30p $G
       - name: Permiso de microfono
         run: |
-          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
+          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
           grep -n "RECORD_AUDIO" android/app/src/main/AndroidManifest.xml
       - name: Abrir enlaces de localizaciones
         run: |
@@ -144,16 +150,15 @@ jobs:
       - name: Poner nombre al APK
         run: |
           mkdir -p out
-          cp android/app/build/outputs/apk/debug/app-debug.apk "out/Pajareo Huelva.${{ steps.ver.outputs.v }}.apk"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "out/Pajareo Pruebas.apk"
       - uses: actions/upload-artifact@v4
         with:
-          name: "Pajareo Huelva.${{ steps.ver.outputs.v }}"
+          name: "Pajareo Pruebas"
           path: out/*.apk
-      - name: Publicar en Releases
+      - name: Publicar como PRUEBA (no la ve nadie mas en la app)
         if: env.HAS_KS == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          N=${{ steps.ver.outputs.build }}
-          gh release delete "b$N" --yes --cleanup-tag || true
-          gh release create "b$N" "out/Pajareo Huelva.${{ steps.ver.outputs.v }}.apk" --title "Pajareo Huelva ${{ steps.ver.outputs.v }}" --notes "Version ${{ steps.ver.outputs.v }} (compilacion $N)" --latest
+          gh release delete pruebas --yes --cleanup-tag || true
+          gh release create pruebas "out/Pajareo Pruebas.apk" --prerelease --target "${{ github.sha }}" --title "Pajareo Pruebas (solo para probar)" --notes "Version de pruebas. No es la version oficial."
