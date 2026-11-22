@@ -1,4 +1,4 @@
-name: Crear APK (pruebas)
+name: Crear APK
 on:
   push:
   workflow_dispatch:
@@ -16,19 +16,14 @@ jobs:
       - name: Calcular version
         id: ver
         run: |
-          OFFSET=0
+          OFFSET=3
           BASE=$(git log -1 --format=%H -- .github/workflows/android.yml)
           K=$(( $(git rev-list --count "$BASE"..HEAD) + OFFSET ))
           MAJOR=$(( 1 + K / 9 ))
           MINOR=$(( K % 9 + 1 ))
           if [ $MINOR -eq 1 ]; then V="v$MAJOR"; else V="v$MAJOR.$MINOR"; fi
-          V="_p"
           echo "v=$V" >> "$GITHUB_OUTPUT"
           echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
-      - name: App de pruebas (otro nombre y otro id, no pisa la real)
-        run: |
-          sed -i 's/"appId":"com.pajareo.huelva"/"appId":"com.pajareo.huelva.pruebas"/; s/"appName":"Pajareo Huelva"/"appName":"Pajareo Pruebas"/' capacitor.config.json
-          cat capacitor.config.json
       - name: Descargar fotos libres de serpientes
         continue-on-error: true
         run: node scripts/fotos-serpientes.js
@@ -150,15 +145,16 @@ jobs:
       - name: Poner nombre al APK
         run: |
           mkdir -p out
-          cp android/app/build/outputs/apk/debug/app-debug.apk "out/Pajareo Pruebas.apk"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "out/Pajareo Huelva.${{ steps.ver.outputs.v }}.apk"
       - uses: actions/upload-artifact@v4
         with:
-          name: "Pajareo Pruebas"
+          name: "Pajareo Huelva.${{ steps.ver.outputs.v }}"
           path: out/*.apk
-      - name: Publicar como PRUEBA (no la ve nadie mas en la app)
+      - name: Publicar en Releases
         if: env.HAS_KS == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete pruebas --yes --cleanup-tag || true
-          gh release create pruebas "out/Pajareo Pruebas.apk" --prerelease --target "${{ github.sha }}" --title "Pajareo Pruebas (solo para probar)" --notes "Version de pruebas. No es la version oficial."
+          N=${{ steps.ver.outputs.build }}
+          gh release delete "b$N" --yes --cleanup-tag || true
+          gh release create "b$N" "out/Pajareo Huelva.${{ steps.ver.outputs.v }}.apk" --title "Pajareo Huelva ${{ steps.ver.outputs.v }}" --notes "Version ${{ steps.ver.outputs.v }} (compilacion $N)" --latest
