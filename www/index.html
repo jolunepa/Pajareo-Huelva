@@ -22,7 +22,7 @@ a{color:var(--ac);word-break:break-word}.mu{color:var(--mu)}.sci{font-style:ital
 <main id="m"></main>
 <script src="js/foto.js"></script>
 <script>
-const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["creditos","⚖️","Créditos y licencias","Autores, licencias y aviso legal"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["calendario","📅","Calendario","Fases lunares día a día"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"],["huellas","🐾","Huellas","Aves, mamíferos, anfibios y reptiles"],["serpientes","🐍","Serpientes","Guía con fotos de especies"],["brujula","🧭","Brújula","Rumbo y punto de vuelta"],["ebird","🔭","Buscador eBird","Mapa y especies en eBird.org"],["equipo","📷","Mi equipo","Cámaras, objetivos y nº de serie"]];
+const TABS=[["amigos","🌐","Redes Sociales","Amigos y sus enlaces"],["aves","🎵","Sonidos de aves","Lista alfabética con reproductor"],["reconocer","🎤","Reconocer ave","Escucha y te dice qué ave suena"],["foto","📷","Reconocer por foto","Haz una foto o elige una y te dice el ave"],["creditos","⚖️","Créditos y licencias","Autores, licencias y aviso legal"],["quiz","🎯","Quiz de sonidos","Adivina el ave por su canto"],["telefonos","📞","Teléfonos de interés","Emergencias, centros y contactos"],["calendario","📅","Calendario","Fases lunares día a día"],["tiempo","⚡","El tiempo","Previsión por localidad"],["mareas","🌊","Tablas de mareas","Mareas de Huelva"],["sitios","👀","Localizaciones","Dónde hemos visto cada especie"],["huellas","🐾","Huellas","Aves, mamíferos, anfibios y reptiles"],["serpientes","🐍","Serpientes","Guía con fotos de especies"],["brujula","🧭","Brújula","Rumbo y punto de vuelta"],["ebird","🔭","Buscador eBird","Mapa y especies en eBird.org"],["equipo","📷","Mi equipo","Cámaras, objetivos y nº de serie"],["parejas","🃏","Parejas de aves","Memoriza y empareja aves"]];
 const LOCS=["Huelva","Almonte","El Rocío","Doñana","Isla Cristina","Ayamonte","Punta Umbría","Matalascañas","Moguer","Lepe","Cartaya","El Portil"];
 const FR=[["Cristóbal Crespo","https://www.instagram.com/cristobal_crespo_caro"],["Carlos Salguero","https://www.instagram.com/carlxsh"],["Tomás Gómez","https://www.instagram.com/toromy75"],["Fco. Rivas","https://www.instagram.com/francisco_rivas68"],["David (Zuma)","https://www.instagram.com/elzuma"],["Juanjo Cipriano","https://ebird.org/profile/OTEwMTk0/ES"],["Jose Manuel Reyes","https://www.instagram.com/josemreyesp"],["Seba","https://www.instagram.com/seba_wildlife"],["Jose Antonio (jolunepa)","https://www.instagram.com/jolunepa"],["Antonio Medina","https://www.instagram.com/antonio.jmedina"],["Loren","https://www.instagram.com/fotografiasdeloren"],["Felipe","https://www.instagram.com/felipe.felipe.1806"],["Isidro","https://www.instagram.com/donanaparadise"],["Enrique Pragom","https://www.instagram.com/enri_prax"],["Jose A. Diaz","https://www.instagram.com/diazregodon"],["Jose Luis","https://www.facebook.com/joseluis.cruzadoblanco"],["Feliciano","https://www.instagram.com/feliciano.esteban.9"],["Diego","https://www.instagram.com/spanishwildlife70"],["Sara Manga","https://www.instagram.com/sara_manga_"]];
 const SI=[["Camachuelo común","https://maps.app.goo.gl/Rh3Kthsp6KQoRNQ87"],["Camachuelo común","https://maps.app.goo.gl/Kh3F2EJNKzbcijPk9"],["Pechiazul","https://maps.app.goo.gl/xkopK4rHkDf1pMmh7"],["Búho campestre","https://maps.app.goo.gl/tkmkyvNb69Ak8EhGA"],["Chorlito gris","https://maps.app.goo.gl/qxTrqNCbBqarAwAcA"],["Malvasía cabeciblanca","https://maps.app.goo.gl/uGRr4QxcVu7taz7J7"],["Falaropo tricolor","https://maps.app.goo.gl/bLWZuV7Bf7KAjpb9A"]];
@@ -42,7 +42,7 @@ window.rm=(k,i)=>{if(confirm("¿Borrar?")){S[k].splice(i,1);keep();render()}};
 function render(){if(tab!=="home")ORD=false;
   const cur=TABS.find(t=>t[0]===tab);
   $("#ttl").textContent=cur?cur[2]:"Pajareo Huelva";
-  $("#m").innerHTML=cur?({amigos,aves,reconocer,foto,quiz,creditos,calendario,telefonos,vistas,tiempo,mareas,sitios,huellas,serpientes,brujula,ebird,equipo})[tab]():home();if(tab!=="ebird"&&EB&&EB.map){EB.map.remove();EB.map=null}if(tab!=="brujula")brStop();else{brStart();brUp()}if(tab!=="reconocer"&&R.on)detenerR();if(tab==="quiz"&&Q.play){Q.play=false;const a=document.getElementById("qa");if(a)a.play().catch(()=>{})}
+  $("#m").innerHTML=cur?({amigos,aves,reconocer,foto,quiz,creditos,calendario,telefonos,vistas,tiempo,mareas,sitios,huellas,serpientes,brujula,ebird,equipo,parejas})[tab]():home();if(tab!=="ebird"&&EB&&EB.map){EB.map.remove();EB.map=null}if(tab!=="brujula")brStop();else{brStart();brUp()}if(tab!=="reconocer"&&R.on)detenerR();if(tab==="quiz"&&Q.play){Q.play=false;const a=document.getElementById("qa");if(a)a.play().catch(()=>{})}
 }
 const VER="__VERSION__";
 const verTxt=()=>VER.charAt(0)==="_"?"pruebas":"v."+VER.slice(1);
@@ -50,7 +50,7 @@ let ORD=false;
 function ordenados(){return TABS.filter(t=>t[0]!=="creditos").sort((a,b)=>a[2].localeCompare(b[2],"es",{sensitivity:"base"}))}
 window.mover=(id,d)=>{const l=ordenados().map(t=>t[0]),i=l.indexOf(id),j=i+d;if(j<0||j>=l.length)return;[l[i],l[j]]=[l[j],l[i]];S.order=l;keep();render()};
 window.togOrd=()=>{ORD=!ORD;render()};
-const MENU=[["aves","🐦","Aves",["aves","reconocer","foto","ebird","quiz"]],["campo","🐾","Guía de campo",["huellas","serpientes"]],["salidas","🧭","Salidas al campo",["tiempo","mareas","brujula","calendario","sitios"]],["grupo","👥","Grupo",["amigos","telefonos"]],["mio","📷","Mi equipo",["equipo"]]];
+const MENU=[["aves","🐦","Aves",["aves","reconocer","foto","ebird","quiz","parejas"]],["campo","🐾","Guía de campo",["huellas","serpientes"]],["salidas","🧭","Salidas al campo",["tiempo","mareas","brujula","calendario","sitios"]],["grupo","👥","Grupo",["amigos","telefonos"]],["mio","📷","Mi equipo",["equipo"]]];
 const MNO={};const mnT=id=>{if(MNO[id])delete MNO[id];else MNO[id]=1;render()};
 function home(){const T={};TABS.forEach(t=>{if(t[0]!=="creditos")T[t[0]]=t});const usados=new Set();const M=MENU.map(c=>[c[0],c[1],c[2],c[3].filter(id=>T[id])]);M.forEach(c=>c[3].forEach(id=>usados.add(id)));const resto=Object.keys(T).filter(id=>!usados.has(id));if(resto.length)M.push(["mas","📌","Más",resto]);const ab=MNO;return (inocente()?`<div class="card" onclick="abreVid()" style="display:flex;align-items:center;gap:12px;cursor:pointer;background:#2e8b3d22;border-color:var(--ac)"><span style="font-size:30px">🌙</span><div style="flex:1"><b>Novedad: Visión Nocturna</b><br><small class="mu">Toca para descubrirla</small></div><span style="font-size:18px">▸</span></div>`:"")+M.map(c=>{const o=!!ab[c[0]];return `<div class="card" style="padding:0;overflow:hidden"><div onclick="mnT('${c[0]}')" style="display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer"><span style="font-size:26px">${c[1]}</span><b style="flex:1;font-size:17px">${c[2]}</b><small class="mu">${c[3].length}</small><span style="font-size:18px">${o?"▾":"▸"}</span></div>`+(o?c[3].map(id=>`<div onclick="tab='${id}';q='';render()" style="display:flex;gap:10px;align-items:center;padding:10px 14px 10px 24px;border-top:1px solid var(--bd);cursor:pointer"><span class="ic" style="font-size:22px">${T[id][1]}</span><div><b>${T[id][2]}</b><br><small class="mu">${T[id][3]}</small></div></div>`).join(""):"")+`</div>`}).join("")+(UP.nuevo?`<div class="card" style="background:#2e8b3d22;border-color:var(--ac)"><b>🔄 Hay una versión nueva (${esc(UP.nuevo.v)})</b><button class="b" onclick="instalaAct()">⬇️ Descargar e instalar</button><small class="mu">Se descarga el archivo; ábrelo para instalar (se mantiene todo lo que tienes guardado).</small></div>`:"")+`<div style="text-align:center"><button class="chip" onclick="buscaAct(true)">🔄 Buscar actualización</button></div><div class="foot">Creado por <a href="https://www.instagram.com/jolunepa" target="_blank">jolunepa</a><br>${verTxt()}</div>`+`<div style="text-align:center;margin:6px 0 18px"><a href="#" onclick="tab='creditos';q='';render();return false" style="font-size:12px;color:var(--mu);text-decoration:underline">⚖️ Créditos y licencias</a></div>`}
 function lista(k,tit,ph1,ph2,btn,lbl){
@@ -541,18 +541,46 @@ async function ebMapDraw(){
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"© OpenStreetMap"}).addTo(map);
     const pts=[];
     j.forEach(o=>{if(o.lat==null||o.lng==null)return;pts.push([o.lat,o.lng]);
-      L.circleMarker([o.lat,o.lng],{radius:8,color:"#fff",weight:2,fillColor:"#d33",fillOpacity:.9}).addTo(map).bindPopup(`<b>${esc(o.locName||"")}</b><br>${esc(ebFecha(o.obsDt))} · ${o.howMany!=null?o.howMany+" ejemplares":"presente"}<br><a href="#" onclick="go('https://ebird.org/checklist/${esc(o.subId)}');return false">Ver en eBird</a>`)});
+      L.circleMarker([o.lat,o.lng],{radius:8,color:"#fff",weight:2,fillColor:"#d33",fillOpacity:.9}).addTo(map).bindPopup(`<b>${esc(ebLoc(o.locName))}</b><br>${esc(ebFecha(o.obsDt))} · ${o.howMany!=null?o.howMany+" ejemplares":"presente"}<br><a href="#" onclick="go('https://ebird.org/checklist/${esc(o.subId)}');return false">Ver en eBird</a>`)});
     if(pts.length)map.fitBounds(pts,{padding:[24,24],maxZoom:13});
     nEl.textContent=j.length?j.length+" avistamientos en los últimos "+d+" días ("+via+") · toca un punto para ver el detalle":"Sin avistamientos en los últimos "+d+" días en Huelva (eBird no devuelve registros de esta especie).";
     const el2=document.getElementById("ebl");
-    if(el2)el2.innerHTML=j.slice().sort((a,b)=>a.obsDt<b.obsDt?1:-1).slice(0,40).map(o=>`<div class="topic" style="cursor:pointer;gap:10px" onclick="go('https://ebird.org/checklist/${esc(o.subId)}')"><div style="flex:1;min-width:0"><b>${esc(o.locName||"")}</b><div class="mu" style="font-size:12px">${esc(ebFecha(o.obsDt))}</div></div><b>${o.howMany!=null?o.howMany:"x"}</b></div>`).join("")
+    if(el2)el2.innerHTML=j.slice().sort((a,b)=>a.obsDt<b.obsDt?1:-1).slice(0,40).map(o=>`<div class="topic" style="cursor:pointer;gap:10px" onclick="go('https://ebird.org/checklist/${esc(o.subId)}')"><div style="flex:1;min-width:0"><b>${esc(ebLoc(o.locName))}</b><div class="mu" style="font-size:12px">${esc(ebFecha(o.obsDt))}</div></div><b>${o.howMany!=null?o.howMany:"x"}</b></div>`).join("")
   }catch(e){if(nEl)nEl.textContent=e.message==="key"?"eBird no acepta tu clave.":e.message==="mapa"?"No he podido cargar el mapa.":"No he podido conectar con eBird. Comprueba tu conexión."}}
 function ebFecha(d){try{const x=new Date(d.replace(" ","T")),h=new Date(),dd=Math.round((new Date(h.getFullYear(),h.getMonth(),h.getDate())-new Date(x.getFullYear(),x.getMonth(),x.getDate()))/864e5);const hm=d.slice(11,16);return dd<=0?"hoy "+hm:dd===1?"ayer "+hm:"hace "+dd+" días"}catch(e){return d}}
 function ebList(){
   const el=document.getElementById("ebl");if(!el)return;
   if(!EB.data){el.innerHTML=`<div class="mu" style="padding:8px 0">${esc(EB.msg||"")}</div>`;return}
   const nm=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(),t=nm(EB.q.trim()),L=EB.data.filter(o=>!t||nm(o.comName).includes(t)||nm(o.sciName).includes(t));
-  el.innerHTML=(EB.msg&&!L.length?`<div class="mu" style="padding:8px 0">${esc(EB.msg)}</div>`:"")+L.map(o=>`<div class="topic" style="cursor:pointer;gap:10px" onclick="go('https://ebird.org/checklist/${esc(o.subId)}')"><div style="flex:1;min-width:0"><b>${esc(o.comName)}</b><div class="sci">${esc(o.sciName)}</div><div class="mu" style="font-size:12px">${esc(o.locName||"")} · ${esc(ebFecha(o.obsDt))}</div></div><div style="text-align:right;white-space:nowrap"><b style="font-size:16px">${o.howMany!=null?o.howMany:"x"}</b><div class="mu" style="font-size:11px">${o.howMany!=null?"ejemplares":"presente"}</div></div></div>`).join("")}
+  el.innerHTML=(EB.msg&&!L.length?`<div class="mu" style="padding:8px 0">${esc(EB.msg)}</div>`:"")+L.map(o=>`<div class="topic" style="cursor:pointer;gap:10px" onclick="go('https://ebird.org/checklist/${esc(o.subId)}')"><div style="flex:1;min-width:0"><b>${esc(o.comName)}</b><div class="sci">${esc(o.sciName)}</div><div class="mu" style="font-size:12px">${esc(ebLoc(o.locName))} · ${esc(ebFecha(o.obsDt))}</div></div><div style="text-align:right;white-space:nowrap"><b style="font-size:16px">${o.howMany!=null?o.howMany:"x"}</b><div class="mu" style="font-size:11px">${o.howMany!=null?"ejemplares":"presente"}</div></div></div>`).join("")}
+
+function ebLoc(n){n=String(n||"").trim();return(!n||/^auto selected/i.test(n)||/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(n))?"Ubicación aproximada":n}
+const LN=()=>window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.LocalNotifications;
+async function ebNotify(title,body){const L=LN();if(!L)return false;try{await L.schedule({notifications:[{id:Math.floor(Math.random()*2e9),title,body,schedule:{at:new Date(Date.now()+500)}}]});return true}catch(e){return false}}
+let EBA={busy:false};
+async function ebAlertCheck(manual){
+  if(!S.ebalert||!ebKey()||EBA.busy)return;EBA.busy=true;
+  try{const R=await ebHuelvaObs("notable","back=2&maxResults=100&sppLocale=es_ES"),j=Array.isArray(R.j)?R.j:[];
+    const seen=new Set(S.ebseen||[]);const first=!S.ebseen;const nuevos=j.filter(o=>o.subId&&!seen.has(o.subId+"|"+o.speciesCode));
+    j.forEach(o=>seen.add(o.subId+"|"+o.speciesCode));S.ebseen=Array.from(seen).slice(-400);keep();
+    if(first&&!manual)return;
+    if(nuevos.length){const sp=[...new Set(nuevos.map(o=>o.comName))];
+      const t=sp.length===1?"🐦 Ave rara en Huelva: "+sp[0]:"🐦 "+sp.length+" aves raras en Huelva";
+      const b=sp.length===1?ebLoc(nuevos[0].locName)+" · "+ebFecha(nuevos[0].obsDt):sp.slice(0,4).join(", ")+(sp.length>4?"…":"");
+      await ebNotify(t,b)}
+    else if(manual)toast("Sin rarezas nuevas ahora mismo")}
+  catch(e){if(manual)toast("No he podido comprobar ahora")}
+  finally{EBA.busy=false}}
+window.ebAlertToggle=async()=>{
+  if(S.ebalert){S.ebalert=false;keep();render();toast("Avisos desactivados");return}
+  const L=LN();if(!L){toast("Los avisos solo funcionan en la app instalada");return}
+  try{let p=await L.checkPermissions();if(p.display!=="granted")p=await L.requestPermissions();
+    if(p.display!=="granted"){toast("Activa las notificaciones de la app en los ajustes del móvil");return}}catch(e){toast("No he podido pedir permiso");return}
+  S.ebalert=true;delete S.ebseen;keep();render();await ebAlertCheck(false);toast("Avisos activados")};
+window.ebAlertTest=()=>ebAlertCheck(true);
+function ebAlertCard(){return `<div class="card" style="font-size:13px;line-height:1.5"><b>🔔 Avisos de rarezas</b><div class="mu" style="margin:4px 0">Te aviso con una notificación cuando eBird publique un ave rara nueva en Huelva. Se comprueba al abrir la app y mientras esté abierta o en segundo plano.</div><button class="b" onclick="ebAlertToggle()">${S.ebalert?"Desactivar avisos":"Activar avisos"}</button>${S.ebalert?`<button class="b" style="background:var(--card);color:var(--tx);border:1px solid var(--bd)" onclick="ebAlertTest()">Comprobar ahora</button>`:""}</div>`}
+setTimeout(()=>ebAlertCheck(false),4000);setInterval(()=>ebAlertCheck(false),20*60*1000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(()=>ebAlertCheck(false),1500)});
 function ebird(){
   const cred=`<p class="mu" style="font-size:12px;text-align:center;margin:12px 4px">Datos: <a href="https://ebird.org" target="_blank">eBird.org</a> · Cornell Lab of Ornithology. Pajareo Huelva no tiene relación oficial con eBird.</p>`;
   if(!ebKey())return `<div class="card"><div style="font-size:14px;line-height:1.5">Para ver avistamientos recientes de <b>eBird</b> dentro de la app necesitas tu clave personal. Es gratis y se pide con tu cuenta de eBird.</div><p><a href="https://ebird.org/api/keygen" target="_blank">Conseguir mi clave en ebird.org</a></p><input id="ebk" placeholder="Pega aquí tu clave" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="b" onclick="ebSave()">Guardar clave</button><div class="mu" style="font-size:12px">La clave se guarda solo en tu móvil y solo se envía a eBird.</div></div>`+cred;
@@ -561,7 +589,7 @@ function ebird(){
   const forget=`<div style="text-align:center"><button class="x" style="float:none;font-size:13px" onclick="ebForget()">Quitar mi clave</button></div>`;
   if(EB.m===3){const dch=[7,14,30].map(n=>`<button class="chip ${n===EB.d?"on":""}" style="flex:1" onclick="ebDays(${n})">${n} días</button>`).join("");
     return `<div class="chips" style="margin:2px 0 8px">${ch}</div><input id="ebsq" placeholder="Buscar especie (ej. espátula)" value="${esc(EB.sq)}" oninput="ebSq(this.value)" autocomplete="off"><div id="ebsg"></div>`+(EB.sp?`<div style="margin:8px 0 4px"><b>${esc(EB.sp.n)}</b> <span class="sci">${esc(EB.sp.s)}</span></div><div class="chips" style="margin:6px 0">${dch}</div><div id="ebmap" style="height:300px;border-radius:12px;border:1px solid var(--bd);margin:8px 0;z-index:0"></div><div id="ebn" class="mu" style="font-size:13px"></div><div id="ebl"></div>`:`<div class="mu" style="padding:12px 2px">Escribe el nombre de un ave y elige una para ver en el mapa dónde se ha visto en Huelva.</div>`)+cred+`<p class="mu" style="font-size:11px;text-align:center;margin:0 4px 6px">Mapa © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a></p>`+forget}
-  return `<div class="chips" style="margin:2px 0 8px">${ch}</div><input placeholder="Buscar un ave…" value="${esc(EB.q)}" oninput="ebQ(this.value)"><div id="ebl"></div>`+cred+forget}
+  return `<div class="chips" style="margin:2px 0 8px">${ch}</div><input placeholder="Buscar un ave…" value="${esc(EB.q)}" oninput="ebQ(this.value)"><div id="ebl"></div>`+ebAlertCard()+cred+forget}
 const EQS=[["camaras","Cámaras","📷","Cámara"],["objetivos","Objetivos","🔭","Objetivo"],["otros","Otros (flash, trípode, tarjetas…)","🎒","Otro"]];
 let EQ={sec:null,i:-1};
 const eqData=()=>{S.equipo=S.equipo||{};EQS.forEach(x=>{if(!Array.isArray(S.equipo[x[0]]))S.equipo[x[0]]=[]});return S.equipo};
@@ -598,6 +626,80 @@ function equipo(){
       h+=`<div class="card" style="margin:6px 0"><div style="display:flex;justify-content:space-between;gap:8px"><div style="min-width:0"><b>${esc(o.m||"-")}</b> · ${esc(o.mo||"-")}<div class="mu" style="font-size:13px">Nº de serie: <b style="color:var(--tx)">${esc(o.s||"-")}</b></div>${o.n?`<div class="mu" style="font-size:12px">${esc(o.n)}</div>`:""}</div><div style="white-space:nowrap"><button class="chip" onclick="eqEdit('${sec}',${i})">Editar</button> <button class="x" style="float:none" onclick="eqDel('${sec}',${i})" aria-label="Borrar">✕</button></div></div></div>`})});
   h+=`<button class="b" style="width:100%;margin-top:16px" onclick="eqShare()">📤 Compartir lista</button><p class="mu" style="font-size:12px;text-align:center;margin:8px 4px">Guárdala para tener las series a mano si tienes que hacer una denuncia o avisar al seguro.</p>`;
   return h}
+/*PJ-START*/
+const PJA=[["abejaruco-europeo", "Abejaruco europeo"], ["abubilla-comun", "Abubilla común"], ["buho-campestre", "Búho campestre"], ["calamon-comun", "Calamón común"], ["cormoran-grande", "Cormorán grande"], ["elanio-comun", "Elanio común"], ["espatula-comun", "Espátula común"], ["flamenco-comun", "Flamenco común"], ["herrerillo-capuchino", "Herrerillo capuchino"], ["herrerillo-comun", "Herrerillo común"], ["martin-pescador-comun", "Martín pescador común"], ["mochuelo-europeo", "Mochuelo europeo"]];
+let PJ=null;
+const pjNivel=()=>[6,8,12].includes(S.pjn)?S.pjn:8;
+let pjPrev=[];
+const pjFmt=ms=>{const t=Math.floor(ms/1000),m=Math.floor(t/60),s=t%60;return m+":"+String(s).padStart(2,"0")};
+function pjNueva(){const n=pjNivel(),sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+  const todas=PJA.map(x=>x[0]);
+  const nuevas=sh(todas.filter(x=>!pjPrev.includes(x))).slice(0,Math.ceil(n/2));
+  const el=sh([...nuevas,...sh(todas.filter(x=>!nuevas.includes(x))).slice(0,n-nuevas.length)]);
+  pjPrev=el.slice();
+  const info=Object.fromEntries(PJA),c=sh([...el,...el]).map((x,i)=>({s:x,n:info[x],id:i,ok:false}));
+  PJ={c,sp:el,open:[],lock:false,mv:0,pr:0,tot:n,rec:false,t0:0,tf:0,img:null}}
+window.pjNivelSet=n=>{S.pjn=n;keep();pjNueva();render()};
+window.pjNew=()=>{pjNueva();render()};
+window.pjTap=i=>{if(!PJ||PJ.lock||PJ.tf)return;const k=PJ.c[i];if(k.ok||PJ.open.includes(i))return;
+  if(!PJ.t0)PJ.t0=Date.now();PJ.open.push(i);
+  if(PJ.open.length===2){PJ.mv++;const[a,b]=PJ.open.map(x=>PJ.c[x]);
+    if(a.s===b.s){a.ok=b.ok=true;PJ.open=[];PJ.pr++;
+      if(PJ.pr===PJ.tot){PJ.tf=Date.now();const n=pjNivel(),t=PJ.tf-PJ.t0;S.pjb=S.pjb||{};
+        if(!S.pjb[n]||t<S.pjb[n].t||(t===S.pjb[n].t&&PJ.mv<S.pjb[n].m)){S.pjb[n]={t,m:PJ.mv};PJ.rec=true}keep()}}
+    else{PJ.lock=true;render();setTimeout(()=>{if(PJ){PJ.open=[];PJ.lock=false;render()}},900);return}}
+  render()};
+setInterval(()=>{const e=document.getElementById("pjt");if(e&&PJ&&PJ.t0&&!PJ.tf)e.textContent=pjFmt(Date.now()-PJ.t0)},250);
+const pjLoad=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src});
+async function pjCanvas(){
+  const W=1080,H=1350,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
+  x.fillStyle="#0f3d24";x.fillRect(0,0,W,H);
+  const rr=(a,b,w,h,r)=>{x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()};
+  x.textAlign="center";x.fillStyle="#9fd8b0";x.font="bold 34px sans-serif";x.fillText("PAJAREO HUELVA",W/2,90);
+  x.fillStyle="#fff";x.font="bold 88px sans-serif";x.fillText("Parejas de aves",W/2,190);
+  const lv=PJ.tot+" parejas";x.font="bold 38px sans-serif";const lw=x.measureText(lv).width+60;
+  x.fillStyle="#2f7d4a";rr(W/2-lw/2,225,lw,64,32);x.fill();x.fillStyle="#fff";x.fillText(lv,W/2,270);
+    
+  const t=PJ.tf-PJ.t0;
+  x.fillStyle="#fff";x.font="bold 230px sans-serif";x.fillText(pjFmt(t),W/2,520);
+  x.fillStyle="#cfe9d7";x.font="40px sans-serif";x.fillText("tiempo  ·  "+PJ.mv+" intentos",W/2,590);
+  if(PJ.rec){x.fillStyle="#f2c94c";x.font="bold 42px sans-serif";x.fillText("¡Nuevo récord personal!",W/2,655)}
+  const n=PJ.sp.length,cols=n<=6?n:(n===8?4:6),sz=cols>=6?150:200,gap=14,rows=Math.ceil(n/cols);
+  const gw=cols*sz+(cols-1)*gap,gx=(W-gw)/2,gy=720;
+  const ims=await Promise.all(PJ.sp.map(s=>pjLoad("img/aves/"+s+".jpg")));
+  ims.forEach((im,i)=>{const cx=gx+(i%cols)*(sz+gap),cy=gy+Math.floor(i/cols)*(sz+gap);x.save();rr(cx,cy,sz,sz,18);x.clip();
+    if(im)x.drawImage(im,cx,cy,sz,sz);else{x.fillStyle="#2f7d4a";x.fillRect(cx,cy,sz,sz)}x.restore()});
+  x.fillStyle="#fff";x.font="bold 50px sans-serif";x.fillText("¿Puedes ganarme?",W/2,H-110);
+  return cv}
+window.pjShare=async()=>{if(!PJ||!PJ.tf)return;
+  const txt="🐦 Parejas de aves ("+PJ.tot+" parejas): "+pjFmt(PJ.tf-PJ.t0)+" y "+PJ.mv+" intentos. ¿Me ganas? #PajareoHuelva";
+  let cv;try{cv=await pjCanvas()}catch(e){toast("No he podido crear la imagen");return}
+  const url=cv.toDataURL("image/png");PJ.img=url;
+  const P=window.Capacitor&&window.Capacitor.Plugins;
+  try{
+    if(P&&P.Filesystem&&P.Share){const w=await P.Filesystem.writeFile({path:"parejas-aves.png",data:url.split(",")[1],directory:"CACHE"});
+      await P.Share.share({title:"Parejas de aves",text:txt,url:w.uri,dialogTitle:"Compartir mi resultado"});return}
+    if(navigator.canShare){const b=await (await fetch(url)).blob(),f=new File([b],"parejas-aves.png",{type:"image/png"});
+      if(navigator.canShare({files:[f]})){await navigator.share({files:[f],text:txt});return}}
+  }catch(e){if(e&&/cancel|abort/i.test(String(e.message||e)))return}
+  render()};
+function parejas(){
+  if(!PJ||PJ.tot!==pjNivel())pjNueva();
+  const n=pjNivel(),rec=(S.pjb||{})[n],fin=PJ.pr===PJ.tot;
+  const tm=PJ.tf?pjFmt(PJ.tf-PJ.t0):PJ.t0?pjFmt(Date.now()-PJ.t0):"0:00";
+  let h=`<div class="card"><div class="row" style="margin-bottom:8px">${[6,8,12].map(x=>`<button class="b" style="${x===n?"":"background:var(--card);color:var(--tx);border:1px solid var(--bd)"}" onclick="pjNivelSet(${x})">${x} parejas</button>`).join("")}</div>
+<div style="display:flex;justify-content:space-between;align-items:center;font-size:15px"><span>⏱ <b id="pjt" style="font-variant-numeric:tabular-nums">${tm}</b></span><span>Intentos: <b>${PJ.mv}</b></span><span>Parejas: <b>${PJ.pr}</b>/${PJ.tot}</span></div>
+<div class="mu" style="font-size:13px;margin-top:4px">${rec?"Tu récord con "+n+" parejas: "+pjFmt(rec.t)+" · "+rec.m+" intentos":"Aún sin récord con "+n+" parejas"}</div></div>`;
+  h+=`<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px">`;
+  PJ.c.forEach((k,i)=>{const up=k.ok||PJ.open.includes(i);
+    h+=up?`<div style="border-radius:10px;overflow:hidden;background:var(--card);border:2px solid ${k.ok?"var(--ac)":"#e8a020"};aspect-ratio:1"><img src="img/aves/${k.s}.jpg" alt="${esc(k.n)}" style="width:100%;height:100%;object-fit:cover;display:block"></div>`
+      :`<button onclick="pjTap(${i})" aria-label="Carta ${i+1}" style="aspect-ratio:1;border-radius:10px;border:2px solid #25683b;background:var(--ac);color:#fff;font-size:28px;font-weight:700;padding:0">?</button>`});
+  h+=`</div>`;
+  if(fin)h+=`<div class="card" style="text-align:center"><b style="font-size:18px">¡Completado en ${tm} y ${PJ.mv} intentos!</b>${PJ.rec?`<div style="color:var(--ac);font-weight:700;margin-top:4px">¡Nuevo récord!</div>`:""}<button class="b" onclick="pjShare()">📤 Compartir mi resultado</button><button class="b" style="background:var(--card);color:var(--tx);border:1px solid var(--bd)" onclick="pjNew()">Jugar otra vez</button>${PJ.img?`<img src="${PJ.img}" alt="Captura de la partida" style="width:100%;border-radius:10px;margin-top:8px"><div class="mu" style="font-size:12px">Mantén pulsada la imagen para guardarla y enviarla.</div>`:""}</div>`;
+  else h+=`<button class="b" style="margin-top:12px;background:var(--card);color:var(--tx);border:1px solid var(--bd)" onclick="pjNew()">Nueva partida</button>`;
+  h+=`<p class="mu" style="font-size:12px;text-align:center;margin:10px 0">Fotos: © jolunepa</p>`;
+  return h}
+/*PJ-END*/
 function creditos(){
   const L=(t,u)=>`<a href="${u}" target="_blank" style="color:var(--ac)">${t}</a>`;
   const c=(t,b)=>`<div class="card"><b>${t}</b><div style="margin-top:6px;font-size:14px;line-height:1.45">${b}</div></div>`;
