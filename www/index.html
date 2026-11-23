@@ -672,15 +672,14 @@ async function pjCanvas(){
   x.fillStyle="#fff";x.font="bold 50px sans-serif";x.fillText("¿Puedes ganarme?",W/2,H-110);
   return cv}
 window.pjShare=async()=>{if(!PJ||!PJ.tf)return;
-  const txt="🐦 Parejas de aves ("+PJ.tot+" parejas): "+pjFmt(PJ.tf-PJ.t0)+" y "+PJ.mv+" intentos. ¿Me ganas? #PajareoHuelva";
   let cv;try{cv=await pjCanvas()}catch(e){toast("No he podido crear la imagen");return}
   const url=cv.toDataURL("image/png");PJ.img=url;
   const P=window.Capacitor&&window.Capacitor.Plugins;
   try{
     if(P&&P.Filesystem&&P.Share){const w=await P.Filesystem.writeFile({path:"parejas-aves.png",data:url.split(",")[1],directory:"CACHE"});
-      await P.Share.share({title:"Parejas de aves",text:txt,url:w.uri,dialogTitle:"Compartir mi resultado"});return}
+      await P.Share.share({url:w.uri,dialogTitle:"Compartir mi resultado"});return}
     if(navigator.canShare){const b=await (await fetch(url)).blob(),f=new File([b],"parejas-aves.png",{type:"image/png"});
-      if(navigator.canShare({files:[f]})){await navigator.share({files:[f],text:txt});return}}
+      if(navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}
   }catch(e){if(e&&/cancel|abort/i.test(String(e.message||e)))return}
   render()};
 function parejas(){
