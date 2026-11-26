@@ -633,17 +633,19 @@ function equipo(){
   h+=`<button class="b" style="width:100%;margin-top:16px" onclick="eqShare()">📤 Compartir lista</button><p class="mu" style="font-size:12px;text-align:center;margin:8px 4px">Guárdala para tener las series a mano si tienes que hacer una denuncia o avisar al seguro.</p>`;
   return h}
 /*PJ-START*/
-const PJA=[["abejaruco-europeo", "Abejaruco europeo"], ["abubilla-comun", "Abubilla común"], ["buho-campestre", "Búho campestre"], ["calamon-comun", "Calamón común"], ["cormoran-grande", "Cormorán grande"], ["elanio-comun", "Elanio común"], ["espatula-comun", "Espátula común"], ["flamenco-comun", "Flamenco común"], ["herrerillo-capuchino", "Herrerillo capuchino"], ["herrerillo-comun", "Herrerillo común"], ["martin-pescador-comun", "Martín pescador común"], ["mochuelo-europeo", "Mochuelo europeo"]];
+const PJA=[["abejaruco-europeo","Abejaruco europeo","jolunepa"],["abubilla-comun","Abubilla común","jolunepa"],["buho-campestre","Búho campestre","jolunepa"],["calamon-comun","Calamón común","jolunepa"],["cormoran-grande","Cormorán grande","jolunepa"],["elanio-comun","Elanio común","jolunepa"],["espatula-comun","Espátula común","jolunepa"],["flamenco-comun","Flamenco común","jolunepa"],["herrerillo-capuchino","Herrerillo capuchino","jolunepa"],["herrerillo-comun","Herrerillo común","jolunepa"],["martin-pescador-comun","Martín pescador común","jolunepa"],["mochuelo-europeo","Mochuelo europeo","jolunepa"],["av-a1","Camachuelo común","Juanjo"],["av-a2","Treparriscos","Juanjo"],["av-a3","Pechiazul","Juanjo"],["av-a4","Pájaro moscón europeo","Juanjo"],["av-a5","Acentor alpino","Juanjo"],["av-b1","Martín pescador común","Loren"],["av-b2","Abejaruco europeo","Loren"],["av-b3","Águila pescadora","Loren"],["av-b4","Alcaraván común","Loren"],["av-b5","Chorlitejo patinegro","Loren"],["av-c1","Águila imperial ibérica","Antonio M."],["av-c2","Águila real","Antonio M."],["av-c3","Alimoche común","Antonio M."],["av-c4","Azor común","Antonio M."],["av-c5","Buitre leonado","Antonio M."],["av-d1","Águila calzada","jolunepa"],["av-d2","Alzacola rojizo","jolunepa"],["av-d3","Ánade friso","jolunepa"],["av-d4","Avetorillo común","jolunepa"],["av-d5","Búho campestre","jolunepa"],["av-e1","Alcaudón real","Seba"],["av-e2","Gavilán común","Seba"],["av-e3","Oropéndola europea","Seba"],["av-e4","Ruiseñor común","Seba"],["av-e5","Torcecuello euroasiático","Seba"],["av-f1","Águila calzada","Isidro"],["av-f2","Águila imperial ibérica","Isidro"],["av-f3","Águila pescadora","Isidro"],["av-f4","Cigüeña blanca","Isidro"],["av-f5","Cormorán grande","Isidro"],["av-g1","Archibebe claro","Tomás"],["av-g2","Cigüeña negra","Tomás"],["av-g3","Correlimos tridáctilo","Tomás"],["av-g4","Pagaza piquirroja","Tomás"],["av-g5","Pardela capirotada","Tomás"]];
 let PJ=null;
 const pjNivel=()=>[6,8,12].includes(S.pjn)?S.pjn:8;
 let pjPrev=[];
 const pjFmt=ms=>{const t=Math.floor(ms/1000),m=Math.floor(t/60),s=t%60;return m+":"+String(s).padStart(2,"0")};
+const PJAU=Object.fromEntries(PJA.map(x=>[x[0],x[2]]));
 function pjNueva(){const n=pjNivel(),sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-  const todas=PJA.map(x=>x[0]);
-  const nuevas=sh(todas.filter(x=>!pjPrev.includes(x))).slice(0,Math.ceil(n/2));
-  const el=sh([...nuevas,...sh(todas.filter(x=>!nuevas.includes(x))).slice(0,n-nuevas.length)]);
+  const info=Object.fromEntries(PJA.map(x=>[x[0],x[1]])),todas=PJA.map(x=>x[0]);
+  const uq=(a,used)=>{const seen=new Set(used.map(x=>info[x]));return a.filter(x=>{if(seen.has(info[x]))return false;seen.add(info[x]);return true})};
+  const nuevas=uq(sh(todas.filter(x=>!pjPrev.includes(x))),[]).slice(0,Math.ceil(n/2));
+  const el=sh([...nuevas,...uq(sh(todas.filter(x=>!nuevas.includes(x))),nuevas).slice(0,n-nuevas.length)]);
   pjPrev=el.slice();
-  const info=Object.fromEntries(PJA),c=sh([...el,...el]).map((x,i)=>({s:x,n:info[x],id:i,ok:false}));
+  c=sh([...el,...el]).map((x,i)=>({s:x,n:info[x],id:i,ok:false}));
   PJ={c,sp:el,open:[],lock:false,mv:0,pr:0,tot:n,rec:false,t0:0,tf:0,img:null}}
 window.pjNivelSet=n=>{S.pjn=n;keep();pjNueva();render()};
 window.pjNew=()=>{pjNueva();render()};
@@ -702,7 +704,7 @@ function parejas(){
   h+=`</div>`;
   if(fin)h+=`<div class="card" style="text-align:center"><b style="font-size:18px">¡Completado en ${tm} y ${PJ.mv} intentos!</b>${PJ.rec?`<div style="color:var(--ac);font-weight:700;margin-top:4px">¡Nuevo récord!</div>`:""}<button class="b" onclick="pjShare()">📤 Compartir mi resultado</button><button class="b" style="background:var(--card);color:var(--tx);border:1px solid var(--bd)" onclick="pjNew()">Jugar otra vez</button>${PJ.img?`<img src="${PJ.img}" alt="Captura de la partida" style="width:100%;border-radius:10px;margin-top:8px"><div class="mu" style="font-size:12px">Mantén pulsada la imagen para guardarla y enviarla.</div>`:""}</div>`;
   else h+=`<button class="b" style="margin-top:12px;background:var(--card);color:var(--tx);border:1px solid var(--bd)" onclick="pjNew()">Nueva partida</button>`;
-  h+=`<p class="mu" style="font-size:12px;text-align:center;margin:10px 0">Fotos: © jolunepa</p>`;
+  h+=`<p class="mu" style="font-size:12px;text-align:center;margin:10px 0">Fotos: © de sus autores: jolunepa, Juanjo Cipriano, Loren, Antonio Medina, Seba, Isidro y Tomás Gómez</p>`;
   return h}
 /*PJ-END*/
 function creditos(){
