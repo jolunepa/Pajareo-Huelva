@@ -45,7 +45,8 @@ function render(){navAplica();if(tab!=="home")ORD=false;
   $("#ttl").textContent=cur?cur[2]:"Pajareo Huelva";
   const CP=tab.startsWith("m:")?catPage(tab.slice(2)):null;if(CP)$("#ttl").textContent=CP.t;$("#m").innerHTML=CP?CP.h:cur?({amigos,aves,reconocer,foto,quiz,creditos,calendario,telefonos,vistas,tiempo,mareas,sitios,huellas,serpientes,brujula,ebird,equipo,parejas,rutas})[tab]():home();if(tab!=="ebird"&&EB&&EB.map){EB.map.remove();EB.map=null}if(RT.map){try{RT.map.remove()}catch(e){}RT.map=null;RT.line=null;RT.dot=null}if(tab!=="rutas")RT.view=null;else rtMapa();if(tab!=="brujula")brStop();else{brStart();brUp()}if(tab!=="reconocer"&&R.on)detenerR();if(tab==="quiz"&&Q.play){Q.play=false;const a=document.getElementById("qa");if(a)a.play().catch(()=>{})}
 }
-let RT={on:false,pause:false,pts:[],dist:0,ms:0,t:0,wid:null,wl:null,tm:null,map:null,line:null,dot:null,view:null,err:""};
+let RT={bg:null,on:false,pause:false,pts:[],dist:0,ms:0,t:0,wid:null,wl:null,tm:null,map:null,line:null,dot:null,view:null,err:""};
+function rtBG(){try{const C=window.Capacitor;if(!C||!C.isNativePlatform||!C.isNativePlatform())return null;return C.Plugins&&C.Plugins.BackgroundGeolocation||(C.registerPlugin?C.registerPlugin("BackgroundGeolocation"):null)}catch(e){return null}}
 const rtT=ms=>{const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60,p=n=>String(n).padStart(2,"0");return(h?h+":"+p(m):m)+":"+p(x)};
 const rtKm=d=>(d/1000).toFixed(2).replace(".",",")+" km";
 const rtMs=()=>RT.ms+(RT.on&&!RT.pause?Date.now()-RT.t:0);
@@ -59,12 +60,16 @@ function rtPos(p){if(!RT.on||RT.pause)return;const c=p.coords;if(c.accuracy>40)r
   rtUi()}
 window.rtStart=async()=>{if(!navigator.geolocation){toast("Este móvil no tiene GPS");return}
   RT.on=true;RT.pause=false;RT.pts=[];RT.dist=0;RT.ms=0;RT.t=Date.now();RT.err="";
+  const BG=rtBG();
+  if(BG){try{RT.bg=await BG.addWatcher({backgroundTitle:"Pajareo Huelva",backgroundMessage:"Grabando tu ruta",requestPermissions:true,stale:false,distanceFilter:3},(l,e)=>{if(e){if(e.code==="NOT_AUTHORIZED"){RT.err="Sin permiso de ubicación: actívalo para esta app (Permitir siempre)";if(tab==="rutas")render();if(confirm("Pajareo Huelva necesita la ubicación para grabar la ruta. ¿Abrir los ajustes?"))BG.openSettings()}return}if(l)rtPos({coords:{latitude:l.latitude,longitude:l.longitude,accuracy:l.accuracy},timestamp:l.time||Date.now()})})}catch(e){RT.bg=null}}
+  if(!RT.bg){
   try{RT.wid=navigator.geolocation.watchPosition(rtPos,e=>{if(e&&e.code===1){RT.err="Sin permiso de ubicación: actívalo para esta app";if(tab==="rutas")render()}},{enableHighAccuracy:true,maximumAge:2000,timeout:30000})}catch(e){}
-  try{if(navigator.wakeLock)RT.wl=await navigator.wakeLock.request("screen")}catch(e){}
+  try{if(navigator.wakeLock)RT.wl=await navigator.wakeLock.request("screen")}catch(e){}}
   RT.tm=setInterval(rtUi,1000);render()};
 window.rtPause=()=>{if(!RT.on)return;if(RT.pause){RT.t=Date.now();RT.pause=false}else{RT.ms+=Date.now()-RT.t;RT.pause=true}render()};
 window.rtEnd=()=>{if(!RT.on)return;const ms=rtMs();
   if(RT.wid!=null&&navigator.geolocation)navigator.geolocation.clearWatch(RT.wid);RT.wid=null;
+  if(RT.bg!=null){const BG=rtBG();try{if(BG)BG.removeWatcher({id:RT.bg})}catch(e){}RT.bg=null}
   try{if(RT.wl)RT.wl.release()}catch(e){}RT.wl=null;clearInterval(RT.tm);RT.on=false;RT.pause=false;
   if(RT.pts.length>=2&&RT.dist>=20){const n=Math.ceil(RT.pts.length/400),p=RT.pts.filter((x,i)=>i%n===0||i===RT.pts.length-1).map(x=>[+x[0].toFixed(5),+x[1].toFixed(5)]);
     S.rutas=S.rutas||[];S.rutas.unshift({f:new Date().toISOString(),d:Math.round(RT.dist),ms:ms,k:rtKc(RT.dist),p:p});keep();toast("Ruta guardada")}
@@ -93,7 +98,7 @@ function rutas(){S.rutas=S.rutas||[];
     return `<button class="chip" onclick="rtBack()">← Volver</button><div class="card" style="padding:0;overflow:hidden;margin-top:8px"><div id="rtmap" style="height:260px"></div></div><b>${esc(f.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"}))}</b>`+grid(rtKm(r.d),rtT(r.ms),r.k+" kcal")+nota+`<div style="margin-top:12px"><button class="chip" onclick="rtDel(${RT.view})">🗑️ Borrar ruta</button></div>`}
   if(RT.on)return `<div class="card" style="padding:0;overflow:hidden"><div id="rtmap" style="height:260px"></div></div>`+(RT.err?`<div class="card" style="border-color:#c33">${esc(RT.err)}</div>`:"")+(RT.pause?`<div class="mu" style="text-align:center">⏸️ En pausa</div>`:"")+`<div id="rtgrid">${grid(`<span id="rtd">${rtKm(RT.dist)}</span>`,`<span id="rtt">${rtT(rtMs())}</span>`,`<span id="rtk">${rtKc(RT.dist)} kcal</span>`).replace(rtVel(RT.dist,rtMs()),`<span id="rtv">${rtVel(RT.dist,rtMs())}</span>`)}</div><div style="display:flex;gap:8px"><button class="b" style="flex:1" onclick="rtPause()">${RT.pause?"▶️ Seguir":"⏸️ Pausar"}</button><button class="b" style="flex:1" onclick="rtEnd()">⏹️ Terminar</button></div><div style="margin-top:8px">${nota}</div>`;
   const tot=S.rutas.reduce((a,r)=>a+r.d,0);
-  return `<div class="card"><b>Registra tu recorrido andando</b><br><small class="mu">Pulsa Iniciar y deja la app abierta con la pantalla encendida (se mantiene sola). Necesita la ubicación del móvil activada.</small><div style="margin:10px 0"><label class="mu" style="font-size:13px">Tu peso (kg), para calcular las calorías</label><input type="number" inputmode="decimal" value="${+S.peso||70}" oninput="S.peso=+this.value;keep()" style="width:100%"></div><button class="b" onclick="rtStart()">▶️ Iniciar ruta</button></div>`
+  return `<div class="card"><b>Registra tu recorrido andando</b><br><small class="mu">Pulsa Iniciar y puedes bloquear la pantalla o usar otras apps: mientras graba verás un aviso en la barra de notificaciones. Necesita la ubicación del móvil activada y, si te lo pide, el permiso "Permitir siempre".</small><div style="margin:10px 0"><label class="mu" style="font-size:13px">Tu peso (kg), para calcular las calorías</label><input type="number" inputmode="decimal" value="${+S.peso||70}" oninput="S.peso=+this.value;keep()" style="width:100%"></div><button class="b" onclick="rtStart()">▶️ Iniciar ruta</button></div>`
   +`<div class="card"><b>Historial de rutas</b>${S.rutas.length?` <small class="mu">${S.rutas.length} guardadas · ${rtKm(tot)} en total</small>`+S.rutas.map((r,i)=>`<div onclick="rtVer(${i})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--bd);cursor:pointer"><span style="font-size:22px">🥾</span><div style="flex:1"><b>${esc(new Date(r.f).toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"numeric"}))}</b><br><small class="mu">${rtKm(r.d)} · ${rtT(r.ms)} · ${r.k} kcal</small></div><span>▸</span></div>`).join(""):`<br><small class="mu">Aún no has guardado ninguna ruta.</small>`}</div>`+nota}
 const VER="__VERSION__";
 const verTxt=()=>VER.charAt(0)==="_"?"pruebas":"v."+VER.slice(1);
